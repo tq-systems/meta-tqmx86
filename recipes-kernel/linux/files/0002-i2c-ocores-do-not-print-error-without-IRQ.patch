@@ -1,0 +1,29 @@
+From f04c1632dd3d12b2ae328133a91279ed0bce7bce Mon Sep 17 00:00:00 2001
+From: Matthias Schiffer <matthias.schiffer@tq-group.com>
+Date: Mon, 25 Jan 2021 09:35:36 +0100
+Subject: [PATCH 2/4] i2c: ocores: do not print error without IRQ
+
+The OpenCores driver has a polling mode to work without IRQs. Use
+platform_get_irq_optional() to avoid error message.
+
+Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
+---
+ drivers/i2c/busses/i2c-ocores.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/i2c/busses/i2c-ocores.c b/drivers/i2c/busses/i2c-ocores.c
+index f5fc75b65a19..c6bf51774b64 100644
+--- a/drivers/i2c/busses/i2c-ocores.c
++++ b/drivers/i2c/busses/i2c-ocores.c
+@@ -686,7 +686,7 @@ static int ocores_i2c_probe(struct platform_device *pdev)
+ 
+ 	init_waitqueue_head(&i2c->wait);
+ 
+-	irq = platform_get_irq(pdev, 0);
++	irq = platform_get_irq_optional(pdev, 0);
+ 	if (irq == -ENXIO) {
+ 		ocores_algorithm.master_xfer = ocores_xfer_polling;
+ 
+-- 
+2.17.1
+

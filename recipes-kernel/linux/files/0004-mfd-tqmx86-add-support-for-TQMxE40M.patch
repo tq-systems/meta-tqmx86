@@ -1,0 +1,59 @@
+From 43670b328109cf4472e1c3a088cbb4476c1962c2 Mon Sep 17 00:00:00 2001
+From: Matthias Schiffer <matthias.schiffer@tq-group.com>
+Date: Mon, 25 Jan 2021 09:41:00 +0100
+Subject: [PATCH 4/4] mfd: tqmx86: add support for TQMxE40M
+
+All future TQMx86 SoMs will use a 24MHz LPC clock, so we can use that as
+a default instead of listing each new module individually.
+
+Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
+---
+ drivers/mfd/tqmx86.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
+index 732013f40e4e..1d5cebc4e72b 100644
+--- a/drivers/mfd/tqmx86.c
++++ b/drivers/mfd/tqmx86.c
+@@ -36,6 +36,7 @@
+ #define TQMX86_REG_BOARD_ID_70EB	8
+ #define TQMX86_REG_BOARD_ID_80UC	9
+ #define TQMX86_REG_BOARD_ID_90UC	10
++#define TQMX86_REG_BOARD_ID_E40M	12
+ #define TQMX86_REG_BOARD_REV	0x21
+ #define TQMX86_REG_IO_EXT_INT	0x26
+ #define TQMX86_REG_IO_EXT_INT_NONE		0
+@@ -130,6 +131,8 @@ static const char *tqmx86_board_id_to_name(u8 board_id)
+ 		return "TQMx80UC";
+ 	case TQMX86_REG_BOARD_ID_90UC:
+ 		return "TQMx90UC";
++	case TQMX86_REG_BOARD_ID_E40M:
++		return "TQMxE40M";
+ 	default:
+ 		return "Unknown";
+ 	}
+@@ -138,12 +141,6 @@ static const char *tqmx86_board_id_to_name(u8 board_id)
+ static int tqmx86_board_id_to_clk_rate(u8 board_id)
+ {
+ 	switch (board_id) {
+-	case TQMX86_REG_BOARD_ID_50UC:
+-	case TQMX86_REG_BOARD_ID_60EB:
+-	case TQMX86_REG_BOARD_ID_70EB:
+-	case TQMX86_REG_BOARD_ID_80UC:
+-	case TQMX86_REG_BOARD_ID_90UC:
+-		return 24000;
+ 	case TQMX86_REG_BOARD_ID_E39M:
+ 	case TQMX86_REG_BOARD_ID_E39C:
+ 	case TQMX86_REG_BOARD_ID_E39x:
+@@ -152,7 +149,7 @@ static int tqmx86_board_id_to_clk_rate(u8 board_id)
+ 	case TQMX86_REG_BOARD_ID_E38C:
+ 		return 33000;
+ 	default:
+-		return 0;
++		return 24000;
+ 	}
+ }
+ 
+-- 
+2.17.1
+
