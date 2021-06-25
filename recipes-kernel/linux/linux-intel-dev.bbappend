@@ -3,6 +3,7 @@ FILESEXTRAPATHS_prepend_tqmx86 := "${THISDIR}/files:"
 LINUX_VERSION = "5.12.0"
 SRCREV_machine = "9f4ad9e425a1d3b6a34617b8ea226d56a119a717"
 SRCREV_meta = "99570241ac88d6c7e32b6fccd83afce53816b275"
+KBRANCH = "HEAD"
 
 SRC_URI_append_tqmx86 = " \
 	file://0001-gpio-tqmx86-really-make-IRQ-optional.patch \
