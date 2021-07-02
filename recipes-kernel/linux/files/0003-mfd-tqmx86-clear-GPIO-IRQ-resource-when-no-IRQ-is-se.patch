@@ -1,7 +1,7 @@
-From 7d0030073d8af3b57527813056c43b4d0fd63785 Mon Sep 17 00:00:00 2001
+From b12e05e0e98e48c670fe19823a62b8ef47ca8a55 Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@tq-group.com>
 Date: Mon, 25 Jan 2021 09:38:01 +0100
-Subject: [PATCH 3/4] mfd: tqmx86: clear GPIO IRQ resource when no IRQ is set
+Subject: [PATCH 3/8] mfd: tqmx86: clear GPIO IRQ resource when no IRQ is set
 
 The driver was registering IRQ 0 when no IRQ was set. This leads to
 warnings with newer kernels.

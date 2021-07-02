@@ -1,0 +1,35 @@
+From c36129957b81c00622c489419543e1933e711195 Mon Sep 17 00:00:00 2001
+From: Matthias Schiffer <matthias.schiffer@tq-group.com>
+Date: Thu, 1 Jul 2021 15:40:10 +0200
+Subject: [PATCH 7/8] mfd: tqmx86: add support for TQ-Systems DMI IDs
+
+Newer TQMx86 modules use TQ-Systems instead of TQ-Group as their vendor
+ID.
+
+Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
+---
+ drivers/mfd/tqmx86.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
+index 9eb05b3ef573..58f35c8b5a45 100644
+--- a/drivers/mfd/tqmx86.c
++++ b/drivers/mfd/tqmx86.c
+@@ -271,6 +271,14 @@ static const struct dmi_system_id tqmx86_dmi_table[] __initconst = {
+ 		},
+ 		.callback = tqmx86_create_platform_device,
+ 	},
++	{
++		.ident = "TQMX86",
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "TQ-Systems"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "TQMx"),
++		},
++		.callback = tqmx86_create_platform_device,
++	},
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(dmi, tqmx86_dmi_table);
+-- 
+2.17.1
+

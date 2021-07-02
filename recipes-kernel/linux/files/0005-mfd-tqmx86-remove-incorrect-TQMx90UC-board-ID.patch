@@ -1,0 +1,46 @@
+From 40bc5c264ad1c7290a96a7ae671cb38f0ee9ffd4 Mon Sep 17 00:00:00 2001
+From: Matthias Schiffer <matthias.schiffer@tq-group.com>
+Date: Thu, 1 Jul 2021 15:34:49 +0200
+Subject: [PATCH 5/8] mfd: tqmx86: remove incorrect TQMx90UC board ID
+
+No TQMx90UC exists at the moment, and it is undecided whether ID 10 will
+be used eventually (and if it is, how that SoM will be named).
+
+Fixes: 2f17dd34ffed ("mfd: tqmx86: IO controller with I2C, Wachdog and GPIO")
+Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
+---
+ drivers/mfd/tqmx86.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
+index a47c8ab69d1f..ff1bdb742e3f 100644
+--- a/drivers/mfd/tqmx86.c
++++ b/drivers/mfd/tqmx86.c
+@@ -35,7 +35,6 @@
+ #define TQMX86_REG_BOARD_ID_E39x	7
+ #define TQMX86_REG_BOARD_ID_70EB	8
+ #define TQMX86_REG_BOARD_ID_80UC	9
+-#define TQMX86_REG_BOARD_ID_90UC	10
+ #define TQMX86_REG_BOARD_REV	0x21
+ #define TQMX86_REG_IO_EXT_INT	0x26
+ #define TQMX86_REG_IO_EXT_INT_NONE		0
+@@ -128,8 +127,6 @@ static const char *tqmx86_board_id_to_name(u8 board_id)
+ 		return "TQMx70EB";
+ 	case TQMX86_REG_BOARD_ID_80UC:
+ 		return "TQMx80UC";
+-	case TQMX86_REG_BOARD_ID_90UC:
+-		return "TQMx90UC";
+ 	default:
+ 		return "Unknown";
+ 	}
+@@ -142,7 +139,6 @@ static int tqmx86_board_id_to_clk_rate(u8 board_id)
+ 	case TQMX86_REG_BOARD_ID_60EB:
+ 	case TQMX86_REG_BOARD_ID_70EB:
+ 	case TQMX86_REG_BOARD_ID_80UC:
+-	case TQMX86_REG_BOARD_ID_90UC:
+ 		return 24000;
+ 	case TQMX86_REG_BOARD_ID_E39M:
+ 	case TQMX86_REG_BOARD_ID_E39C:
+-- 
+2.17.1
+
