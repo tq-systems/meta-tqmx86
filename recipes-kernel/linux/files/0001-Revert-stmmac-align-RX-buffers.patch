@@ -1,0 +1,31 @@
+From 9aa30212b420e206c0eb05084a16dc95767eb644 Mon Sep 17 00:00:00 2001
+From: Matthias Schiffer <matthias.schiffer@tq-group.com>
+Date: Fri, 9 Jul 2021 09:41:40 +0200
+Subject: [PATCH] Revert "stmmac: align RX buffers"
+
+This reverts commit d95b18ba09cefcdc4e2d728f4debb858a7da3bed.
+
+Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+index 1eda88408c7f..17db9858cc3c 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+@@ -338,9 +338,9 @@ static inline bool stmmac_xdp_is_enabled(struct stmmac_priv *priv)
+ static inline unsigned int stmmac_rx_offset(struct stmmac_priv *priv)
+ {
+ 	if (stmmac_xdp_is_enabled(priv))
+-		return XDP_PACKET_HEADROOM + NET_IP_ALIGN;
++		return XDP_PACKET_HEADROOM;
+ 
+-	return NET_SKB_PAD + NET_IP_ALIGN;
++	return 0;
+ }
+ 
+ void stmmac_disable_rx_queue(struct stmmac_priv *priv, u32 queue);
+-- 
+2.17.1
+
