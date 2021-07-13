@@ -65,7 +65,7 @@ For many COMs, variants with alternative CPUs are available.
 | `b` | TQMxE38C           | Intel Atom E3800             | COM Express Compact Type 6 |
 | `b` | TQMxE38M           | Intel Atom E3800             | COM Express Mini Type 10   |
 | `b` | TQMxE39C1/2        | Intel Atom E3900             | COM Express Compact Type 6 |
-| `y` | TQMxE39M           | Intel Atom E3900             | COM Express Mini Type 10   |
+| `b` | TQMxE39M           | Intel Atom E3900             | COM Express Mini Type 10   |
 | `b` | TQMxE39S           | Intel Atom E3900             | SMARC 2.0/2.1              |
 | `p` | TQMxE40C1/2        | Intel Atom x6000             | COM Express Compact Type 6 |
 | `y` | TQMxE40M           | Intel Atom x6000             | COM Express Mini Type 10   |
