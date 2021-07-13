@@ -96,3 +96,10 @@ is missing in Linux 5.10.
 Linux 5.12 is provided as a technology preview. It will not receive updates
 through this layer or *meta-intel* and should only be used for evaluation
 purposes.
+
+
+## Known issues
+
+Display driver support on the Atom x6000 (TQMxE40x) platform is still
+experimental. While no issues have been observed during regular operation,
+the driver crashes during shutdown, emitting a backtrace in the kernel log.
