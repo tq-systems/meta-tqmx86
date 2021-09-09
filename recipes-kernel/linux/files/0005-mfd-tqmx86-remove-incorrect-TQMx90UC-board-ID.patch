@@ -1,7 +1,7 @@
-From 40bc5c264ad1c7290a96a7ae671cb38f0ee9ffd4 Mon Sep 17 00:00:00 2001
+From a20321a46f4bd1aa0fd5d64bf059a396e7384206 Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@tq-group.com>
 Date: Thu, 1 Jul 2021 15:34:49 +0200
-Subject: [PATCH 5/8] mfd: tqmx86: remove incorrect TQMx90UC board ID
+Subject: [PATCH] mfd: tqmx86: remove incorrect TQMx90UC board ID
 
 No TQMx90UC exists at the moment, and it is undecided whether ID 10 will
 be used eventually (and if it is, how that SoM will be named).
@@ -41,6 +41,3 @@ index a47c8ab69d1f..ff1bdb742e3f 100644
  		return 24000;
  	case TQMX86_REG_BOARD_ID_E39M:
  	case TQMX86_REG_BOARD_ID_E39C:
--- 
-2.17.1
-

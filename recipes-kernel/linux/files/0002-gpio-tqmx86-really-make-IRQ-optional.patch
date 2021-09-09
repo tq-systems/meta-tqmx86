@@ -1,7 +1,7 @@
-From ffc3cf49b7927422a001a034dbbe599272d20dd9 Mon Sep 17 00:00:00 2001
+From 5ff9b9c0c9975d38a3b9b913b786c509ac0ad5c0 Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@tq-group.com>
 Date: Mon, 25 Jan 2021 09:24:59 +0100
-Subject: [PATCH 2/8] gpio: tqmx86: really make IRQ optional
+Subject: [PATCH] gpio: tqmx86: really make IRQ optional
 
 The tqmx86 MFD driver was passing IRQ 0 for "no IRQ" in the past. This
 causes warnings with newer kernels.
@@ -38,6 +38,3 @@ index 5022e0ad0fae..0f5d17f343f1 100644
  		struct irq_chip *irq_chip = &gpio->irq_chip;
  		u8 irq_status;
  
--- 
-2.17.1
-

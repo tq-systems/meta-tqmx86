@@ -1,7 +1,7 @@
-From 785dbe466f6e1603c4b40b040fd0a84647f12c1a Mon Sep 17 00:00:00 2001
+From cb8abb95e39510278c6f1bdc0246997f62275b25 Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@tq-group.com>
 Date: Thu, 1 Jul 2021 16:09:21 +0200
-Subject: [PATCH 4/8] mfd: tqmx86: fix typo in "platform"
+Subject: [PATCH] mfd: tqmx86: fix typo in "platform"
 
 Rename variable from "ocores_platfom_data" to "ocores_platform_data".
 
@@ -43,6 +43,3 @@ index 732013f40e4e..a47c8ab69d1f 100644
  
  	if (i2c_det == TQMX86_REG_I2C_DETECT_SOFT) {
  		err = devm_mfd_add_devices(dev, PLATFORM_DEVID_NONE,
--- 
-2.17.1
-

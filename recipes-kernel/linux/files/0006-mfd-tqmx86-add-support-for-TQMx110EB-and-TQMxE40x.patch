@@ -1,7 +1,7 @@
-From 956f4ee0a400e9d290f6bf07d3c9128963330503 Mon Sep 17 00:00:00 2001
+From def6c1d9edaf284df7ba113c948cd6cc632a5c4b Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@tq-group.com>
 Date: Thu, 1 Jul 2021 16:04:00 +0200
-Subject: [PATCH 6/8] mfd: tqmx86: add support for TQMx110EB and TQMxE40x
+Subject: [PATCH] mfd: tqmx86: add support for TQMx110EB and TQMxE40x
 
 Add the board IDs for the TQMx110EB and the TQMxE40x family. All use a
 24MHz LPC clock.
@@ -56,6 +56,3 @@ index ff1bdb742e3f..9eb05b3ef573 100644
  		return 24000;
  	case TQMX86_REG_BOARD_ID_E39M:
  	case TQMX86_REG_BOARD_ID_E39C:
--- 
-2.17.1
-
