@@ -1,13 +1,19 @@
 FILESEXTRAPATHS_prepend_tqmx86 := "${THISDIR}/files:"
 
-LINUX_VERSION = "5.12.0"
-SRCREV_machine = "9f4ad9e425a1d3b6a34617b8ea226d56a119a717"
-SRCREV_meta = "99570241ac88d6c7e32b6fccd83afce53816b275"
-KBRANCH = "HEAD"
+# Switch to linux-stable repo to get stable releases not available in Intel's repo
+SRC_URI = " \
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git;protocol=https;name=machine;branch=${KBRANCH} \
+	git://git.yoctoproject.org/yocto-kernel-cache;type=kmeta;name=meta;branch=${KMETA_BRANCH};destsuffix=${KMETA} \
+	file://0001-menuconfig-mconf-cfg-Allow-specification-of-ncurses-.patch \
+"
+
+LINUX_VERSION = "5.14.9"
+KBRANCH = "linux-5.14.y"
+KMETA_BRANCH = "yocto-5.14"
+SRCREV_machine = "70248e7b378b96f208d5544ee25b808a8ef2ddc2"
+SRCREV_meta = "884dfea956ec6b166d1f99a295c47338573a974c"
 
 SRC_URI_append_tqmx86 = " \
-	file://0002-gpio-tqmx86-really-make-IRQ-optional.patch \
-	file://0003-mfd-tqmx86-clear-GPIO-IRQ-resource-when-no-IRQ-is-se.patch \
 	file://0004-mfd-tqmx86-fix-typo-in-platform.patch \
 	file://0005-mfd-tqmx86-remove-incorrect-TQMx90UC-board-ID.patch \
 	file://0006-mfd-tqmx86-add-support-for-TQMx110EB-and-TQMxE40x.patch \
