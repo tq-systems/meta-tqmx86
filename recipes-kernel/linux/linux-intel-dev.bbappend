@@ -7,19 +7,13 @@ SRC_URI = " \
 	file://0001-menuconfig-mconf-cfg-Allow-specification-of-ncurses-.patch \
 "
 
-LINUX_VERSION = "5.14.9"
-KBRANCH = "linux-5.14.y"
-KMETA_BRANCH = "yocto-5.14"
-SRCREV_machine = "70248e7b378b96f208d5544ee25b808a8ef2ddc2"
-SRCREV_meta = "884dfea956ec6b166d1f99a295c47338573a974c"
+LINUX_VERSION = "5.15.2"
+KBRANCH = "linux-5.15.y"
+KMETA_BRANCH = "yocto-5.15"
+SRCREV_machine = "7cc36c3e14ae0af800a3a5d20cb17d0c168fc956"
+SRCREV_meta = "5bcd50d6b0cde22583768dc1acf304259364ddbc"
 
 SRC_URI_append_tqmx86 = " \
-	file://0004-mfd-tqmx86-fix-typo-in-platform.patch \
-	file://0005-mfd-tqmx86-remove-incorrect-TQMx90UC-board-ID.patch \
-	file://0006-mfd-tqmx86-add-support-for-TQMx110EB-and-TQMxE40x.patch \
-	file://0007-mfd-tqmx86-add-support-for-TQ-Systems-DMI-IDs.patch \
-	file://0008-mfd-tqmx86-assume-24MHz-LPC-clock-for-unknown-boards.patch \
-	\
 	file://elkhart-lake.cfg \
 	file://tqmx86.cfg \
 	file://nct7802.cfg \
