@@ -7,19 +7,13 @@ SRC_URI = " \
 	file://0001-menuconfig-mconf-cfg-Allow-specification-of-ncurses-.patch \
 "
 
-LINUX_VERSION = "5.15.2"
+LINUX_VERSION = "5.15.25"
 KBRANCH = "linux-5.15.y"
 KMETA_BRANCH = "yocto-5.15"
-SRCREV_machine = "7cc36c3e14ae0af800a3a5d20cb17d0c168fc956"
-SRCREV_meta = "5bcd50d6b0cde22583768dc1acf304259364ddbc"
+SRCREV_machine = "1e7beca2829960d7ec407d0a7b3f5243c6344412"
+SRCREV_meta = "c4e4de6ccb27846e48a848d7ca1f20d9503a6fec"
 
 SRC_URI_append_tqmx86 = " \
-	file://m_can-0001-can-m_can-pci-fix-incorrect-reference-clock-rate.patch \
-	file://m_can-0002-Revert-can-m_can-remove-support-for-custom-bit-timin.patch \
-	file://m_can-0003-can-m_can-make-custom-bittiming-fields-const.patch \
-	file://m_can-0004-can-m_can-pci-use-custom-bit-timings-for-Elkhart-Lak.patch \
-	file://m_can-0005-can-m_can-pci-fix-iomap_read_fifo-and-iomap_write_fi.patch \
-	\
 	file://elkhart-lake.cfg \
 	file://tqmx86.cfg \
 	file://nct7802.cfg \
