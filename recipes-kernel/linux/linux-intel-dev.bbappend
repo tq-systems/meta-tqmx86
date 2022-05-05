@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend_tqmx86 := "${THISDIR}/files:"
+FILESEXTRAPATHS_prepend_tqmx86 := "${THISDIR}/common:${THISDIR}/${PN}:"
 
 # Switch to linux-stable repo to get stable releases not available in Intel's repo
 SRC_URI = " \
@@ -13,7 +13,19 @@ KMETA_BRANCH = "yocto-5.15"
 SRCREV_machine = "1e7beca2829960d7ec407d0a7b3f5243c6344412"
 SRCREV_meta = "c4e4de6ccb27846e48a848d7ca1f20d9503a6fec"
 
-SRC_URI_append_tqmx86 = " \
+SRC_URI_append_tqmx86 = "\
+	file://0001-mfd-tqmx86-fix-IO-port-base-register.patch \
+	file://0002-gpio-tqmx86-store-output-register-value-in-driver-da.patch \
+	file://0003-gpio-tqmx86-add-support-for-changing-GPIO-directions.patch \
+	file://0004-gpio-tqmx86-prepare-support-for-variants-with-more-G.patch \
+	file://0005-gpio-tqmx86-add-support-for-registers-of-variants-wi.patch \
+	file://0006-mfd-tqmx86-correct-board-names-for-TQMxE39x.patch \
+	file://0007-gpio-tqmx86-prepare-support-for-variants-with-more-G.patch \
+	file://0008-mfd-tqmx86-use-platform_data-dependent-on-board_id.patch \
+	file://0009-gpio-gpio-tqmx86-fix-broken-IRQ_TYPE_EDGE_BOTH-inter.patch \
+	file://0010-gpio-gpio-tqmx86-add-support-for-new-interrupt-regis.patch \
+	file://0011-mfd-tqmx86-Add-platform_data-for-smarc-with-14-gpios.patch \
+	\
 	file://elkhart-lake.cfg \
 	file://tqmx86.cfg \
 	file://nct7802.cfg \

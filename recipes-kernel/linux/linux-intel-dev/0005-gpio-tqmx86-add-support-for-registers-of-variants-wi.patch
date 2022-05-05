@@ -1,0 +1,293 @@
+From 3d3204a3a4bc1e73a9d3e5842bed20f5b6aeb630 Mon Sep 17 00:00:00 2001
+From: Matthias Schiffer <matthias.schiffer@tq-group.com>
+Date: Fri, 10 Sep 2021 13:16:52 +0200
+Subject: [PATCH] gpio: tqmx86: add support for registers of variants with >8
+ GPIOs
+
+The SMARC modules TQMxE39S and TQMxE40S have 12 and 14 GPIOs, as
+specified by the SMARC 2.0 / 2.1 standards. Make the driver handle the
+new registers for the additional channels. The new code is not actually
+used for now.
+
+Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
+---
+ drivers/gpio/gpio-tqmx86.c | 135 ++++++++++++++++++++++++++++++-------
+ 1 file changed, 111 insertions(+), 24 deletions(-)
+
+diff --git a/drivers/gpio/gpio-tqmx86.c b/drivers/gpio/gpio-tqmx86.c
+index ce424db6dd3f..e8fd529c5109 100644
+--- a/drivers/gpio/gpio-tqmx86.c
++++ b/drivers/gpio/gpio-tqmx86.c
+@@ -24,11 +24,15 @@
+ #define TQMX86_GPIOD	1	/* GPIO Data Register */
+ #define TQMX86_GPIIC	3	/* GPI Interrupt Configuration Register */
+ #define TQMX86_GPIIS	4	/* GPI Interrupt Status Register */
++#define TQMX86_GPIODD2	5	/* GPIO Data Direction Register 2 */
++#define TQMX86_GPIOD2	6	/* GPIO Data Register 2 */
++#define TQMX86_GPIIC2	7	/* GPI Interrupt Configuration Register 2 */
++#define TQMX86_GPIIC3	8	/* GPI Interrupt Configuration Register 3 */
++#define TQMX86_GPIIS2	9	/* GPI Interrupt Status Register 2 */
+ 
+ #define TQMX86_GPII_FALLING	BIT(0)
+ #define TQMX86_GPII_RISING	BIT(1)
+ #define TQMX86_GPII_MASK	(BIT(0) | BIT(1))
+-#define TQMX86_GPII_BITS	2
+ 
+ struct tqmx86_gpio_data {
+ 	struct gpio_chip	chip;
+@@ -36,12 +40,53 @@ struct tqmx86_gpio_data {
+ 	void __iomem		*io_base;
+ 	int			irq;
+ 	raw_spinlock_t		spinlock;
+-	u8			output;
++	u16			output;
+ 	u8			irq_type[TQMX86_NGPIO_MAX];
+ 	unsigned int		irq_offset;
+ 	unsigned long		irq_invalid_mask;
+ };
+ 
++static unsigned int tqmx86_gpio_reg_gpiodd(unsigned int offset)
++{
++	if (offset < 8)
++		return TQMX86_GPIODD;
++	else
++		return TQMX86_GPIODD2;
++}
++
++static unsigned int tqmx86_gpio_offset_gpiodd(unsigned int offset)
++{
++	return (offset % 8);
++}
++
++static unsigned int tqmx86_gpio_reg_gpiod(unsigned int offset)
++{
++	if (offset < 8)
++		return TQMX86_GPIOD;
++	else
++		return TQMX86_GPIOD2;
++}
++
++static unsigned int tqmx86_gpio_offset_gpiod(unsigned int offset)
++{
++	return (offset % 8);
++}
++
++static unsigned int tqmx86_gpio_reg_gpiic(unsigned int offset)
++{
++	if (offset < 4)
++		return TQMX86_GPIIC;
++	else if (offset < 8)
++		return TQMX86_GPIIC2;
++	else
++		return TQMX86_GPIIC3;
++}
++
++static unsigned int tqmx86_gpio_shift_gpiic(unsigned int offset)
++{
++	return 2 * (offset % 4);
++}
++
+ static u8 tqmx86_gpio_read(struct tqmx86_gpio_data *gd, unsigned int reg)
+ {
+ 	return ioread8(gd->io_base + reg);
+@@ -56,8 +101,12 @@ static void tqmx86_gpio_write(struct tqmx86_gpio_data *gd, u8 val,
+ static int tqmx86_gpio_get(struct gpio_chip *chip, unsigned int offset)
+ {
+ 	struct tqmx86_gpio_data *gpio = gpiochip_get_data(chip);
++	unsigned int reg_gpiod, offset_gpiod;
++
++	reg_gpiod = tqmx86_gpio_reg_gpiod(offset);
++	offset_gpiod = tqmx86_gpio_offset_gpiod(offset);
+ 
+-	return !!(tqmx86_gpio_read(gpio, TQMX86_GPIOD) & BIT(offset));
++	return !!(tqmx86_gpio_read(gpio, reg_gpiod) & BIT(offset_gpiod));
+ }
+ 
+ static void _tqmx86_gpio_set(struct tqmx86_gpio_data *gpio, unsigned int offset,
+@@ -67,7 +116,12 @@ static void _tqmx86_gpio_set(struct tqmx86_gpio_data *gpio, unsigned int offset,
+ 		gpio->output |= BIT(offset);
+ 	else
+ 		gpio->output &= ~BIT(offset);
+-	tqmx86_gpio_write(gpio, gpio->output, TQMX86_GPIOD);
++
++	if (offset < 8)
++		tqmx86_gpio_write(gpio, gpio->output, TQMX86_GPIOD);
++	else
++		tqmx86_gpio_write(gpio, gpio->output >> 8, TQMX86_GPIOD2);
++
+ }
+ 
+ static void tqmx86_gpio_set(struct gpio_chip *chip, unsigned int offset,
+@@ -85,13 +139,17 @@ static int tqmx86_gpio_direction_input(struct gpio_chip *chip,
+ 				       unsigned int offset)
+ {
+ 	struct tqmx86_gpio_data *gpio = gpiochip_get_data(chip);
++	unsigned int reg_gpiodd, offset_gpiodd;
+ 	unsigned long flags;
+ 	u8 val;
+ 
++	reg_gpiodd = tqmx86_gpio_reg_gpiodd(offset);
++	offset_gpiodd = tqmx86_gpio_offset_gpiodd(offset);
++
+ 	raw_spin_lock_irqsave(&gpio->spinlock, flags);
+-	val = tqmx86_gpio_read(gpio, TQMX86_GPIODD);
+-	val &= ~BIT(offset);
+-	tqmx86_gpio_write(gpio, val, TQMX86_GPIODD);
++	val = tqmx86_gpio_read(gpio, reg_gpiodd);
++	val &= ~BIT(offset_gpiodd);
++	tqmx86_gpio_write(gpio, val, reg_gpiodd);
+ 	raw_spin_unlock_irqrestore(&gpio->spinlock, flags);
+ 
+ 	return 0;
+@@ -102,14 +160,18 @@ static int tqmx86_gpio_direction_output(struct gpio_chip *chip,
+ 					int value)
+ {
+ 	struct tqmx86_gpio_data *gpio = gpiochip_get_data(chip);
++	unsigned int reg_gpiodd, offset_gpiodd;
+ 	unsigned long flags;
+ 	u8 val;
+ 
++	reg_gpiodd = tqmx86_gpio_reg_gpiodd(offset);
++	offset_gpiodd = tqmx86_gpio_offset_gpiodd(offset);
++
+ 	raw_spin_lock_irqsave(&gpio->spinlock, flags);
+ 	_tqmx86_gpio_set(gpio, offset, value);
+-	val = tqmx86_gpio_read(gpio, TQMX86_GPIODD);
+-	val |= BIT(offset);
+-	tqmx86_gpio_write(gpio, val, TQMX86_GPIODD);
++	val = tqmx86_gpio_read(gpio, reg_gpiodd);
++	val |= BIT(offset_gpiodd);
++	tqmx86_gpio_write(gpio, val, reg_gpiodd);
+ 	raw_spin_unlock_irqrestore(&gpio->spinlock, flags);
+ 
+ 	return 0;
+@@ -119,11 +181,15 @@ static int tqmx86_gpio_get_direction(struct gpio_chip *chip,
+ 				     unsigned int offset)
+ {
+ 	struct tqmx86_gpio_data *gpio = gpiochip_get_data(chip);
++	unsigned int reg_gpiodd, offset_gpiodd;
+ 	u8 val;
+ 
+-	val = tqmx86_gpio_read(gpio, TQMX86_GPIODD);
++	reg_gpiodd = tqmx86_gpio_reg_gpiodd(offset);
++	offset_gpiodd = tqmx86_gpio_offset_gpiodd(offset);
++
++	val = tqmx86_gpio_read(gpio, reg_gpiodd);
+ 
+-	if (val & BIT(offset))
++	if (val & BIT(offset_gpiodd))
+ 		return GPIO_LINE_DIRECTION_OUT;
+ 
+ 	return GPIO_LINE_DIRECTION_IN;
+@@ -134,15 +200,16 @@ static void tqmx86_gpio_irq_mask(struct irq_data *data)
+ 	struct tqmx86_gpio_data *gpio = gpiochip_get_data(
+ 		irq_data_get_irq_chip_data(data));
+ 	unsigned int offset = (data->hwirq - gpio->irq_offset);
++	unsigned int reg_gpiic = tqmx86_gpio_reg_gpiic(offset);
+ 	unsigned long flags;
+ 	u8 gpiic, mask;
+ 
+-	mask = TQMX86_GPII_MASK << (offset * TQMX86_GPII_BITS);
++	mask = TQMX86_GPII_MASK << tqmx86_gpio_shift_gpiic(offset);
+ 
+ 	raw_spin_lock_irqsave(&gpio->spinlock, flags);
+-	gpiic = tqmx86_gpio_read(gpio, TQMX86_GPIIC);
++	gpiic = tqmx86_gpio_read(gpio, reg_gpiic);
+ 	gpiic &= ~mask;
+-	tqmx86_gpio_write(gpio, gpiic, TQMX86_GPIIC);
++	tqmx86_gpio_write(gpio, gpiic, reg_gpiic);
+ 	raw_spin_unlock_irqrestore(&gpio->spinlock, flags);
+ }
+ 
+@@ -151,16 +218,18 @@ static void tqmx86_gpio_irq_unmask(struct irq_data *data)
+ 	struct tqmx86_gpio_data *gpio = gpiochip_get_data(
+ 		irq_data_get_irq_chip_data(data));
+ 	unsigned int offset = (data->hwirq - gpio->irq_offset);
++	unsigned int reg_gpiic = tqmx86_gpio_reg_gpiic(offset);
++	unsigned int shift = tqmx86_gpio_shift_gpiic(offset);
+ 	unsigned long flags;
+ 	u8 gpiic, mask;
+ 
+-	mask = TQMX86_GPII_MASK << (offset * TQMX86_GPII_BITS);
++	mask = TQMX86_GPII_MASK << shift;
+ 
+ 	raw_spin_lock_irqsave(&gpio->spinlock, flags);
+-	gpiic = tqmx86_gpio_read(gpio, TQMX86_GPIIC);
++	gpiic = tqmx86_gpio_read(gpio, reg_gpiic);
+ 	gpiic &= ~mask;
+-	gpiic |= gpio->irq_type[offset] << (offset * TQMX86_GPII_BITS);
+-	tqmx86_gpio_write(gpio, gpiic, TQMX86_GPIIC);
++	gpiic |= gpio->irq_type[offset] << shift;
++	tqmx86_gpio_write(gpio, gpiic, reg_gpiic);
+ 	raw_spin_unlock_irqrestore(&gpio->spinlock, flags);
+ }
+ 
+@@ -169,6 +238,8 @@ static int tqmx86_gpio_irq_set_type(struct irq_data *data, unsigned int type)
+ 	struct tqmx86_gpio_data *gpio = gpiochip_get_data(
+ 		irq_data_get_irq_chip_data(data));
+ 	unsigned int offset = (data->hwirq - gpio->irq_offset);
++	unsigned int reg_gpiic = tqmx86_gpio_reg_gpiic(offset);
++	unsigned int shift = tqmx86_gpio_shift_gpiic(offset);
+ 	unsigned int edge_type = type & IRQF_TRIGGER_MASK;
+ 	unsigned long flags;
+ 	u8 new_type, gpiic;
+@@ -190,10 +261,10 @@ static int tqmx86_gpio_irq_set_type(struct irq_data *data, unsigned int type)
+ 	gpio->irq_type[offset] = new_type;
+ 
+ 	raw_spin_lock_irqsave(&gpio->spinlock, flags);
+-	gpiic = tqmx86_gpio_read(gpio, TQMX86_GPIIC);
+-	gpiic &= ~((TQMX86_GPII_MASK) << (offset * TQMX86_GPII_BITS));
+-	gpiic |= new_type << (offset * TQMX86_GPII_BITS);
+-	tqmx86_gpio_write(gpio, gpiic, TQMX86_GPIIC);
++	gpiic = tqmx86_gpio_read(gpio, reg_gpiic);
++	gpiic &= ~((TQMX86_GPII_MASK) << shift);
++	gpiic |= new_type << shift;
++	tqmx86_gpio_write(gpio, gpiic, reg_gpiic);
+ 	raw_spin_unlock_irqrestore(&gpio->spinlock, flags);
+ 
+ 	return 0;
+@@ -213,8 +284,14 @@ static void tqmx86_gpio_irq_handler(struct irq_desc *desc)
+ 
+ 	irq_status = tqmx86_gpio_read(gpio, TQMX86_GPIIS);
+ 	tqmx86_gpio_write(gpio, irq_status, TQMX86_GPIIS);
++	irq_bits = irq_status & 0xf;
++
++	if (nirq > 4) {
++		irq_status = tqmx86_gpio_read(gpio, TQMX86_GPIIS2);
++		tqmx86_gpio_write(gpio, irq_status, TQMX86_GPIIS2);
++		irq_bits |= irq_status << 4;
++	}
+ 
+-	irq_bits = irq_status;
+ 	for_each_set_bit(i, &irq_bits, nirq)
+ 		generic_handle_domain_irq(gpio->chip.irq.domain,
+ 					  i + gpio->irq_offset);
+@@ -303,6 +380,7 @@ static int tqmx86_gpio_probe(struct platform_device *pdev)
+ 	pm_runtime_enable(&pdev->dev);
+ 
+ 	if (irq > 0) {
++		unsigned int nirq = chip->ngpio - gpio->irq_offset;
+ 		struct irq_chip *irq_chip = &gpio->irq_chip;
+ 		u8 irq_status;
+ 
+@@ -314,11 +392,20 @@ static int tqmx86_gpio_probe(struct platform_device *pdev)
+ 
+ 		/* Mask all interrupts */
+ 		tqmx86_gpio_write(gpio, 0, TQMX86_GPIIC);
++		if (nirq > 4)
++			tqmx86_gpio_write(gpio, 0, TQMX86_GPIIC2);
++		if (nirq > 8)
++			tqmx86_gpio_write(gpio, 0, TQMX86_GPIIC3);
+ 
+ 		/* Clear all pending interrupts */
+ 		irq_status = tqmx86_gpio_read(gpio, TQMX86_GPIIS);
+ 		tqmx86_gpio_write(gpio, irq_status, TQMX86_GPIIS);
+ 
++		if (nirq > 4) {
++			irq_status = tqmx86_gpio_read(gpio, TQMX86_GPIIS2);
++			tqmx86_gpio_write(gpio, irq_status, TQMX86_GPIIS2);
++		}
++
+ 		girq = &chip->irq;
+ 		girq->chip = irq_chip;
+ 		girq->parent_handler = tqmx86_gpio_irq_handler;

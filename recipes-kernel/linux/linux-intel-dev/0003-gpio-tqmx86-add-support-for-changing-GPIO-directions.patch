@@ -1,0 +1,80 @@
+From d78adf1e000af5adb0dbf90ca0805b2fe0202338 Mon Sep 17 00:00:00 2001
+From: Matthias Schiffer <matthias.schiffer@tq-group.com>
+Date: Fri, 10 Sep 2021 10:52:12 +0200
+Subject: [PATCH] gpio: tqmx86: add support for changing GPIO directions
+
+Only GPIOs 4..7 have IRQ support, but apart from that, changing
+directions works fine. The default directions are left unchanged (0..3
+output, 4..7 input), as recommended by the COM Express specification.
+
+Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
+---
+ drivers/gpio/gpio-tqmx86.c | 41 +++++++++++++++++++++++++++-----------
+ 1 file changed, 29 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/gpio/gpio-tqmx86.c b/drivers/gpio/gpio-tqmx86.c
+index e3bdae8b5280..1024ee513934 100644
+--- a/drivers/gpio/gpio-tqmx86.c
++++ b/drivers/gpio/gpio-tqmx86.c
+@@ -84,32 +84,49 @@ static void tqmx86_gpio_set(struct gpio_chip *chip, unsigned int offset,
+ static int tqmx86_gpio_direction_input(struct gpio_chip *chip,
+ 				       unsigned int offset)
+ {
+-	/* Direction cannot be changed. Validate is an input. */
+-	if (BIT(offset) & TQMX86_DIR_INPUT_MASK)
+-		return 0;
+-	else
+-		return -EINVAL;
++	struct tqmx86_gpio_data *gpio = gpiochip_get_data(chip);
++	unsigned long flags;
++	u8 val;
++
++	raw_spin_lock_irqsave(&gpio->spinlock, flags);
++	val = tqmx86_gpio_read(gpio, TQMX86_GPIODD);
++	val &= ~BIT(offset);
++	tqmx86_gpio_write(gpio, val, TQMX86_GPIODD);
++	raw_spin_unlock_irqrestore(&gpio->spinlock, flags);
++
++	return 0;
+ }
+ 
+ static int tqmx86_gpio_direction_output(struct gpio_chip *chip,
+ 					unsigned int offset,
+ 					int value)
+ {
+-	/* Direction cannot be changed, validate is an output */
+-	if (BIT(offset) & TQMX86_DIR_INPUT_MASK)
+-		return -EINVAL;
++	struct tqmx86_gpio_data *gpio = gpiochip_get_data(chip);
++	unsigned long flags;
++	u8 val;
++
++	raw_spin_lock_irqsave(&gpio->spinlock, flags);
++	_tqmx86_gpio_set(gpio, offset, value);
++	val = tqmx86_gpio_read(gpio, TQMX86_GPIODD);
++	val |= BIT(offset);
++	tqmx86_gpio_write(gpio, val, TQMX86_GPIODD);
++	raw_spin_unlock_irqrestore(&gpio->spinlock, flags);
+ 
+-	tqmx86_gpio_set(chip, offset, value);
+ 	return 0;
+ }
+ 
+ static int tqmx86_gpio_get_direction(struct gpio_chip *chip,
+ 				     unsigned int offset)
+ {
+-	if (TQMX86_DIR_INPUT_MASK & BIT(offset))
+-		return GPIO_LINE_DIRECTION_IN;
++	struct tqmx86_gpio_data *gpio = gpiochip_get_data(chip);
++	u8 val;
++
++	val = tqmx86_gpio_read(gpio, TQMX86_GPIODD);
++
++	if (val & BIT(offset))
++		return GPIO_LINE_DIRECTION_OUT;
+ 
+-	return GPIO_LINE_DIRECTION_OUT;
++	return GPIO_LINE_DIRECTION_IN;
+ }
+ 
+ static void tqmx86_gpio_irq_mask(struct irq_data *data)

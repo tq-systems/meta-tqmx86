@@ -1,0 +1,164 @@
+From a80d7db3890107ac155158fa8561c1eb625ec95f Mon Sep 17 00:00:00 2001
+From: Gregor Herburger <gregor.herburger@tq-group.com>
+Date: Thu, 10 Mar 2022 16:53:25 +0100
+Subject: [PATCH] gpio: gpio-tqmx86: fix broken IRQ_TYPE_EDGE_BOTH interrupt
+ type
+
+The TQMx86 GPIO controller only supports falling and rising edge
+triggers, but not both. Fix this by implementing a software both-edge
+mode by toggling the edge type after every interrupt.
+
+Signed-off-by: Gregor Herburger <gregor.herburger@tq-group.com>
+---
+ drivers/gpio/gpio-tqmx86.c | 68 +++++++++++++++++++++++---------------
+ 1 file changed, 41 insertions(+), 27 deletions(-)
+
+diff --git a/drivers/gpio/gpio-tqmx86.c b/drivers/gpio/gpio-tqmx86.c
+index 361585b5fdc2..50e7c42f4941 100644
+--- a/drivers/gpio/gpio-tqmx86.c
++++ b/drivers/gpio/gpio-tqmx86.c
+@@ -30,8 +30,10 @@
+ #define TQMX86_GPIIC3	8	/* GPI Interrupt Configuration Register 3 */
+ #define TQMX86_GPIIS2	9	/* GPI Interrupt Status Register 2 */
+ 
++#define TQMX86_GPII_DISABLE	0
+ #define TQMX86_GPII_FALLING	BIT(0)
+ #define TQMX86_GPII_RISING	BIT(1)
++#define TQMX86_GPII_BOTH	(BIT(0) | BIT(1))
+ #define TQMX86_GPII_MASK	(BIT(0) | BIT(1))
+ 
+ struct tqmx86_gpio_data {
+@@ -195,21 +197,35 @@ static int tqmx86_gpio_get_direction(struct gpio_chip *chip,
+ 	return GPIO_LINE_DIRECTION_IN;
+ }
+ 
++static void _tqmx86_gpio_irq_set_type(struct tqmx86_gpio_data *gpio, unsigned int offset,
++				      unsigned int type)
++{
++	unsigned int shift = tqmx86_gpio_shift_gpiic(offset);
++	u8 reg_gpiic = tqmx86_gpio_reg_gpiic(offset);
++	u8 new_type = type;
++	u8 gpiic;
++	u8 val;
++
++	if (type == TQMX86_GPII_BOTH) {
++		val = tqmx86_gpio_get(&gpio->chip, offset);
++		new_type = val ? TQMX86_GPII_FALLING : TQMX86_GPII_RISING;
++	}
++
++	gpiic = tqmx86_gpio_read(gpio, reg_gpiic);
++	gpiic &= ~((TQMX86_GPII_MASK) << shift);
++	gpiic |= new_type << shift;
++	tqmx86_gpio_write(gpio, gpiic, reg_gpiic);
++}
++
+ static void tqmx86_gpio_irq_mask(struct irq_data *data)
+ {
+ 	struct tqmx86_gpio_data *gpio = gpiochip_get_data(
+ 		irq_data_get_irq_chip_data(data));
+ 	unsigned int offset = (data->hwirq - gpio->irq_offset);
+-	unsigned int reg_gpiic = tqmx86_gpio_reg_gpiic(offset);
+ 	unsigned long flags;
+-	u8 gpiic, mask;
+-
+-	mask = TQMX86_GPII_MASK << tqmx86_gpio_shift_gpiic(offset);
+ 
+ 	raw_spin_lock_irqsave(&gpio->spinlock, flags);
+-	gpiic = tqmx86_gpio_read(gpio, reg_gpiic);
+-	gpiic &= ~mask;
+-	tqmx86_gpio_write(gpio, gpiic, reg_gpiic);
++	_tqmx86_gpio_irq_set_type(gpio, offset, TQMX86_GPII_DISABLE);
+ 	raw_spin_unlock_irqrestore(&gpio->spinlock, flags);
+ }
+ 
+@@ -218,18 +234,10 @@ static void tqmx86_gpio_irq_unmask(struct irq_data *data)
+ 	struct tqmx86_gpio_data *gpio = gpiochip_get_data(
+ 		irq_data_get_irq_chip_data(data));
+ 	unsigned int offset = (data->hwirq - gpio->irq_offset);
+-	unsigned int reg_gpiic = tqmx86_gpio_reg_gpiic(offset);
+-	unsigned int shift = tqmx86_gpio_shift_gpiic(offset);
+ 	unsigned long flags;
+-	u8 gpiic, mask;
+-
+-	mask = TQMX86_GPII_MASK << shift;
+ 
+ 	raw_spin_lock_irqsave(&gpio->spinlock, flags);
+-	gpiic = tqmx86_gpio_read(gpio, reg_gpiic);
+-	gpiic &= ~mask;
+-	gpiic |= gpio->irq_type[offset] << shift;
+-	tqmx86_gpio_write(gpio, gpiic, reg_gpiic);
++	_tqmx86_gpio_irq_set_type(gpio, offset, gpio->irq_type[offset]);
+ 	raw_spin_unlock_irqrestore(&gpio->spinlock, flags);
+ }
+ 
+@@ -238,11 +246,9 @@ static int tqmx86_gpio_irq_set_type(struct irq_data *data, unsigned int type)
+ 	struct tqmx86_gpio_data *gpio = gpiochip_get_data(
+ 		irq_data_get_irq_chip_data(data));
+ 	unsigned int offset = (data->hwirq - gpio->irq_offset);
+-	unsigned int reg_gpiic = tqmx86_gpio_reg_gpiic(offset);
+-	unsigned int shift = tqmx86_gpio_shift_gpiic(offset);
+ 	unsigned int edge_type = type & IRQF_TRIGGER_MASK;
+ 	unsigned long flags;
+-	u8 new_type, gpiic;
++	u8 new_type;
+ 
+ 	switch (edge_type) {
+ 	case IRQ_TYPE_EDGE_RISING:
+@@ -252,7 +258,7 @@ static int tqmx86_gpio_irq_set_type(struct irq_data *data, unsigned int type)
+ 		new_type = TQMX86_GPII_FALLING;
+ 		break;
+ 	case IRQ_TYPE_EDGE_BOTH:
+-		new_type = TQMX86_GPII_FALLING | TQMX86_GPII_RISING;
++		new_type = TQMX86_GPII_BOTH;
+ 		break;
+ 	default:
+ 		return -EINVAL; /* not supported */
+@@ -261,10 +267,7 @@ static int tqmx86_gpio_irq_set_type(struct irq_data *data, unsigned int type)
+ 	gpio->irq_type[offset] = new_type;
+ 
+ 	raw_spin_lock_irqsave(&gpio->spinlock, flags);
+-	gpiic = tqmx86_gpio_read(gpio, reg_gpiic);
+-	gpiic &= ~((TQMX86_GPII_MASK) << shift);
+-	gpiic |= new_type << shift;
+-	tqmx86_gpio_write(gpio, gpiic, reg_gpiic);
++	_tqmx86_gpio_irq_set_type(gpio, offset, new_type);
+ 	raw_spin_unlock_irqrestore(&gpio->spinlock, flags);
+ 
+ 	return 0;
+@@ -276,22 +279,33 @@ static void tqmx86_gpio_irq_handler(struct irq_desc *desc)
+ 	struct tqmx86_gpio_data *gpio = gpiochip_get_data(chip);
+ 	struct irq_chip *irq_chip = irq_desc_get_chip(desc);
+ 	unsigned int nirq = chip->ngpio - gpio->irq_offset;
+-	unsigned long irq_bits;
++	unsigned long irq_bits, flags;
+ 	int i = 0;
+ 	u8 irq_status;
+ 
+ 	chained_irq_enter(irq_chip, desc);
+ 
++	raw_spin_lock_irqsave(&gpio->spinlock, flags);
++
+ 	irq_status = tqmx86_gpio_read(gpio, TQMX86_GPIIS);
+-	tqmx86_gpio_write(gpio, irq_status, TQMX86_GPIIS);
+ 	irq_bits = irq_status & 0xf;
+ 
+ 	if (nirq > 4) {
+ 		irq_status = tqmx86_gpio_read(gpio, TQMX86_GPIIS2);
+-		tqmx86_gpio_write(gpio, irq_status, TQMX86_GPIIS2);
+ 		irq_bits |= irq_status << 4;
+ 	}
+ 
++	for_each_set_bit(i, &irq_bits, nirq)
++		if (gpio->irq_type[i] == TQMX86_GPII_BOTH)
++			_tqmx86_gpio_irq_set_type(gpio, i, TQMX86_GPII_BOTH);
++
++	tqmx86_gpio_write(gpio, irq_bits & 0xf, TQMX86_GPIIS);
++	if (nirq > 4)
++		tqmx86_gpio_write(gpio, (irq_bits >> 4) & 0xff, TQMX86_GPIIS2);
++
++	raw_spin_unlock_irqrestore(&gpio->spinlock, flags);
++
++	i = 0;
+ 	for_each_set_bit(i, &irq_bits, nirq)
+ 		generic_handle_domain_irq(gpio->chip.irq.domain,
+ 					  i + gpio->irq_offset);

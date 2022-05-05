@@ -1,0 +1,127 @@
+From 2dc6b407e1cd59d887facceec732ccde1c9aa3cc Mon Sep 17 00:00:00 2001
+From: Matthias Schiffer <matthias.schiffer@tq-group.com>
+Date: Fri, 10 Sep 2021 12:22:19 +0200
+Subject: [PATCH] gpio: tqmx86: prepare support for variants with more GPIO
+ channels
+
+The SMARC variants of TQMx86 modules have more than 8 GPIOs and use a
+different mapping between GPIOs channels and IRQ register bits. Prepare
+their support by moving a number of constants into tqmx86_gpio_data.
+
+Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
+---
+ drivers/gpio/gpio-tqmx86.c | 33 +++++++++++++++++----------------
+ 1 file changed, 17 insertions(+), 16 deletions(-)
+
+diff --git a/drivers/gpio/gpio-tqmx86.c b/drivers/gpio/gpio-tqmx86.c
+index 1024ee513934..ce424db6dd3f 100644
+--- a/drivers/gpio/gpio-tqmx86.c
++++ b/drivers/gpio/gpio-tqmx86.c
+@@ -17,10 +17,8 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/slab.h>
+ 
+-#define TQMX86_NGPIO	8
+-#define TQMX86_NGPO	4	/* 0-3 - output */
+-#define TQMX86_NGPI	4	/* 4-7 - input */
+-#define TQMX86_DIR_INPUT_MASK	0xf0	/* 0-3 - output, 4-7 - input */
++#define TQMX86_NGPIO_MAX	8
++#define TQMX86_DIR_INPUT_MASK  0xf0    /* 0-3 - output, 4-7 - input */
+ 
+ #define TQMX86_GPIODD	0	/* GPIO Data Direction Register */
+ #define TQMX86_GPIOD	1	/* GPIO Data Register */
+@@ -39,7 +37,9 @@ struct tqmx86_gpio_data {
+ 	int			irq;
+ 	raw_spinlock_t		spinlock;
+ 	u8			output;
+-	u8			irq_type[TQMX86_NGPI];
++	u8			irq_type[TQMX86_NGPIO_MAX];
++	unsigned int		irq_offset;
++	unsigned long		irq_invalid_mask;
+ };
+ 
+ static u8 tqmx86_gpio_read(struct tqmx86_gpio_data *gd, unsigned int reg)
+@@ -131,9 +131,9 @@ static int tqmx86_gpio_get_direction(struct gpio_chip *chip,
+ 
+ static void tqmx86_gpio_irq_mask(struct irq_data *data)
+ {
+-	unsigned int offset = (data->hwirq - TQMX86_NGPO);
+ 	struct tqmx86_gpio_data *gpio = gpiochip_get_data(
+ 		irq_data_get_irq_chip_data(data));
++	unsigned int offset = (data->hwirq - gpio->irq_offset);
+ 	unsigned long flags;
+ 	u8 gpiic, mask;
+ 
+@@ -148,9 +148,9 @@ static void tqmx86_gpio_irq_mask(struct irq_data *data)
+ 
+ static void tqmx86_gpio_irq_unmask(struct irq_data *data)
+ {
+-	unsigned int offset = (data->hwirq - TQMX86_NGPO);
+ 	struct tqmx86_gpio_data *gpio = gpiochip_get_data(
+ 		irq_data_get_irq_chip_data(data));
++	unsigned int offset = (data->hwirq - gpio->irq_offset);
+ 	unsigned long flags;
+ 	u8 gpiic, mask;
+ 
+@@ -168,7 +168,7 @@ static int tqmx86_gpio_irq_set_type(struct irq_data *data, unsigned int type)
+ {
+ 	struct tqmx86_gpio_data *gpio = gpiochip_get_data(
+ 		irq_data_get_irq_chip_data(data));
+-	unsigned int offset = (data->hwirq - TQMX86_NGPO);
++	unsigned int offset = (data->hwirq - gpio->irq_offset);
+ 	unsigned int edge_type = type & IRQF_TRIGGER_MASK;
+ 	unsigned long flags;
+ 	u8 new_type, gpiic;
+@@ -204,6 +204,7 @@ static void tqmx86_gpio_irq_handler(struct irq_desc *desc)
+ 	struct gpio_chip *chip = irq_desc_get_handler_data(desc);
+ 	struct tqmx86_gpio_data *gpio = gpiochip_get_data(chip);
+ 	struct irq_chip *irq_chip = irq_desc_get_chip(desc);
++	unsigned int nirq = chip->ngpio - gpio->irq_offset;
+ 	unsigned long irq_bits;
+ 	int i = 0;
+ 	u8 irq_status;
+@@ -214,9 +215,9 @@ static void tqmx86_gpio_irq_handler(struct irq_desc *desc)
+ 	tqmx86_gpio_write(gpio, irq_status, TQMX86_GPIIS);
+ 
+ 	irq_bits = irq_status;
+-	for_each_set_bit(i, &irq_bits, TQMX86_NGPI)
++	for_each_set_bit(i, &irq_bits, nirq)
+ 		generic_handle_domain_irq(gpio->chip.irq.domain,
+-					  i + TQMX86_NGPO);
++					  i + gpio->irq_offset);
+ 
+ 	chained_irq_exit(irq_chip, desc);
+ }
+@@ -241,11 +242,9 @@ static void tqmx86_init_irq_valid_mask(struct gpio_chip *chip,
+ 				       unsigned long *valid_mask,
+ 				       unsigned int ngpios)
+ {
+-	/* Only GPIOs 4-7 are valid for interrupts. Clear the others */
+-	clear_bit(0, valid_mask);
+-	clear_bit(1, valid_mask);
+-	clear_bit(2, valid_mask);
+-	clear_bit(3, valid_mask);
++	struct tqmx86_gpio_data *gpio = gpiochip_get_data(chip);
++
++	*valid_mask &= ~gpio->irq_invalid_mask;
+ }
+ 
+ static int tqmx86_gpio_probe(struct platform_device *pdev)
+@@ -278,6 +277,8 @@ static int tqmx86_gpio_probe(struct platform_device *pdev)
+ 
+ 	raw_spin_lock_init(&gpio->spinlock);
+ 	gpio->io_base = io_base;
++	gpio->irq_offset = 4;
++	gpio->irq_invalid_mask = ~(unsigned long)TQMX86_DIR_INPUT_MASK;
+ 
+ 	tqmx86_gpio_write(gpio, (u8)~TQMX86_DIR_INPUT_MASK, TQMX86_GPIODD);
+ 
+@@ -296,7 +297,7 @@ static int tqmx86_gpio_probe(struct platform_device *pdev)
+ 	chip->get_direction = tqmx86_gpio_get_direction;
+ 	chip->get = tqmx86_gpio_get;
+ 	chip->set = tqmx86_gpio_set;
+-	chip->ngpio = TQMX86_NGPIO;
++	chip->ngpio = TQMX86_NGPIO_MAX;
+ 	chip->parent = pdev->dev.parent;
+ 
+ 	pm_runtime_enable(&pdev->dev);

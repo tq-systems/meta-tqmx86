@@ -1,0 +1,125 @@
+From bcb231ef1c9c5e11e6d70406078413a7e7717dbf Mon Sep 17 00:00:00 2001
+From: Matthias Schiffer <matthias.schiffer@tq-group.com>
+Date: Fri, 10 Sep 2021 14:17:54 +0200
+Subject: [PATCH] mfd: tqmx86: use platform_data dependent on board_id
+
+The different TQMX86 modules use different GPIO configurations. Use
+the TQMX86_REG_BOARD_ID to distinguish between variants and use
+corresponding tqmx86_gpio_platform_data.
+
+Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
+Signed-off-by: Gregor Herburger <gregor.herburger@tq-group.com>
+---
+ drivers/mfd/tqmx86.c | 66 ++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 63 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
+index 1580457b9a3d..784dbf516eb1 100644
+--- a/drivers/mfd/tqmx86.c
++++ b/drivers/mfd/tqmx86.c
+@@ -13,6 +13,7 @@
+ #include <linux/io.h>
+ #include <linux/mfd/core.h>
+ #include <linux/module.h>
++#include <linux/platform_data/gpio-tqmx86.h>
+ #include <linux/platform_data/i2c-ocores.h>
+ #include <linux/platform_device.h>
+ 
+@@ -97,14 +98,37 @@ static const struct mfd_cell tqmx86_i2c_soft_dev[] = {
+ 	},
+ };
+ 
+-static const struct mfd_cell tqmx86_devs[] = {
+-	{
++static const struct tqmx86_gpio_platform_data gpio_platform_data_come = {
++	.ngpio = 8,
++	.irq_offset = 4,
++	.irq_invalid_mask = 0x0f,
++	.dir_input_mask = 0xf0, /* 4 output, 4 inputs */
++};
++
++static const struct tqmx86_gpio_platform_data gpio_platform_data_smarc20 = {
++	.ngpio = 12,
++	.dir_input_mask = 0xfc0, /* 6 outputs, 6 inputs */
++};
++
++static const struct tqmx86_gpio_platform_data gpio_platform_data_smarc21 = {
++	.ngpio = 14,
++	.irq_invalid_mask = 0x3000,
++	.dir_input_mask = 0x3fc0, /* 6 outputs, 8 inputs */
++};
++
++enum tqmx86_cells {
++	TQMX86_WDT,
++	TQMX86_GPIO,
++};
++
++static struct mfd_cell tqmx86_devs[] = {
++	[TQMX86_WDT] = {
+ 		.name = "tqmx86-wdt",
+ 		.resources = tqmx_watchdog_resources,
+ 		.num_resources = ARRAY_SIZE(tqmx_watchdog_resources),
+ 		.ignore_resource_conflicts = true,
+ 	},
+-	{
++	[TQMX86_GPIO] = {
+ 		.name = "tqmx86-gpio",
+ 		.resources = tqmx_gpio_resources,
+ 		.num_resources = ARRAY_SIZE(tqmx_gpio_resources),
+@@ -112,6 +136,34 @@ static const struct mfd_cell tqmx86_devs[] = {
+ 	},
+ };
+ 
++static const struct tqmx86_gpio_platform_data *
++tqmx86_board_id_to_gpio_pdata(u8 board_id, u8 sauc)
++{
++	switch (board_id) {
++	case TQMX86_REG_BOARD_ID_E38M:
++	case TQMX86_REG_BOARD_ID_50UC:
++	case TQMX86_REG_BOARD_ID_E38C:
++	case TQMX86_REG_BOARD_ID_60EB:
++	case TQMX86_REG_BOARD_ID_E39C1:
++	case TQMX86_REG_BOARD_ID_E39C2:
++	case TQMX86_REG_BOARD_ID_70EB:
++	case TQMX86_REG_BOARD_ID_80UC:
++	case TQMX86_REG_BOARD_ID_110EB:
++	case TQMX86_REG_BOARD_ID_E40M:
++	case TQMX86_REG_BOARD_ID_E40C1:
++	case TQMX86_REG_BOARD_ID_E40C2:
++		return &gpio_platform_data_come;
++	case TQMX86_REG_BOARD_ID_E39MS:
++		return (sauc == 0xff)
++			? &gpio_platform_data_come
++			: &gpio_platform_data_smarc20;
++	case TQMX86_REG_BOARD_ID_E40S:
++		return &gpio_platform_data_smarc21;
++	default:
++		return ERR_PTR(-EINVAL);
++	}
++}
++
+ static const char *tqmx86_board_id_to_name(u8 board_id, u8 sauc)
+ {
+ 	switch (board_id) {
+@@ -177,6 +229,7 @@ static int tqmx86_board_id_to_clk_rate(struct device *dev, u8 board_id)
+ 
+ static int tqmx86_probe(struct platform_device *pdev)
+ {
++	const struct tqmx86_gpio_platform_data *gpio_pdata;
+ 	u8 board_id, sauc, rev, i2c_det, io_ext_int_val;
+ 	struct device *dev = &pdev->dev;
+ 	u8 gpio_irq_cfg, readback;
+@@ -244,6 +297,13 @@ static int tqmx86_probe(struct platform_device *pdev)
+ 			return err;
+ 	}
+ 
++	gpio_pdata = tqmx86_board_id_to_gpio_pdata(board_id, sauc);
++	if (IS_ERR(gpio_pdata))
++		return PTR_ERR(gpio_pdata);
++
++	tqmx86_devs[TQMX86_GPIO].platform_data = (void *)gpio_pdata;
++	tqmx86_devs[TQMX86_GPIO].pdata_size = sizeof(*gpio_pdata);
++
+ 	return devm_mfd_add_devices(dev, PLATFORM_DEVID_NONE,
+ 				    tqmx86_devs,
+ 				    ARRAY_SIZE(tqmx86_devs),

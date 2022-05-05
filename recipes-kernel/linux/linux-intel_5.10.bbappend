@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend_tqmx86 := "${THISDIR}/files:"
+FILESEXTRAPATHS_prepend_tqmx86 := "${THISDIR}/common:${THISDIR}/${PN}:"
 
 LINUX_VERSION = "5.10.41"
 SRCREV_machine = "916ac934a98bc8206c1b5e1500c891dbcb43aac7"

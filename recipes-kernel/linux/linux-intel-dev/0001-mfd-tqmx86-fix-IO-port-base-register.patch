@@ -1,0 +1,58 @@
+From 833f4f0031065b2c8c94203a154878b9f6cdede0 Mon Sep 17 00:00:00 2001
+From: Matthias Schiffer <matthias.schiffer@tq-group.com>
+Date: Thu, 24 Feb 2022 09:33:29 +0100
+Subject: [PATCH] mfd: tqmx86: fix IO port base register
+
+The actual used range starts at 0x180, which also matches our
+documentation. However, the driver currently specifies a base register
+of 0x160.
+
+A number of newly added and updated register offsets were meant to use
+0x180 as base, so they don't point at the right registers when
+interpreted relative to 0x160. Consistently use 0x180 and update the old
+offsets accordingly.
+
+This fixes board detection for TQMxE39S, and revision detection for all
+boards.
+
+Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
+---
+ drivers/mfd/tqmx86.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
+index 7ae906ff8e35..2b8a64121e03 100644
+--- a/drivers/mfd/tqmx86.c
++++ b/drivers/mfd/tqmx86.c
+@@ -16,8 +16,8 @@
+ #include <linux/platform_data/i2c-ocores.h>
+ #include <linux/platform_device.h>
+ 
+-#define TQMX86_IOBASE	0x160
+-#define TQMX86_IOSIZE	0x3f
++#define TQMX86_IOBASE	0x180
++#define TQMX86_IOSIZE	0x1f
+ #define TQMX86_IOBASE_I2C	0x1a0
+ #define TQMX86_IOSIZE_I2C	0xa
+ #define TQMX86_IOBASE_WATCHDOG	0x18b
+@@ -25,7 +25,7 @@
+ #define TQMX86_IOBASE_GPIO	0x18d
+ #define TQMX86_IOSIZE_GPIO	0x4
+ 
+-#define TQMX86_REG_BOARD_ID	0x20
++#define TQMX86_REG_BOARD_ID	0x00
+ #define TQMX86_REG_BOARD_ID_E38M	1
+ #define TQMX86_REG_BOARD_ID_50UC	2
+ #define TQMX86_REG_BOARD_ID_E38C	3
+@@ -49,9 +49,9 @@
+ #define TQMX86_REG_IO_EXT_INT_MASK		0x3
+ #define TQMX86_REG_IO_EXT_INT_GPIO_SHIFT	4
+ 
+-#define TQMX86_REG_I2C_DETECT	0x47
++#define TQMX86_REG_I2C_DETECT	0x27
+ #define TQMX86_REG_I2C_DETECT_SOFT		0xa5
+-#define TQMX86_REG_I2C_INT_EN	0x49
++#define TQMX86_REG_I2C_INT_EN	0x29
+ 
+ static uint gpio_irq;
+ module_param(gpio_irq, uint, 0);

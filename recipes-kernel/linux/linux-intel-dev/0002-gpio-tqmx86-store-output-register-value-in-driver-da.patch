@@ -1,0 +1,75 @@
+From e1ca9a2c813dfdaf2de4e2318891f51811c18e7c Mon Sep 17 00:00:00 2001
+From: Matthias Schiffer <matthias.schiffer@tq-group.com>
+Date: Mon, 13 Sep 2021 10:50:07 +0200
+Subject: [PATCH] gpio: tqmx86: store output register value in driver data
+
+The TQMx86 GPIO controller uses the same register for input and output
+data. To avoid inputs affecting output values, use a stored output value
+instead of reading the data register when changing the output.
+
+As there is no reliable way to get the current output values from the
+hardware, also initialize all channels to 0, so the stored and actual
+output values match.
+
+The inner part of the output setter is refactored into a separate
+function to be reused in tqmx86_gpio_direction_output().
+
+Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
+---
+ drivers/gpio/gpio-tqmx86.c | 22 +++++++++++++++-------
+ 1 file changed, 15 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/gpio/gpio-tqmx86.c b/drivers/gpio/gpio-tqmx86.c
+index 5b103221b58d..e3bdae8b5280 100644
+--- a/drivers/gpio/gpio-tqmx86.c
++++ b/drivers/gpio/gpio-tqmx86.c
+@@ -38,6 +38,7 @@ struct tqmx86_gpio_data {
+ 	void __iomem		*io_base;
+ 	int			irq;
+ 	raw_spinlock_t		spinlock;
++	u8			output;
+ 	u8			irq_type[TQMX86_NGPI];
+ };
+ 
+@@ -59,20 +60,24 @@ static int tqmx86_gpio_get(struct gpio_chip *chip, unsigned int offset)
+ 	return !!(tqmx86_gpio_read(gpio, TQMX86_GPIOD) & BIT(offset));
+ }
+ 
++static void _tqmx86_gpio_set(struct tqmx86_gpio_data *gpio, unsigned int offset,
++			     int value)
++{
++	if (value)
++		gpio->output |= BIT(offset);
++	else
++		gpio->output &= ~BIT(offset);
++	tqmx86_gpio_write(gpio, gpio->output, TQMX86_GPIOD);
++}
++
+ static void tqmx86_gpio_set(struct gpio_chip *chip, unsigned int offset,
+ 			    int value)
+ {
+ 	struct tqmx86_gpio_data *gpio = gpiochip_get_data(chip);
+ 	unsigned long flags;
+-	u8 val;
+ 
+ 	raw_spin_lock_irqsave(&gpio->spinlock, flags);
+-	val = tqmx86_gpio_read(gpio, TQMX86_GPIOD);
+-	if (value)
+-		val |= BIT(offset);
+-	else
+-		val &= ~BIT(offset);
+-	tqmx86_gpio_write(gpio, val, TQMX86_GPIOD);
++	_tqmx86_gpio_set(gpio, offset, value);
+ 	raw_spin_unlock_irqrestore(&gpio->spinlock, flags);
+ }
+ 
+@@ -259,6 +264,9 @@ static int tqmx86_gpio_probe(struct platform_device *pdev)
+ 
+ 	tqmx86_gpio_write(gpio, (u8)~TQMX86_DIR_INPUT_MASK, TQMX86_GPIODD);
+ 
++	/* Initialize all outputs to 0 */
++	tqmx86_gpio_write(gpio, 0, TQMX86_GPIOD);
++
+ 	platform_set_drvdata(pdev, gpio);
+ 
+ 	chip = &gpio->chip;

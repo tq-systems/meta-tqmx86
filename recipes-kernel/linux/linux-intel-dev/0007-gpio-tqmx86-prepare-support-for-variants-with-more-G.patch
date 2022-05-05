@@ -1,0 +1,117 @@
+From 611e5f488bd0023e31eedc6442690a3bc1a67810 Mon Sep 17 00:00:00 2001
+From: Matthias Schiffer <matthias.schiffer@tq-group.com>
+Date: Fri, 10 Sep 2021 12:22:19 +0200
+Subject: [PATCH] gpio: tqmx86: prepare support for variants with more GPIO
+ channels
+
+The SMARC variants of TQMx86 modules have more than 8 GPIOs and use a
+different mapping between GPIOs channels and IRQ register bits. Prepare
+their support by getting variant dependent infos from platform_data.
+
+Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
+Signed-off-by: Gregor Herburger <gregor.herburger@tq-group.com>
+---
+ drivers/gpio/gpio-tqmx86.c                | 26 +++++++++++++++++------
+ include/linux/platform_data/gpio-tqmx86.h | 19 +++++++++++++++++
+ 2 files changed, 39 insertions(+), 6 deletions(-)
+ create mode 100644 include/linux/platform_data/gpio-tqmx86.h
+
+diff --git a/drivers/gpio/gpio-tqmx86.c b/drivers/gpio/gpio-tqmx86.c
+index e8fd529c5109..361585b5fdc2 100644
+--- a/drivers/gpio/gpio-tqmx86.c
++++ b/drivers/gpio/gpio-tqmx86.c
+@@ -13,12 +13,12 @@
+ #include <linux/interrupt.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
++#include <linux/platform_data/gpio-tqmx86.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/slab.h>
+ 
+-#define TQMX86_NGPIO_MAX	8
+-#define TQMX86_DIR_INPUT_MASK  0xf0    /* 0-3 - output, 4-7 - input */
++#define TQMX86_NGPIO_MAX	16
+ 
+ #define TQMX86_GPIODD	0	/* GPIO Data Direction Register */
+ #define TQMX86_GPIOD	1	/* GPIO Data Register */
+@@ -326,6 +326,7 @@ static void tqmx86_init_irq_valid_mask(struct gpio_chip *chip,
+ 
+ static int tqmx86_gpio_probe(struct platform_device *pdev)
+ {
++	const struct tqmx86_gpio_platform_data *pdata;
+ 	struct device *dev = &pdev->dev;
+ 	struct tqmx86_gpio_data *gpio;
+ 	struct gpio_chip *chip;
+@@ -334,6 +335,13 @@ static int tqmx86_gpio_probe(struct platform_device *pdev)
+ 	struct resource *res;
+ 	int ret, irq;
+ 
++	pdata = dev->platform_data;
++	if (!pdata || pdata->ngpio > TQMX86_NGPIO_MAX ||
++	    pdata->irq_offset > pdata->ngpio) {
++		dev_err(&pdev->dev, "invalid platform data\n");
++		return -EINVAL;
++	}
++
+ 	irq = platform_get_irq_optional(pdev, 0);
+ 	if (irq < 0 && irq != -ENXIO)
+ 		return irq;
+@@ -354,14 +362,20 @@ static int tqmx86_gpio_probe(struct platform_device *pdev)
+ 
+ 	raw_spin_lock_init(&gpio->spinlock);
+ 	gpio->io_base = io_base;
+-	gpio->irq_offset = 4;
+-	gpio->irq_invalid_mask = ~(unsigned long)TQMX86_DIR_INPUT_MASK;
++	gpio->irq_offset = pdata->irq_offset;
++	gpio->irq_invalid_mask = pdata->irq_invalid_mask;
+ 
+-	tqmx86_gpio_write(gpio, (u8)~TQMX86_DIR_INPUT_MASK, TQMX86_GPIODD);
++	tqmx86_gpio_write(gpio, ~pdata->dir_input_mask, TQMX86_GPIODD);
+ 
+ 	/* Initialize all outputs to 0 */
+ 	tqmx86_gpio_write(gpio, 0, TQMX86_GPIOD);
+ 
++	if (pdata->ngpio > 8) {
++		tqmx86_gpio_write(gpio, ~pdata->dir_input_mask >> 8,
++				  TQMX86_GPIODD2);
++		tqmx86_gpio_write(gpio, 0, TQMX86_GPIOD2);
++	}
++
+ 	platform_set_drvdata(pdev, gpio);
+ 
+ 	chip = &gpio->chip;
+@@ -374,7 +388,7 @@ static int tqmx86_gpio_probe(struct platform_device *pdev)
+ 	chip->get_direction = tqmx86_gpio_get_direction;
+ 	chip->get = tqmx86_gpio_get;
+ 	chip->set = tqmx86_gpio_set;
+-	chip->ngpio = TQMX86_NGPIO_MAX;
++	chip->ngpio = pdata->ngpio;
+ 	chip->parent = pdev->dev.parent;
+ 
+ 	pm_runtime_enable(&pdev->dev);
+diff --git a/include/linux/platform_data/gpio-tqmx86.h b/include/linux/platform_data/gpio-tqmx86.h
+new file mode 100644
+index 000000000000..b36351f7ff4f
+--- /dev/null
++++ b/include/linux/platform_data/gpio-tqmx86.h
+@@ -0,0 +1,19 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * TQMx86 GPIO controller platform data
++ *
++ * Copyright (C) 2021 TQ-Systems GmbH
++ * Author: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
++ */
++
++#ifndef __LINUX_PLATFORM_DATA_GPIO_TQMX86_H
++#define __LINUX_PLATFORM_DATA_GPIO_TQMX86_H
++
++struct tqmx86_gpio_platform_data {
++	unsigned int ngpio;
++	unsigned int irq_offset;
++	unsigned long irq_invalid_mask;
++	unsigned long dir_input_mask;
++};
++
++#endif
