@@ -25,6 +25,8 @@ SRC_URI_append_tqmx86 = "\
 	file://0009-gpio-gpio-tqmx86-fix-broken-IRQ_TYPE_EDGE_BOTH-inter.patch \
 	file://0010-gpio-gpio-tqmx86-add-support-for-new-interrupt-regis.patch \
 	file://0011-mfd-tqmx86-Add-platform_data-for-smarc-with-14-gpios.patch \
+	file://0012-Revert-can-m_can-pci-use-custom-bit-timings-for-Elkh.patch \
+	file://0013-can-m_can-remove-support-for-custom-bit-timing-take-.patch \
 	\
 	file://elkhart-lake.cfg \
 	file://tqmx86.cfg \
