@@ -27,6 +27,8 @@ SRC_URI_append_tqmx86 = "\
 	file://0011-mfd-tqmx86-Add-platform_data-for-smarc-with-14-gpios.patch \
 	file://0012-Revert-can-m_can-pci-use-custom-bit-timings-for-Elkh.patch \
 	file://0013-can-m_can-remove-support-for-custom-bit-timing-take-.patch \
+	file://0014-i2c-busses-i2c-ocores-generate-stop-condition-after-.patch \
+	file://0015-mfd-tqmx86-add-irq-option-for-ocores-i2c.patch \
 	\
 	file://elkhart-lake.cfg \
 	file://tqmx86.cfg \
