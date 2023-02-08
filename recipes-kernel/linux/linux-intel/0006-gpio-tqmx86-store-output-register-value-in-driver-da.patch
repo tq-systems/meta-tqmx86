@@ -1,4 +1,4 @@
-From e1ca9a2c813dfdaf2de4e2318891f51811c18e7c Mon Sep 17 00:00:00 2001
+From 6d1e34fe6ba08c1167d0b008f81ceed6636d47ba Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@tq-group.com>
 Date: Mon, 13 Sep 2021 10:50:07 +0200
 Subject: [PATCH] gpio: tqmx86: store output register value in driver data
@@ -20,7 +20,7 @@ Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
  1 file changed, 15 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/gpio/gpio-tqmx86.c b/drivers/gpio/gpio-tqmx86.c
-index 5b103221b58d..e3bdae8b5280 100644
+index 5b103221b58dd..e3bdae8b52809 100644
 --- a/drivers/gpio/gpio-tqmx86.c
 +++ b/drivers/gpio/gpio-tqmx86.c
 @@ -38,6 +38,7 @@ struct tqmx86_gpio_data {

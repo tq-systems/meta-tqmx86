@@ -1,4 +1,4 @@
-From f455bf454a0c67c88ca02b791d2297eb88671ef1 Mon Sep 17 00:00:00 2001
+From 9d792a9a699ade0b4fa67766508649cdae054c8b Mon Sep 17 00:00:00 2001
 From: Gregor Herburger <gregor.herburger@tq-group.com>
 Date: Fri, 20 May 2022 14:35:02 +0200
 Subject: [PATCH] mfd: tqmx86: add irq option for ocores-i2c
@@ -9,22 +9,21 @@ driver and configuring the interrupt on the tqmx86 module.
 
 Signed-off-by: Gregor Herburger <gregor.herburger@tq-group.com>
 ---
- drivers/mfd/tqmx86.c | 109 +++++++++++++++++++++++++++++++------------
- 1 file changed, 78 insertions(+), 31 deletions(-)
+ drivers/mfd/tqmx86.c | 106 +++++++++++++++++++++++++++++++------------
+ 1 file changed, 76 insertions(+), 30 deletions(-)
 
 diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
-index b74b7c3d49c03..95efda1efbc7c 100644
+index 579c7fe2040ee..35cdd63d2636d 100644
 --- a/drivers/mfd/tqmx86.c
 +++ b/drivers/mfd/tqmx86.c
-@@ -50,16 +50,27 @@
- #define TQMX86_REG_IO_EXT_INT_12		3
+@@ -50,15 +50,26 @@
  #define TQMX86_REG_IO_EXT_INT_MASK		0x3
  #define TQMX86_REG_IO_EXT_INT_GPIO_SHIFT	4
+ #define TQMX86_REG_SAUC		0x17
 +#define TQMX86_REG_IO_EXT_INT_I2C_SHIFT		0
  
- #define TQMX86_REG_I2C_DETECT	0x27
+ #define TQMX86_REG_I2C_DETECT	0x1a7
  #define TQMX86_REG_I2C_DETECT_SOFT		0xa5
- #define TQMX86_REG_I2C_INT_EN	0x29
  
 +struct tqmx86_data {
 +	void __iomem	*io_base;
@@ -45,7 +44,7 @@ index b74b7c3d49c03..95efda1efbc7c 100644
  	DEFINE_RES_IO(TQMX86_IOBASE_I2C, TQMX86_IOSIZE_I2C),
  };
  
-@@ -234,38 +245,69 @@ static int tqmx86_board_id_to_clk_rate(struct device *dev, u8 board_id)
+@@ -233,38 +244,69 @@ static int tqmx86_board_id_to_clk_rate(struct device *dev, u8 board_id)
  	}
  }
  
@@ -81,8 +80,8 @@ index b74b7c3d49c03..95efda1efbc7c 100644
  	default:
 -		pr_err("tqmx86: Invalid GPIO IRQ (%d)\n", gpio_irq);
 +		dev_err(data->dev, "tqmx86: Invalid IRQ (%d)\n", irq);
- 		return -EINVAL;
- 	}
++		return -EINVAL;
++	}
 +}
 +
 +static int tqmx86_setup_irq(struct tqmx86_data *data, u8 irq, u8 reg_shift)
@@ -102,9 +101,9 @@ index b74b7c3d49c03..95efda1efbc7c 100644
 +	readback = ioread8(data->io_base + TQMX86_REG_IO_EXT_INT);
 +	if (readback != val) {
 +		dev_warn(data->dev, "interrupt not supported.\n");
-+		return -EINVAL;
-+	}
-+
+ 		return -EINVAL;
+ 	}
+ 
 +	return 0;
 +}
 +
@@ -121,7 +120,7 @@ index b74b7c3d49c03..95efda1efbc7c 100644
 +	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
 +	if (!data)
 +		return -ENOMEM;
- 
++
  	io_base = devm_ioport_map(dev, TQMX86_IOBASE, TQMX86_IOSIZE);
  	if (!io_base)
  		return -ENOMEM;
@@ -134,11 +133,10 @@ index b74b7c3d49c03..95efda1efbc7c 100644
  	board_id = ioread8(io_base + TQMX86_REG_BOARD_ID);
  	sauc = ioread8(io_base + TQMX86_REG_SAUC);
  	board_name = tqmx86_board_id_to_name(board_id, sauc);
-@@ -277,17 +319,10 @@ static int tqmx86_probe(struct platform_device *pdev)
- 		 "Found %s - Board ID %d, PCB Revision %d, PLD Revision %d\n",
- 		 board_name, board_id, pcb_rev, pld_rev);
- 
--	i2c_det = ioread8(io_base + TQMX86_REG_I2C_DETECT);
+@@ -282,16 +324,10 @@ static int tqmx86_probe(struct platform_device *pdev)
+ 	 * unmap.
+ 	 */
+ 	i2c_det = inb(TQMX86_REG_I2C_DETECT);
 -
 -	if (gpio_irq_cfg) {
 -		io_ext_int_val =
@@ -156,12 +154,9 @@ index b74b7c3d49c03..95efda1efbc7c 100644
  
  		/* Assumes the IRQ resource is first. */
  		tqmx_gpio_resources[0].start = gpio_irq;
-@@ -297,7 +332,19 @@ static int tqmx86_probe(struct platform_device *pdev)
- 
+@@ -302,6 +338,16 @@ static int tqmx86_probe(struct platform_device *pdev)
  	ocores_platform_data.clock_khz = tqmx86_board_id_to_clk_rate(dev, board_id);
  
-+	i2c_det = ioread8(io_base + TQMX86_REG_I2C_DETECT);
-+
  	if (i2c_det == TQMX86_REG_I2C_DETECT_SOFT) {
 +		if (i2c_irq) {
 +			err = tqmx86_setup_irq(data, i2c_irq, TQMX86_REG_IO_EXT_INT_I2C_SHIFT);

@@ -1,4 +1,4 @@
-From 611e5f488bd0023e31eedc6442690a3bc1a67810 Mon Sep 17 00:00:00 2001
+From c7d7e7aab90e251fa839342ef77132564c269933 Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@tq-group.com>
 Date: Fri, 10 Sep 2021 12:22:19 +0200
 Subject: [PATCH] gpio: tqmx86: prepare support for variants with more GPIO
@@ -17,7 +17,7 @@ Signed-off-by: Gregor Herburger <gregor.herburger@tq-group.com>
  create mode 100644 include/linux/platform_data/gpio-tqmx86.h
 
 diff --git a/drivers/gpio/gpio-tqmx86.c b/drivers/gpio/gpio-tqmx86.c
-index e8fd529c5109..361585b5fdc2 100644
+index e8fd529c51095..361585b5fdc28 100644
 --- a/drivers/gpio/gpio-tqmx86.c
 +++ b/drivers/gpio/gpio-tqmx86.c
 @@ -13,12 +13,12 @@
@@ -92,7 +92,7 @@ index e8fd529c5109..361585b5fdc2 100644
  	pm_runtime_enable(&pdev->dev);
 diff --git a/include/linux/platform_data/gpio-tqmx86.h b/include/linux/platform_data/gpio-tqmx86.h
 new file mode 100644
-index 000000000000..b36351f7ff4f
+index 0000000000000..b36351f7ff4f7
 --- /dev/null
 +++ b/include/linux/platform_data/gpio-tqmx86.h
 @@ -0,0 +1,19 @@

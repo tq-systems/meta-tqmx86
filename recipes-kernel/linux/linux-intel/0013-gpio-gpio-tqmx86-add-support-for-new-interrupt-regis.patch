@@ -1,4 +1,4 @@
-From 96f62395ff4f50db20cc738f7c1ff977c24bbc00 Mon Sep 17 00:00:00 2001
+From fd01249bcaee59c98d1dad7a36e67b460d3fc1bb Mon Sep 17 00:00:00 2001
 From: Gregor Herburger <gregor.herburger@tq-group.com>
 Date: Tue, 15 Mar 2022 09:40:21 +0100
 Subject: [PATCH] gpio: gpio-tqmx86: add support for new interrupt registers
@@ -13,7 +13,7 @@ Signed-off-by: Gregor Herburger <gregor.herburger@tq-group.com>
  1 file changed, 18 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/gpio/gpio-tqmx86.c b/drivers/gpio/gpio-tqmx86.c
-index 50e7c42f4941..8a620c278181 100644
+index 50e7c42f49415..8a620c2781817 100644
 --- a/drivers/gpio/gpio-tqmx86.c
 +++ b/drivers/gpio/gpio-tqmx86.c
 @@ -29,6 +29,8 @@

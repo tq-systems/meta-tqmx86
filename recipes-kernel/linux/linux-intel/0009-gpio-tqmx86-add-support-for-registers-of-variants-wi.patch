@@ -1,4 +1,4 @@
-From 3d3204a3a4bc1e73a9d3e5842bed20f5b6aeb630 Mon Sep 17 00:00:00 2001
+From 96052177bcb8cc83b39c2bc95ee35ab28d511e6b Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@tq-group.com>
 Date: Fri, 10 Sep 2021 13:16:52 +0200
 Subject: [PATCH] gpio: tqmx86: add support for registers of variants with >8
@@ -15,7 +15,7 @@ Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
  1 file changed, 111 insertions(+), 24 deletions(-)
 
 diff --git a/drivers/gpio/gpio-tqmx86.c b/drivers/gpio/gpio-tqmx86.c
-index ce424db6dd3f..e8fd529c5109 100644
+index ce424db6dd3f5..e8fd529c51095 100644
 --- a/drivers/gpio/gpio-tqmx86.c
 +++ b/drivers/gpio/gpio-tqmx86.c
 @@ -24,11 +24,15 @@

@@ -1,4 +1,4 @@
-From bcb231ef1c9c5e11e6d70406078413a7e7717dbf Mon Sep 17 00:00:00 2001
+From 0e8a39eccf82f8ab521ca5b12633874068c7f9c5 Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@tq-group.com>
 Date: Fri, 10 Sep 2021 14:17:54 +0200
 Subject: [PATCH] mfd: tqmx86: use platform_data dependent on board_id
@@ -14,7 +14,7 @@ Signed-off-by: Gregor Herburger <gregor.herburger@tq-group.com>
  1 file changed, 63 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
-index 1580457b9a3d..784dbf516eb1 100644
+index 22a0ebf17ef13..3078492f0d788 100644
 --- a/drivers/mfd/tqmx86.c
 +++ b/drivers/mfd/tqmx86.c
 @@ -13,6 +13,7 @@
@@ -25,7 +25,7 @@ index 1580457b9a3d..784dbf516eb1 100644
  #include <linux/platform_data/i2c-ocores.h>
  #include <linux/platform_device.h>
  
-@@ -97,14 +98,37 @@ static const struct mfd_cell tqmx86_i2c_soft_dev[] = {
+@@ -96,14 +97,37 @@ static const struct mfd_cell tqmx86_i2c_soft_dev[] = {
  	},
  };
  
@@ -66,7 +66,7 @@ index 1580457b9a3d..784dbf516eb1 100644
  		.name = "tqmx86-gpio",
  		.resources = tqmx_gpio_resources,
  		.num_resources = ARRAY_SIZE(tqmx_gpio_resources),
-@@ -112,6 +136,34 @@ static const struct mfd_cell tqmx86_devs[] = {
+@@ -111,6 +135,34 @@ static const struct mfd_cell tqmx86_devs[] = {
  	},
  };
  
@@ -101,7 +101,7 @@ index 1580457b9a3d..784dbf516eb1 100644
  static const char *tqmx86_board_id_to_name(u8 board_id, u8 sauc)
  {
  	switch (board_id) {
-@@ -177,6 +229,7 @@ static int tqmx86_board_id_to_clk_rate(struct device *dev, u8 board_id)
+@@ -176,6 +228,7 @@ static int tqmx86_board_id_to_clk_rate(struct device *dev, u8 board_id)
  
  static int tqmx86_probe(struct platform_device *pdev)
  {
@@ -109,7 +109,7 @@ index 1580457b9a3d..784dbf516eb1 100644
  	u8 board_id, sauc, rev, i2c_det, io_ext_int_val;
  	struct device *dev = &pdev->dev;
  	u8 gpio_irq_cfg, readback;
-@@ -244,6 +297,13 @@ static int tqmx86_probe(struct platform_device *pdev)
+@@ -248,6 +301,13 @@ static int tqmx86_probe(struct platform_device *pdev)
  			return err;
  	}
  

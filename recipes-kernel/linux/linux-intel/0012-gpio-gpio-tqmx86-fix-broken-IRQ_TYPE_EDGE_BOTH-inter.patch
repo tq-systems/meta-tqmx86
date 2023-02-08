@@ -1,4 +1,4 @@
-From a80d7db3890107ac155158fa8561c1eb625ec95f Mon Sep 17 00:00:00 2001
+From 97a992e394d34b0df567bfffcf519406a7841c6e Mon Sep 17 00:00:00 2001
 From: Gregor Herburger <gregor.herburger@tq-group.com>
 Date: Thu, 10 Mar 2022 16:53:25 +0100
 Subject: [PATCH] gpio: gpio-tqmx86: fix broken IRQ_TYPE_EDGE_BOTH interrupt
@@ -14,7 +14,7 @@ Signed-off-by: Gregor Herburger <gregor.herburger@tq-group.com>
  1 file changed, 41 insertions(+), 27 deletions(-)
 
 diff --git a/drivers/gpio/gpio-tqmx86.c b/drivers/gpio/gpio-tqmx86.c
-index 361585b5fdc2..50e7c42f4941 100644
+index 361585b5fdc28..50e7c42f49415 100644
 --- a/drivers/gpio/gpio-tqmx86.c
 +++ b/drivers/gpio/gpio-tqmx86.c
 @@ -30,8 +30,10 @@
