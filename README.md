@@ -76,25 +76,3 @@ For many COMs, variants with alternative CPUs are available.
 | `y` | supported         |
 | `b` | build tested only |
 | `p` | prerelease        |
-
-
-## Kernel selection
-
-linux-intel 5.10.y is selected as the default kernel. With the additions from
-*meta-tqmx86*, most hardware on the TQ-Systems x86 COMs and carrier boards is
-well-supported by this kernel.
-
-As an alternative, Linux 5.15 can be selected by adding the following line to
-`local.conf` or a custom distro configuration:
-```
-PREFERRED_PROVIDER_virtual/kernel_intel-corei7-64-tqmx86 = "linux-intel-dev"
-```
-This kernel supports the newest hardware found on the TQMxE40C/M/S modules; in
-particular, it adds support for the CAN controllers of the Atom x6000 CPU, which
-is missing in Linux 5.10.
-
-## Known issues
-
-Display driver support on the Atom x6000 (TQMxE40x) platform is still
-experimental. While no issues have been observed during regular operation,
-the driver crashes during shutdown, emitting a backtrace in the kernel log.
