@@ -8,9 +8,12 @@ CPU.
 ## Dependencies
 
 This layer depends on a number of base layers, which are listed in the
-following. The Yocto versions "gatesgarth" and "hardknott" are supported at
-this time. The correct branch matching the Yocto version must be checked out
-for each layer.
+following.
+
+The correct branch matching the Yocto version must be checked out for each
+layer. The supported Yocto version is "kirkstone". Historical branches for
+building against older Yocto versions like "hardknott" and "gatesgarth" can
+also be found in this repository.
 
 - poky
 
@@ -23,9 +26,8 @@ for each layer.
 
 ## Patches
 
-Please submit patches against the *meta-tqmx86* layer to
-Matthias Schiffer <matthias.schiffer@tq-group.com> or use Github's
-collaboration features.
+Please submit patches against the *meta-tqmx86* layer to the TQ-Systems
+Linux team (linux@ew.tq-group.com) or use Github's collaboration features.
 
 
 ## Build setup
