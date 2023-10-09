@@ -1,4 +1,4 @@
-From 97a992e394d34b0df567bfffcf519406a7841c6e Mon Sep 17 00:00:00 2001
+From dc9b9b26910508a467830a6c3bd2049e4c6f4770 Mon Sep 17 00:00:00 2001
 From: Gregor Herburger <gregor.herburger@tq-group.com>
 Date: Thu, 10 Mar 2022 16:53:25 +0100
 Subject: [PATCH] gpio: gpio-tqmx86: fix broken IRQ_TYPE_EDGE_BOTH interrupt

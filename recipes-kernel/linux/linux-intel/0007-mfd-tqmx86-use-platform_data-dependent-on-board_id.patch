@@ -1,4 +1,4 @@
-From 0e8a39eccf82f8ab521ca5b12633874068c7f9c5 Mon Sep 17 00:00:00 2001
+From 5ea1d8c1ad2ca80890b8f4eaa1fc98318a2d6fa0 Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@tq-group.com>
 Date: Fri, 10 Sep 2021 14:17:54 +0200
 Subject: [PATCH] mfd: tqmx86: use platform_data dependent on board_id
@@ -14,7 +14,7 @@ Signed-off-by: Gregor Herburger <gregor.herburger@tq-group.com>
  1 file changed, 63 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
-index 22a0ebf17ef13..3078492f0d788 100644
+index fac02875fe7d9..ea0c0f37346c3 100644
 --- a/drivers/mfd/tqmx86.c
 +++ b/drivers/mfd/tqmx86.c
 @@ -13,6 +13,7 @@

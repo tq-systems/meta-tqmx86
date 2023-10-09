@@ -1,4 +1,4 @@
-From 962fa786378d7f77122cded6d6007ab25cc9df6e Mon Sep 17 00:00:00 2001
+From 22642b106650e833208117af306f0348934abe0b Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@tq-group.com>
 Date: Fri, 10 Sep 2021 12:22:19 +0200
 Subject: [PATCH] gpio: tqmx86: prepare support for variants with more GPIO

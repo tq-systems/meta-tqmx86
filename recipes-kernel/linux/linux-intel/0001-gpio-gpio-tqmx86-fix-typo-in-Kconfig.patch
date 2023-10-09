@@ -1,4 +1,4 @@
-From d244e2a444bb684e237248b85d2646c9a70a84f7 Mon Sep 17 00:00:00 2001
+From 0734bb6398e6d4a8ddf6ba5b436bf1b5242f8aaa Mon Sep 17 00:00:00 2001
 From: Gregor Herburger <gregor.herburger@tq-group.com>
 Date: Fri, 17 Sep 2021 10:26:44 +0200
 Subject: [PATCH] gpio: gpio-tqmx86: fix typo in Kconfig
@@ -12,7 +12,7 @@ Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
-index 3686b6b222566..50bb3d7265c0e 100644
+index f5d7afaa750d0..a428fe332a23a 100644
 --- a/drivers/gpio/Kconfig
 +++ b/drivers/gpio/Kconfig
 @@ -1407,7 +1407,7 @@ config GPIO_TPS68470

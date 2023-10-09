@@ -1,4 +1,4 @@
-From 6d1e34fe6ba08c1167d0b008f81ceed6636d47ba Mon Sep 17 00:00:00 2001
+From d90b67dc3184cfb47e42f58589ac12fe8497416f Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@tq-group.com>
 Date: Mon, 13 Sep 2021 10:50:07 +0200
 Subject: [PATCH] gpio: tqmx86: store output register value in driver data

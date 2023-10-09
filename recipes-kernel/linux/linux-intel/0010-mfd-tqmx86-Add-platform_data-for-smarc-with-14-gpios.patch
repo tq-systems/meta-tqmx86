@@ -1,4 +1,4 @@
-From adf3aeae6276c66c3409da2f4f2fcd51454273cd Mon Sep 17 00:00:00 2001
+From ee85b3b59c9a0fc9714f0edffa7f45b05a4e60c0 Mon Sep 17 00:00:00 2001
 From: Gregor Herburger <gregor.herburger@tq-group.com>
 Date: Tue, 22 Mar 2022 14:10:39 +0100
 Subject: [PATCH] mfd: tqmx86: Add platform_data for smarc with 14 gpios
@@ -12,7 +12,7 @@ Signed-off-by: Gregor Herburger <gregor.herburger@tq-group.com>
  1 file changed, 14 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
-index 3078492f0d788..579c7fe2040ee 100644
+index ea0c0f37346c3..c54f3904c696c 100644
 --- a/drivers/mfd/tqmx86.c
 +++ b/drivers/mfd/tqmx86.c
 @@ -115,6 +115,11 @@ static const struct tqmx86_gpio_platform_data gpio_platform_data_smarc21 = {
