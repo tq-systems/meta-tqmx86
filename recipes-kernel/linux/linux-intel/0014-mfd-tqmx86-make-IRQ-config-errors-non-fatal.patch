@@ -1,0 +1,53 @@
+From 975fd2e070e22453700adeb1bffebe8d344ac914 Mon Sep 17 00:00:00 2001
+From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Date: Mon, 17 Apr 2023 16:18:01 +0200
+Subject: [PATCH] mfd: tqmx86: make IRQ config errors non-fatal
+
+Both GPIO and I2C can work without IRQ (with limitations). Don't stop
+probing the drivers altogether when IRQ configuration fails.
+
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+---
+ drivers/mfd/tqmx86.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
+index d65daff89641d..0cbebcbed9a26 100644
+--- a/drivers/mfd/tqmx86.c
++++ b/drivers/mfd/tqmx86.c
+@@ -328,13 +328,14 @@ static int tqmx86_probe(struct platform_device *pdev)
+ 	if (gpio_irq) {
+ 		err = tqmx86_setup_irq(data, gpio_irq, TQMX86_REG_IO_EXT_INT_GPIO_SHIFT, "GPIO");
+ 		if (err)
+-			return err;
++			gpio_irq = 0;
++	}
+ 
+-		/* Assumes the IRQ resource is first. */
++	/* Assumes the IRQ resource is first. */
++	if (gpio_irq)
+ 		tqmx_gpio_resources[0].start = gpio_irq;
+-	} else {
++	else
+ 		tqmx_gpio_resources[0].flags = 0;
+-	}
+ 
+ 	ocores_platform_data.clock_khz = tqmx86_board_id_to_clk_rate(dev, board_id);
+ 
+@@ -343,12 +344,13 @@ static int tqmx86_probe(struct platform_device *pdev)
+ 			err = tqmx86_setup_irq(data, i2c_irq, TQMX86_REG_IO_EXT_INT_I2C_SHIFT,
+ 					       "I2C");
+ 			if (err)
+-				return err;
++				i2c_irq = 0;
++		}
+ 
++		if (i2c_irq)
+ 			tqmx_i2c_soft_resources[0].start = i2c_irq;
+-		} else {
++		else
+ 			tqmx_i2c_soft_resources[0].flags = 0;
+-		}
+ 
+ 		err = devm_mfd_add_devices(dev, PLATFORM_DEVID_NONE,
+ 					   tqmx86_i2c_soft_dev,

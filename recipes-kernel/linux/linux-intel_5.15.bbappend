@@ -16,6 +16,12 @@ SRC_URI:append:tqmx86 = "\
 	file://0009-gpio-gpio-tqmx86-add-support-for-new-interrupt-regis.patch \
 	file://0010-mfd-tqmx86-Add-platform_data-for-smarc-with-14-gpios.patch \
 	file://0011-mfd-tqmx86-add-irq-option-for-ocores-i2c.patch \
+	file://0012-mfd-tqmx86-change-board-ID-defines-to-hexadecimal.patch \
+	file://0013-mfd-tqmx86-improve-IRQ-error-messages.patch \
+	file://0014-mfd-tqmx86-make-IRQ-config-errors-non-fatal.patch \
+	file://0015-mfd-tqmx86-make-GPIO-support-errors-non-fatal.patch \
+	file://0016-mfd-tqmx86-add-board-definitions-for-TQMx120UC-and-T.patch \
+	file://0017-mfd-tqmx86-add-board-definitions-for-TQMxE41S.patch \
 	\
 	file://elkhart-lake.cfg \
 	file://tqmx86.cfg \

@@ -1,0 +1,51 @@
+From 6d2d2de5586ef5d1f0bf7de38c4a21e454f53efe Mon Sep 17 00:00:00 2001
+From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Date: Tue, 18 Apr 2023 12:11:29 +0200
+Subject: [PATCH] mfd: tqmx86: add board definitions for TQMxE41S
+
+Add the TQMxE41S, a SMARC 2.1 module with Intel Atom x7000E and similar
+CPUs.
+
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+---
+ drivers/mfd/tqmx86.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
+index 64353222f182d..b44dbf13ec4e8 100644
+--- a/drivers/mfd/tqmx86.c
++++ b/drivers/mfd/tqmx86.c
+@@ -43,6 +43,7 @@
+ #define TQMX86_REG_BOARD_ID_E40C1	0x0e
+ #define TQMX86_REG_BOARD_ID_E40C2	0x0f
+ #define TQMX86_REG_BOARD_ID_130UC	0x10
++#define TQMX86_REG_BOARD_ID_E41S	0x13
+ #define TQMX86_REG_BOARD_REV	0x01
+ #define TQMX86_REG_IO_EXT_INT	0x06
+ #define TQMX86_REG_IO_EXT_INT_NONE		0
+@@ -172,6 +173,8 @@ tqmx86_board_id_to_gpio_pdata(struct device *dev, u8 board_id, u8 sauc, u8 pld_r
+ 		return (pld_rev > 1)
+ 			? &gpio_platform_data_smarc21_full
+ 			: &gpio_platform_data_smarc21;
++	case TQMX86_REG_BOARD_ID_E41S:
++		return &gpio_platform_data_smarc21_full;
+ 	default:
+ 		dev_warn(dev, "No GPIO support available\n");
+ 		return ERR_PTR(-EINVAL);
+@@ -213,6 +216,8 @@ static const char *tqmx86_board_id_to_name(u8 board_id, u8 sauc)
+ 		return "TQMxE40C2";
+ 	case TQMX86_REG_BOARD_ID_130UC:
+ 		return "TQMx130UC";
++	case TQMX86_REG_BOARD_ID_E41S:
++		return "TQMxE41S";
+ 	default:
+ 		return "Unknown";
+ 	}
+@@ -232,6 +237,7 @@ static int tqmx86_board_id_to_clk_rate(struct device *dev, u8 board_id)
+ 	case TQMX86_REG_BOARD_ID_E40C1:
+ 	case TQMX86_REG_BOARD_ID_E40C2:
+ 	case TQMX86_REG_BOARD_ID_130UC:
++	case TQMX86_REG_BOARD_ID_E41S:
+ 		return 24000;
+ 	case TQMX86_REG_BOARD_ID_E39MS:
+ 	case TQMX86_REG_BOARD_ID_E39C1:

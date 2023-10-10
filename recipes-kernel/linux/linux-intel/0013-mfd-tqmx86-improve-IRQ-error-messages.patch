@@ -1,0 +1,69 @@
+From e44e18d42e16862b1081c6cf6746c446e53eea4f Mon Sep 17 00:00:00 2001
+From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Date: Mon, 17 Apr 2023 16:13:34 +0200
+Subject: [PATCH] mfd: tqmx86: improve IRQ error messages
+
+Include "I2C" or "GPIO" in the messages, so it is clear which IRQ config
+is invalid.
+
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+---
+ drivers/mfd/tqmx86.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
+index 7818c5e3c0973..d65daff89641d 100644
+--- a/drivers/mfd/tqmx86.c
++++ b/drivers/mfd/tqmx86.c
+@@ -256,19 +256,20 @@ static int tqmx86_irq_to_irq_cfg(struct tqmx86_data *data, u8 irq)
+ 	case 12:
+ 		return TQMX86_REG_IO_EXT_INT_12;
+ 	default:
+-		dev_err(data->dev, "tqmx86: Invalid IRQ (%d)\n", irq);
+ 		return -EINVAL;
+ 	}
+ }
+ 
+-static int tqmx86_setup_irq(struct tqmx86_data *data, u8 irq, u8 reg_shift)
++static int tqmx86_setup_irq(struct tqmx86_data *data, u8 irq, u8 reg_shift, const char *label)
+ {
+ 	u8 val, readback;
+ 	int irq_cfg;
+ 
+ 	irq_cfg = tqmx86_irq_to_irq_cfg(data, irq);
+-	if (irq_cfg < 0)
++	if (irq_cfg < 0) {
++		dev_err(data->dev, "Invalid %s IRQ (%d)\n", label, irq);
+ 		return irq_cfg;
++	}
+ 
+ 	val = ioread8(data->io_base + TQMX86_REG_IO_EXT_INT);
+ 	val &= ~(TQMX86_REG_IO_EXT_INT_MASK << reg_shift);
+@@ -277,7 +278,7 @@ static int tqmx86_setup_irq(struct tqmx86_data *data, u8 irq, u8 reg_shift)
+ 	iowrite8(val, data->io_base + TQMX86_REG_IO_EXT_INT);
+ 	readback = ioread8(data->io_base + TQMX86_REG_IO_EXT_INT);
+ 	if (readback != val) {
+-		dev_warn(data->dev, "interrupt not supported.\n");
++		dev_warn(data->dev, "%s interrupt not supported on this board.\n", label);
+ 		return -EINVAL;
+ 	}
+ 
+@@ -325,7 +326,7 @@ static int tqmx86_probe(struct platform_device *pdev)
+ 	 */
+ 	i2c_det = inb(TQMX86_REG_I2C_DETECT);
+ 	if (gpio_irq) {
+-		err = tqmx86_setup_irq(data, gpio_irq, TQMX86_REG_IO_EXT_INT_GPIO_SHIFT);
++		err = tqmx86_setup_irq(data, gpio_irq, TQMX86_REG_IO_EXT_INT_GPIO_SHIFT, "GPIO");
+ 		if (err)
+ 			return err;
+ 
+@@ -339,7 +340,8 @@ static int tqmx86_probe(struct platform_device *pdev)
+ 
+ 	if (i2c_det == TQMX86_REG_I2C_DETECT_SOFT) {
+ 		if (i2c_irq) {
+-			err = tqmx86_setup_irq(data, i2c_irq, TQMX86_REG_IO_EXT_INT_I2C_SHIFT);
++			err = tqmx86_setup_irq(data, i2c_irq, TQMX86_REG_IO_EXT_INT_I2C_SHIFT,
++					       "I2C");
+ 			if (err)
+ 				return err;
+ 

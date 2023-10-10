@@ -1,0 +1,51 @@
+From 458aa351dcb231cc3a06020ca15bdb24e9e08d15 Mon Sep 17 00:00:00 2001
+From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Date: Mon, 17 Apr 2023 14:19:01 +0200
+Subject: [PATCH] mfd: tqmx86: change board ID defines to hexadecimal
+
+Make the ID defines match our documentation.
+
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+---
+ drivers/mfd/tqmx86.c | 28 ++++++++++++++--------------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
+index 539447fd5785f..7818c5e3c0973 100644
+--- a/drivers/mfd/tqmx86.c
++++ b/drivers/mfd/tqmx86.c
+@@ -27,20 +27,20 @@
+ #define TQMX86_IOSIZE_GPIO	0x4
+ 
+ #define TQMX86_REG_BOARD_ID	0x00
+-#define TQMX86_REG_BOARD_ID_E38M	1
+-#define TQMX86_REG_BOARD_ID_50UC	2
+-#define TQMX86_REG_BOARD_ID_E38C	3
+-#define TQMX86_REG_BOARD_ID_60EB	4
+-#define TQMX86_REG_BOARD_ID_E39MS	5
+-#define TQMX86_REG_BOARD_ID_E39C1	6
+-#define TQMX86_REG_BOARD_ID_E39C2	7
+-#define TQMX86_REG_BOARD_ID_70EB	8
+-#define TQMX86_REG_BOARD_ID_80UC	9
+-#define TQMX86_REG_BOARD_ID_110EB	11
+-#define TQMX86_REG_BOARD_ID_E40M	12
+-#define TQMX86_REG_BOARD_ID_E40S	13
+-#define TQMX86_REG_BOARD_ID_E40C1	14
+-#define TQMX86_REG_BOARD_ID_E40C2	15
++#define TQMX86_REG_BOARD_ID_E38M	0x01
++#define TQMX86_REG_BOARD_ID_50UC	0x02
++#define TQMX86_REG_BOARD_ID_E38C	0x03
++#define TQMX86_REG_BOARD_ID_60EB	0x04
++#define TQMX86_REG_BOARD_ID_E39MS	0x05
++#define TQMX86_REG_BOARD_ID_E39C1	0x06
++#define TQMX86_REG_BOARD_ID_E39C2	0x07
++#define TQMX86_REG_BOARD_ID_70EB	0x08
++#define TQMX86_REG_BOARD_ID_80UC	0x09
++#define TQMX86_REG_BOARD_ID_110EB	0x0b
++#define TQMX86_REG_BOARD_ID_E40M	0x0c
++#define TQMX86_REG_BOARD_ID_E40S	0x0d
++#define TQMX86_REG_BOARD_ID_E40C1	0x0e
++#define TQMX86_REG_BOARD_ID_E40C2	0x0f
+ #define TQMX86_REG_BOARD_REV	0x01
+ #define TQMX86_REG_IO_EXT_INT	0x06
+ #define TQMX86_REG_IO_EXT_INT_NONE		0

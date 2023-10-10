@@ -1,0 +1,77 @@
+From d21c8736fabd42ef064eaa9daf2d1fdac62df871 Mon Sep 17 00:00:00 2001
+From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Date: Mon, 17 Apr 2023 14:19:20 +0200
+Subject: [PATCH] mfd: tqmx86: add board definitions for TQMx120UC and
+ TQMx130UC
+
+Add the TQMx120UC and TQMx130UC, which are COM Express Compact Type 6
+modules with 12th and 13th Generation Intel Core CPUs.
+
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+---
+ drivers/mfd/tqmx86.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
+index 2e13765bfcdea..64353222f182d 100644
+--- a/drivers/mfd/tqmx86.c
++++ b/drivers/mfd/tqmx86.c
+@@ -36,11 +36,13 @@
+ #define TQMX86_REG_BOARD_ID_E39C2	0x07
+ #define TQMX86_REG_BOARD_ID_70EB	0x08
+ #define TQMX86_REG_BOARD_ID_80UC	0x09
++#define TQMX86_REG_BOARD_ID_120UC	0x0a
+ #define TQMX86_REG_BOARD_ID_110EB	0x0b
+ #define TQMX86_REG_BOARD_ID_E40M	0x0c
+ #define TQMX86_REG_BOARD_ID_E40S	0x0d
+ #define TQMX86_REG_BOARD_ID_E40C1	0x0e
+ #define TQMX86_REG_BOARD_ID_E40C2	0x0f
++#define TQMX86_REG_BOARD_ID_130UC	0x10
+ #define TQMX86_REG_BOARD_REV	0x01
+ #define TQMX86_REG_IO_EXT_INT	0x06
+ #define TQMX86_REG_IO_EXT_INT_NONE		0
+@@ -155,10 +157,12 @@ tqmx86_board_id_to_gpio_pdata(struct device *dev, u8 board_id, u8 sauc, u8 pld_r
+ 	case TQMX86_REG_BOARD_ID_E39C2:
+ 	case TQMX86_REG_BOARD_ID_70EB:
+ 	case TQMX86_REG_BOARD_ID_80UC:
++	case TQMX86_REG_BOARD_ID_120UC:
+ 	case TQMX86_REG_BOARD_ID_110EB:
+ 	case TQMX86_REG_BOARD_ID_E40M:
+ 	case TQMX86_REG_BOARD_ID_E40C1:
+ 	case TQMX86_REG_BOARD_ID_E40C2:
++	case TQMX86_REG_BOARD_ID_130UC:
+ 		return &gpio_platform_data_come;
+ 	case TQMX86_REG_BOARD_ID_E39MS:
+ 		return (sauc == 0xff)
+@@ -195,6 +199,8 @@ static const char *tqmx86_board_id_to_name(u8 board_id, u8 sauc)
+ 		return "TQMx70EB";
+ 	case TQMX86_REG_BOARD_ID_80UC:
+ 		return "TQMx80UC";
++	case TQMX86_REG_BOARD_ID_120UC:
++		return "TQMx120UC";
+ 	case TQMX86_REG_BOARD_ID_110EB:
+ 		return "TQMx110EB";
+ 	case TQMX86_REG_BOARD_ID_E40M:
+@@ -205,6 +211,8 @@ static const char *tqmx86_board_id_to_name(u8 board_id, u8 sauc)
+ 		return "TQMxE40C1";
+ 	case TQMX86_REG_BOARD_ID_E40C2:
+ 		return "TQMxE40C2";
++	case TQMX86_REG_BOARD_ID_130UC:
++		return "TQMx130UC";
+ 	default:
+ 		return "Unknown";
+ 	}
+@@ -217,11 +225,13 @@ static int tqmx86_board_id_to_clk_rate(struct device *dev, u8 board_id)
+ 	case TQMX86_REG_BOARD_ID_60EB:
+ 	case TQMX86_REG_BOARD_ID_70EB:
+ 	case TQMX86_REG_BOARD_ID_80UC:
++	case TQMX86_REG_BOARD_ID_120UC:
+ 	case TQMX86_REG_BOARD_ID_110EB:
+ 	case TQMX86_REG_BOARD_ID_E40M:
+ 	case TQMX86_REG_BOARD_ID_E40S:
+ 	case TQMX86_REG_BOARD_ID_E40C1:
+ 	case TQMX86_REG_BOARD_ID_E40C2:
++	case TQMX86_REG_BOARD_ID_130UC:
+ 		return 24000;
+ 	case TQMX86_REG_BOARD_ID_E39MS:
+ 	case TQMX86_REG_BOARD_ID_E39C1:
