@@ -55,26 +55,48 @@ All TQ-Systems x86 hardware listed in the following is supported by the
 the `DISTRO` "poky" are the recommended starting point for customization of the
 BSP.
 
-For many COMs, variants with alternative CPUs are available.
+For many COMs, variants with alternative CPUs are available, and different
+mainboards with the same form factor can be used. The boards listed in the
+following table have been used for testing the Yocto BSP.
 
-|     | COM                | CPU                          | Form factor                |
-|-----|--------------------|------------------------------|----------------------------|
-| `b` | TQMx50UC           | Intel Core (5th generation)  | COM Express Compact Type 6 |
-| `b` | TQMx60EB           | Intel Core (6th generation)  | COM Express Basic Type 6   |
-| `b` | TQMx70EB           | Intel Core (7th generation)  | COM Express Basic Type 6   |
-| `b` | TQMx80UC           | Intel Core (8th generation)  | COM Express Compact Type 6 |
-| `p` | TQMx110EB          | Intel Core (11th generation) | COM Express Basic Type 6   |
-| `b` | TQMxE38C           | Intel Atom E3800             | COM Express Compact Type 6 |
-| `b` | TQMxE38M           | Intel Atom E3800             | COM Express Mini Type 10   |
-| `b` | TQMxE39C1/2        | Intel Atom E3900             | COM Express Compact Type 6 |
-| `b` | TQMxE39M           | Intel Atom E3900             | COM Express Mini Type 10   |
-| `b` | TQMxE39S           | Intel Atom E3900             | SMARC 2.0/2.1              |
-| `p` | TQMxE40C1/2        | Intel Atom x6000             | COM Express Compact Type 6 |
-| `y` | TQMxE40M           | Intel Atom x6000             | COM Express Mini Type 10   |
-| `p` | TQMxE40S           | Intel Atom x6000             | SMARC 2.1                  |
+|     | COM                | Mainboard  | CPU                          | Form factor                |
+|-----|--------------------|---------------|------------------------------|----------------------------|
+| `b` | TQMx50UC           |            | Intel Core (5th generation)  | COM Express Compact Type 6 |
+| `b` | TQMx60EB           |            | Intel Core (6th generation)  | COM Express Basic Type 6   |
+| `b` | TQMx70EB           |            | Intel Core (7th generation)  | COM Express Basic Type 6   |
+| `b` | TQMx80UC           |            | Intel Core (8th generation)  | COM Express Compact Type 6 |
+| `y` | TQMx110EB          | MB-COME6-4 | Intel Core (11th generation) | COM Express Basic Type 6   |
+| `p` | TQMx120EB          |            | Intel Core (12th generation) | COM Express Basic Type 6   |
+| `p` | TQMx130EB          |            | Intel Core (13th generation) | COM Express Basic Type 6   |
+| `b` | TQMxE38C           |            | Intel Atom E3800             | COM Express Compact Type 6 |
+| `b` | TQMxE38M           |            | Intel Atom E3800             | COM Express Mini Type 10   |
+| `b` | TQMxE39C1/2        |            | Intel Atom E3900             | COM Express Compact Type 6 |
+| `b` | TQMxE39M           |            | Intel Atom E3900             | COM Express Mini Type 10   |
+| `b` | TQMxE39S           |            | Intel Atom E3900             | SMARC 2.0/2.1              |
+| `b` | TQMxE40C1/2        |            | Intel Atom x6000             | COM Express Compact Type 6 |
+| `b` | TQMxE40M           |            | Intel Atom x6000             | COM Express Mini Type 10   |
+| `y` | TQMxE40S           | MB-SMARC-3 | Intel Atom x6000             | SMARC 2.1                  |
+| `p` | TQMxE41S           |            | Intel Atom x7000E            | SMARC 2.1                  |
 
 |     | Support status    |
 |-----|-------------------|
 | `y` | supported         |
 | `b` | build tested only |
 | `p` | prerelease        |
+
+## Known issues
+
+- linux-intel:
+  - The kernel contains calls to `trace_printk()`, which should only be used
+    for debugging. The kernel warns about this during boot.
+  - The both-edges IRQ trigger of the TQMx86 GPIO driver will report multiple
+    falling or rising edge events in a row instead of alternating between the
+    two when the edges are received faster than they can be reported
+- TQMx110EB:
+  - DisplayPort DP3 of the MB-COME6-4 does not work
+  - Microphone input of MB-COME6-4 does not work
+  - A warning with backtrace from the i915 driver is printed to the kernel log
+    when booting with LVDS enabled
+- TQMxE40S:
+  - There is no driver support for the eSPI UART controller of the MB-SMARC-3
+    (SER4/SER5)
