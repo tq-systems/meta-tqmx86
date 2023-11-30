@@ -24,8 +24,9 @@ SRC_URI:append:tqmx86 = "\
 	file://0017-mfd-tqmx86-add-board-definitions-for-TQMxE41S.patch \
 	\
 	file://elkhart-lake.cfg \
-	file://tqmx86.cfg \
 	file://nct7802.cfg \
+	file://serial.cfg \
+	file://tqmx86.cfg \
 "
 
 KERNEL_EXTRA_FEATURES:append:tqmx86 = " features/can/m_can.scc"
