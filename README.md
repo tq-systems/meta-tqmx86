@@ -66,8 +66,8 @@ following table have been used for testing the Yocto BSP.
 | `b` | TQMx70EB           |            | Intel Core (7th generation)  | COM Express Basic Type 6   |
 | `b` | TQMx80UC           |            | Intel Core (8th generation)  | COM Express Compact Type 6 |
 | `y` | TQMx110EB          | MB-COME6-4 | Intel Core (11th generation) | COM Express Basic Type 6   |
-| `p` | TQMx120EB          |            | Intel Core (12th generation) | COM Express Basic Type 6   |
-| `p` | TQMx130EB          |            | Intel Core (13th generation) | COM Express Basic Type 6   |
+| `p` | TQMx120HC/PC/UC    |            | Intel Core (12th generation) | COM Express Compact Type 6 |
+| `p` | TQMx130HC/PC/UC    |            | Intel Core (13th generation) | COM Express Compact Type 6 |
 | `b` | TQMxE38C           |            | Intel Atom E3800             | COM Express Compact Type 6 |
 | `b` | TQMxE38M           |            | Intel Atom E3800             | COM Express Mini Type 10   |
 | `b` | TQMxE39C1/2        |            | Intel Atom E3900             | COM Express Compact Type 6 |
