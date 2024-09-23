@@ -1,0 +1,126 @@
+From 6e25c1425378c98182b28354bd7cc44bd0ddde3d Mon Sep 17 00:00:00 2001
+From: Markus Schneider-Pargmann <msp@baylibre.com>
+Date: Wed, 7 Feb 2024 10:32:17 +0100
+Subject: [PATCH] can: m_can: Introduce a tx_fifo_in_flight counter
+
+Keep track of the number of transmits in flight.
+
+This patch prepares the driver to control the network interface queue
+based on this counter. By itself this counter be
+implemented with an atomic, but as we need to do other things in the
+critical sections later I am using a spinlock instead.
+
+Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+Link: https://lore.kernel.org/all/20240207093220.2681425-12-msp@baylibre.com
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Upstream-Status: Backport [https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=1fa80e23c15051edc1c594270517de3517ded798]
+Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
+---
+ drivers/net/can/m_can/m_can.c | 30 ++++++++++++++++++++++++++++++
+ drivers/net/can/m_can/m_can.h |  4 ++++
+ 2 files changed, 34 insertions(+)
+
+diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
+index 8d7dbf2eb46c4..2c68b1a60887a 100644
+--- a/drivers/net/can/m_can/m_can.c
++++ b/drivers/net/can/m_can/m_can.c
+@@ -484,6 +484,7 @@ static u32 m_can_get_timestamp(struct m_can_classdev *cdev)
+ static void m_can_clean(struct net_device *net)
+ {
+ 	struct m_can_classdev *cdev = netdev_priv(net);
++	unsigned long irqflags;
+ 
+ 	if (cdev->tx_ops) {
+ 		for (int i = 0; i != cdev->tx_fifo_size; ++i) {
+@@ -497,6 +498,10 @@ static void m_can_clean(struct net_device *net)
+ 
+ 	for (int i = 0; i != cdev->can.echo_skb_max; ++i)
+ 		can_free_echo_skb(cdev->net, i, NULL);
++
++	spin_lock_irqsave(&cdev->tx_handling_spinlock, irqflags);
++	cdev->tx_fifo_in_flight = 0;
++	spin_unlock_irqrestore(&cdev->tx_handling_spinlock, irqflags);
+ }
+ 
+ /* For peripherals, pass skb to rx-offload, which will push skb from
+@@ -1067,6 +1072,24 @@ static void m_can_tx_update_stats(struct m_can_classdev *cdev,
+ 	stats->tx_packets++;
+ }
+ 
++static void m_can_finish_tx(struct m_can_classdev *cdev, int transmitted)
++{
++	unsigned long irqflags;
++
++	spin_lock_irqsave(&cdev->tx_handling_spinlock, irqflags);
++	cdev->tx_fifo_in_flight -= transmitted;
++	spin_unlock_irqrestore(&cdev->tx_handling_spinlock, irqflags);
++}
++
++static void m_can_start_tx(struct m_can_classdev *cdev)
++{
++	unsigned long irqflags;
++
++	spin_lock_irqsave(&cdev->tx_handling_spinlock, irqflags);
++	++cdev->tx_fifo_in_flight;
++	spin_unlock_irqrestore(&cdev->tx_handling_spinlock, irqflags);
++}
++
+ static int m_can_echo_tx_event(struct net_device *dev)
+ {
+ 	u32 txe_count = 0;
+@@ -1076,6 +1099,7 @@ static int m_can_echo_tx_event(struct net_device *dev)
+ 	int i = 0;
+ 	int err = 0;
+ 	unsigned int msg_mark;
++	int processed = 0;
+ 
+ 	struct m_can_classdev *cdev = netdev_priv(dev);
+ 
+@@ -1105,12 +1129,15 @@ static int m_can_echo_tx_event(struct net_device *dev)
+ 
+ 		/* update stats */
+ 		m_can_tx_update_stats(cdev, msg_mark, timestamp);
++		++processed;
+ 	}
+ 
+ 	if (ack_fgi != -1)
+ 		m_can_write(cdev, M_CAN_TXEFA, FIELD_PREP(TXEFA_EFAI_MASK,
+ 							  ack_fgi));
+ 
++	m_can_finish_tx(cdev, processed);
++
+ 	return err;
+ }
+ 
+@@ -1192,6 +1219,7 @@ static irqreturn_t m_can_isr(int irq, void *dev_id)
+ 				timestamp = m_can_get_timestamp(cdev);
+ 			m_can_tx_update_stats(cdev, 0, timestamp);
+ 			netif_wake_queue(dev);
++			m_can_finish_tx(cdev, 1);
+ 		}
+ 	} else  {
+ 		if (ir & (IR_TEFN | IR_TEFW)) {
+@@ -1890,6 +1918,8 @@ static netdev_tx_t m_can_start_xmit(struct sk_buff *skb,
+ 		return NETDEV_TX_OK;
+ 	}
+ 
++	m_can_start_tx(cdev);
++
+ 	if (cdev->is_peripheral)
+ 		return m_can_start_peripheral_xmit(cdev, skb);
+ 	else
+diff --git a/drivers/net/can/m_can/m_can.h b/drivers/net/can/m_can/m_can.h
+index be1d2119bd53a..76b1ce1b7c1b4 100644
+--- a/drivers/net/can/m_can/m_can.h
++++ b/drivers/net/can/m_can/m_can.h
+@@ -108,6 +108,10 @@ struct m_can_classdev {
+ 	// Store this internally to avoid fetch delays on peripheral chips
+ 	u32 tx_fifo_putidx;
+ 
++	/* Protects shared state between start_xmit and m_can_isr */
++	spinlock_t tx_handling_spinlock;
++	int tx_fifo_in_flight;
++
+ 	struct m_can_tx_op *tx_ops;
+ 	int tx_fifo_size;
+ 	int next_tx_op;

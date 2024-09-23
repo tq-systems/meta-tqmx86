@@ -1,0 +1,65 @@
+From 2378c44692e49bb9cb7cb48f724286a9bf1eaf56 Mon Sep 17 00:00:00 2001
+From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Date: Tue, 28 May 2024 16:11:28 +0200
+Subject: [PATCH] gpio: tqmx86: introduce platform data struct
+
+A number of different variants of the TQMx86 GPIO controller exist,
+providing a different number of GPIOs, different IRQ support and
+different default configuration.
+
+While we only have registers for up to 16 GPIOs for now and further
+extension is not planned at the moment, defining the irq_valid_mask and
+dir_input_mask bit fields as arrays allows for import into bitmaps using
+bitmap_from_arr32(), keeping the code independent of the actual
+number of GPIOs when not dealing with register accesses.
+
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Upstream-Status: Pending
+---
+ MAINTAINERS                               |  1 +
+ include/linux/platform_data/gpio-tqmx86.h | 24 +++++++++++++++++++++++
+ 2 files changed, 25 insertions(+)
+ create mode 100644 include/linux/platform_data/gpio-tqmx86.h
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index f09415b2b3c5c..38f2c9d5fd036 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -21842,6 +21842,7 @@ F:	arch/arm64/boot/dts/freescale/mba*.dtsi
+ F:	drivers/gpio/gpio-tqmx86.c
+ F:	drivers/mfd/tqmx86.c
+ F:	drivers/watchdog/tqmx86_wdt.c
++F:	include/linux/platform_data/gpio-tqmx86.h
+ 
+ TRACING
+ M:	Steven Rostedt <rostedt@goodmis.org>
+diff --git a/include/linux/platform_data/gpio-tqmx86.h b/include/linux/platform_data/gpio-tqmx86.h
+new file mode 100644
+index 0000000000000..c315707309e57
+--- /dev/null
++++ b/include/linux/platform_data/gpio-tqmx86.h
+@@ -0,0 +1,24 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * TQMx86 GPIO controller platform data
++ *
++ * Copyright (C) 2024 TQ-Systems GmbH <linux@ew.tq-group.com>, D-82229 Seefeld, Germany.
++ * Author: Matthias Schiffer
++ */
++
++#ifndef __LINUX_PLATFORM_DATA_GPIO_TQMX86_H
++#define __LINUX_PLATFORM_DATA_GPIO_TQMX86_H
++
++#include <linux/bitops.h>
++
++#define TQMX86_NGPIO_MAX	16
++
++struct tqmx86_gpio_platform_data {
++	unsigned int ngpio;
++	/* GPIOs corresponding to 1 bits have IRQ support */
++	u32 irq_valid_mask[BITS_TO_U32(TQMX86_NGPIO_MAX)];
++	/* GPIOs corresponding to 1 bits default to input direction */
++	u32 default_dir_mask[BITS_TO_U32(TQMX86_NGPIO_MAX)];
++};
++
++#endif

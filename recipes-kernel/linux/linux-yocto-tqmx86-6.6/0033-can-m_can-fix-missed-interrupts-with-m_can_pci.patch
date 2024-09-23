@@ -1,0 +1,101 @@
+From 9e80cadaaf46cb192ef9a212afd1a6c5789832de Mon Sep 17 00:00:00 2001
+From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Date: Wed, 18 Sep 2024 13:52:16 +0200
+Subject: [PATCH] can: m_can: fix missed interrupts with m_can_pci
+
+The interrupt line of PCI devices is interpreted as edge-triggered,
+however the interrupt signal of the m_can controller integrated in Intel
+Elkhart Lake CPUs appears to be generated level-triggered.
+
+Consider the following sequence of events:
+
+- IR register is read, interrupt X is set
+- A new interrupt Y is triggered in the m_can controller
+- IR register is written to acknowledge interrupt X. Y remains set in IR
+
+As at no point in this sequence no interrupt flag is set in IR, the
+m_can interrupt line will never become deasserted, and no edge will ever
+be observed to trigger another run of the ISR. This was observed to
+result in the TX queue of the EHL m_can to get stuck under high load,
+because frames were queued to the hardware in m_can_start_xmit(), but
+m_can_finish_tx() was never run to account for their successful
+transmission.
+
+To fix the issue, repeatedly read and acknowledge interrupts at the
+start of the ISR until no interrupt flags are set, so the next incoming
+interrupt will also result in an edge on the interrupt line.
+
+Fixes: cab7ffc0324f ("can: m_can: add PCI glue driver for Intel Elkhart Lake")
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Upstream-Status: Submitted [https://www.spinics.net/lists/linux-can/msg16967.html]
+---
+ drivers/net/can/m_can/m_can.c     | 21 ++++++++++++++++-----
+ drivers/net/can/m_can/m_can.h     |  1 +
+ drivers/net/can/m_can/m_can_pci.c |  1 +
+ 3 files changed, 18 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
+index dbe120aac74fe..48b90712b813c 100644
+--- a/drivers/net/can/m_can/m_can.c
++++ b/drivers/net/can/m_can/m_can.c
+@@ -1207,20 +1207,31 @@ static void m_can_coalescing_update(struct m_can_classdev *cdev, u32 ir)
+ static int m_can_interrupt_handler(struct m_can_classdev *cdev)
+ {
+ 	struct net_device *dev = cdev->net;
+-	u32 ir;
++	u32 ir = 0, ir_read;
+ 	int ret;
+ 
+ 	if (pm_runtime_suspended(cdev->dev))
+ 		return IRQ_NONE;
+ 
+-	ir = m_can_read(cdev, M_CAN_IR);
++	/* For m_can_pci, the interrupt line is interpreted as edge-triggered,
++	 * but the m_can controller generates them as level-triggered. We must
++	 * observe that IR is 0 at least once to be sure that the next
++	 * interrupt will generate an edge.
++	 */
++	while ((ir_read = m_can_read(cdev, M_CAN_IR)) != 0) {
++		ir |= ir_read;
++
++		/* ACK all irqs */
++		m_can_write(cdev, M_CAN_IR, ir);
++
++		if (!cdev->is_edge_triggered)
++			break;
++	}
++
+ 	m_can_coalescing_update(cdev, ir);
+ 	if (!ir)
+ 		return IRQ_NONE;
+ 
+-	/* ACK all irqs */
+-	m_can_write(cdev, M_CAN_IR, ir);
+-
+ 	if (cdev->ops->clear_interrupts)
+ 		cdev->ops->clear_interrupts(cdev);
+ 
+diff --git a/drivers/net/can/m_can/m_can.h b/drivers/net/can/m_can/m_can.h
+index 92b2bd8628e6b..8c17eb94d2f98 100644
+--- a/drivers/net/can/m_can/m_can.h
++++ b/drivers/net/can/m_can/m_can.h
+@@ -99,6 +99,7 @@ struct m_can_classdev {
+ 	int pm_clock_support;
+ 	int pm_wake_source;
+ 	int is_peripheral;
++	bool is_edge_triggered;
+ 
+ 	// Cached M_CAN_IE register content
+ 	u32 active_interrupts;
+diff --git a/drivers/net/can/m_can/m_can_pci.c b/drivers/net/can/m_can/m_can_pci.c
+index d72fe771dfc7a..f98527981402a 100644
+--- a/drivers/net/can/m_can/m_can_pci.c
++++ b/drivers/net/can/m_can/m_can_pci.c
+@@ -127,6 +127,7 @@ static int m_can_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
+ 	mcan_class->pm_clock_support = 1;
+ 	mcan_class->pm_wake_source = 0;
+ 	mcan_class->can.clock.freq = id->driver_data;
++	mcan_class->is_edge_triggered = true;
+ 	mcan_class->ops = &m_can_pci_ops;
+ 
+ 	pci_set_drvdata(pci, mcan_class);

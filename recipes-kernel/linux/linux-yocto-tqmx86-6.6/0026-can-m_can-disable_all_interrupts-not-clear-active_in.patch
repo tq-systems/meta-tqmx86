@@ -1,0 +1,32 @@
+From dcc58bdf515a3c0005bce7b892ae16ca8b0eff6a Mon Sep 17 00:00:00 2001
+From: Markus Schneider-Pargmann <msp@baylibre.com>
+Date: Mon, 5 Aug 2024 20:30:45 +0200
+Subject: [PATCH] can: m_can: disable_all_interrupts, not clear
+ active_interrupts
+
+active_interrupts is a cache for the enabled interrupts and not the
+global masking of interrupts. Do not clear this variable otherwise we
+may loose the state of the interrupts.
+
+Fixes: 07f25091ca02 ("can: m_can: Implement receive coalescing")
+Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+Link: https://lore.kernel.org/all/20240805183047.305630-6-msp@baylibre.com
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Upstream-Status: Backport [https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a572fea86c9b06cd3e6e89d79d565b52cb7e7cff]
+Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
+---
+ drivers/net/can/m_can/m_can.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
+index 5228304779f19..68bd4a00eccaa 100644
+--- a/drivers/net/can/m_can/m_can.c
++++ b/drivers/net/can/m_can/m_can.c
+@@ -483,7 +483,6 @@ static inline void m_can_disable_all_interrupts(struct m_can_classdev *cdev)
+ {
+ 	m_can_coalescing_disable(cdev);
+ 	m_can_write(cdev, M_CAN_ILE, 0x0);
+-	cdev->active_interrupts = 0x0;
+ 
+ 	if (!cdev->net->irq) {
+ 		dev_dbg(cdev->dev, "Stop hrtimer\n");

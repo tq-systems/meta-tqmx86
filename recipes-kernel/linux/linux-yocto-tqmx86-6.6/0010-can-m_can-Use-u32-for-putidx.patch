@@ -1,0 +1,55 @@
+From b05dd3a867c33eff3ba798c1e2e0431c8a922840 Mon Sep 17 00:00:00 2001
+From: Markus Schneider-Pargmann <msp@baylibre.com>
+Date: Wed, 7 Feb 2024 10:32:14 +0100
+Subject: [PATCH] can: m_can: Use u32 for putidx
+
+putidx is not an integer normally, it is an unsigned field used in
+hardware registers. Use a u32 for it.
+
+Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+Reviewed-by: Simon Horman <simon.horman@corigine.com>
+Link: https://lore.kernel.org/all/20240207093220.2681425-9-msp@baylibre.com
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Upstream-Status: Backport [https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=14f0a0a4407ebb6f36eb7d394d497d4632c654dc]
+Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
+---
+ drivers/net/can/m_can/m_can.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
+index b31df3e3ceeb4..1b62613f195c1 100644
+--- a/drivers/net/can/m_can/m_can.c
++++ b/drivers/net/can/m_can/m_can.c
+@@ -486,7 +486,7 @@ static void m_can_clean(struct net_device *net)
+ 	struct m_can_classdev *cdev = netdev_priv(net);
+ 
+ 	if (cdev->tx_skb) {
+-		int putidx = 0;
++		u32 putidx = 0;
+ 
+ 		net->stats.tx_errors++;
+ 		if (cdev->version > 30)
+@@ -1695,12 +1695,12 @@ static int m_can_close(struct net_device *dev)
+ 	return 0;
+ }
+ 
+-static int m_can_next_echo_skb_occupied(struct net_device *dev, int putidx)
++static int m_can_next_echo_skb_occupied(struct net_device *dev, u32 putidx)
+ {
+ 	struct m_can_classdev *cdev = netdev_priv(dev);
+ 	/*get wrap around for loopback skb index */
+ 	unsigned int wrap = cdev->can.echo_skb_max;
+-	int next_idx;
++	u32 next_idx;
+ 
+ 	/* calculate next index */
+ 	next_idx = (++putidx >= wrap ? 0 : putidx);
+@@ -1719,7 +1719,7 @@ static netdev_tx_t m_can_tx_handler(struct m_can_classdev *cdev)
+ 	u32 cccr, fdflags;
+ 	u32 txfqs;
+ 	int err;
+-	int putidx;
++	u32 putidx;
+ 
+ 	cdev->tx_skb = NULL;
+ 

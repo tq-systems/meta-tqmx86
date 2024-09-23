@@ -1,0 +1,30 @@
+From 8c28a29c720ebdda3bd3ddf7fc601f2d9f1b8689 Mon Sep 17 00:00:00 2001
+From: Markus Schneider-Pargmann <msp@baylibre.com>
+Date: Mon, 5 Aug 2024 20:30:46 +0200
+Subject: [PATCH] can: m_can: Reset cached active_interrupts on start
+
+To force writing the enabled interrupts, reset the active_interrupts
+cache.
+
+Fixes: 07f25091ca02 ("can: m_can: Implement receive coalescing")
+Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+Link: https://lore.kernel.org/all/20240805183047.305630-7-msp@baylibre.com
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Upstream-Status: Backport [https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=733dbf556cd5b71d5e6f6aa7a93f117b438ab785]
+Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
+---
+ drivers/net/can/m_can/m_can.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
+index 68bd4a00eccaa..67c4c740c416f 100644
+--- a/drivers/net/can/m_can/m_can.c
++++ b/drivers/net/can/m_can/m_can.c
+@@ -1541,6 +1541,7 @@ static int m_can_chip_config(struct net_device *dev)
+ 		else
+ 			interrupts &= ~(IR_ERR_LEC_31X);
+ 	}
++	cdev->active_interrupts = 0;
+ 	m_can_interrupt_enable(cdev, interrupts);
+ 
+ 	/* route all interrupts to INT0 */

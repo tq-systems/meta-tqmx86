@@ -1,0 +1,35 @@
+From 99fbcb9bd1fe68d17b61694622275d0ea047805c Mon Sep 17 00:00:00 2001
+From: Jake Hamby <Jake.Hamby@Teledyne.com>
+Date: Fri, 6 Sep 2024 23:19:51 +0000
+Subject: [PATCH] can: m_can: m_can_chip_config(): mask timestamp wraparound
+ IRQ
+
+On the Microchip SAMA7G54 MPU the IR_TSW (timestamp wraparound) fires
+at about 1 Hz, but the driver doesn't care about it. Add it to the
+list of interrupts to disable in m_can_chip_config to reduce unneeded
+wakeups.
+
+Link: https://patch.msgid.link/DM8PR14MB5221D9DD3A7F2130EF161AF7EF9E2@DM8PR14MB5221.namprd14.prod.outlook.com
+Signed-off-by: Jake Hamby <Jake.Hamby@Teledyne.com>
+Link: https://patch.msgid.link/20240911-can-m_can-mask-timestamp-wraparound-irq-v1-1-0155b70dc827@pengutronix.de
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Upstream-Status: Backport [https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=709cbd5bb49b54c3d73c1a89b8ebce09c10ed2ed]
+Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
+---
+ drivers/net/can/m_can/m_can.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
+index 012c3d22b01dd..a7b3bc439ae59 100644
+--- a/drivers/net/can/m_can/m_can.c
++++ b/drivers/net/can/m_can/m_can.c
+@@ -1434,7 +1434,8 @@ static int m_can_chip_config(struct net_device *dev)
+ 
+ 	/* Disable unused interrupts */
+ 	interrupts &= ~(IR_ARA | IR_ELO | IR_DRX | IR_TEFF | IR_TFE | IR_TCF |
+-			IR_HPM | IR_RF1F | IR_RF1W | IR_RF1N | IR_RF0F);
++			IR_HPM | IR_RF1F | IR_RF1W | IR_RF1N | IR_RF0F |
++			IR_TSW);
+ 
+ 	err = m_can_config_enable(cdev);
+ 	if (err)

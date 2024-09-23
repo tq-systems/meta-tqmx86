@@ -1,0 +1,99 @@
+From bcfa46eb05add2ec95283dcdc80352f04a642496 Mon Sep 17 00:00:00 2001
+From: Markus Schneider-Pargmann <msp@baylibre.com>
+Date: Wed, 7 Feb 2024 10:32:12 +0100
+Subject: [PATCH] can: m_can: Add rx coalescing ethtool support
+
+Add the possibility to set coalescing parameters with ethtool.
+
+rx-frames-irq and rx-usecs-irq can only be set and unset together as the
+implemented mechanism would not work otherwise. rx-frames-irq can't be
+greater than the RX FIFO size.
+
+Also all values can only be changed if the chip is not active.
+
+Polling is excluded from irq coalescing support.
+
+Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+Reviewed-by: Simon Horman <horms@kernel.org>
+Link: https://lore.kernel.org/all/20240207093220.2681425-7-msp@baylibre.com
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Upstream-Status: Backport [https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=9515223bd0bb9bb0a31b61a68f1049148c1d85ff]
+Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
+---
+ drivers/net/can/m_can/m_can.c | 55 ++++++++++++++++++++++++++++++++++-
+ 1 file changed, 54 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
+index 9b3e8e09f3aa2..6dad1f569f820 100644
+--- a/drivers/net/can/m_can/m_can.c
++++ b/drivers/net/can/m_can/m_can.c
+@@ -1977,7 +1977,57 @@ static const struct net_device_ops m_can_netdev_ops = {
+ 	.ndo_change_mtu = can_change_mtu,
+ };
+ 
++static int m_can_get_coalesce(struct net_device *dev,
++			      struct ethtool_coalesce *ec,
++			      struct kernel_ethtool_coalesce *kec,
++			      struct netlink_ext_ack *ext_ack)
++{
++	struct m_can_classdev *cdev = netdev_priv(dev);
++
++	ec->rx_max_coalesced_frames_irq = cdev->rx_max_coalesced_frames_irq;
++	ec->rx_coalesce_usecs_irq = cdev->rx_coalesce_usecs_irq;
++
++	return 0;
++}
++
++static int m_can_set_coalesce(struct net_device *dev,
++			      struct ethtool_coalesce *ec,
++			      struct kernel_ethtool_coalesce *kec,
++			      struct netlink_ext_ack *ext_ack)
++{
++	struct m_can_classdev *cdev = netdev_priv(dev);
++
++	if (cdev->can.state != CAN_STATE_STOPPED) {
++		netdev_err(dev, "Device is in use, please shut it down first\n");
++		return -EBUSY;
++	}
++
++	if (ec->rx_max_coalesced_frames_irq > cdev->mcfg[MRAM_RXF0].num) {
++		netdev_err(dev, "rx-frames-irq %u greater than the RX FIFO %u\n",
++			   ec->rx_max_coalesced_frames_irq,
++			   cdev->mcfg[MRAM_RXF0].num);
++		return -EINVAL;
++	}
++	if ((ec->rx_max_coalesced_frames_irq == 0) != (ec->rx_coalesce_usecs_irq == 0)) {
++		netdev_err(dev, "rx-frames-irq and rx-usecs-irq can only be set together\n");
++		return -EINVAL;
++	}
++
++	cdev->rx_max_coalesced_frames_irq = ec->rx_max_coalesced_frames_irq;
++	cdev->rx_coalesce_usecs_irq = ec->rx_coalesce_usecs_irq;
++
++	return 0;
++}
++
+ static const struct ethtool_ops m_can_ethtool_ops = {
++	.supported_coalesce_params = ETHTOOL_COALESCE_RX_USECS_IRQ |
++		ETHTOOL_COALESCE_RX_MAX_FRAMES_IRQ,
++	.get_ts_info = ethtool_op_get_ts_info,
++	.get_coalesce = m_can_get_coalesce,
++	.set_coalesce = m_can_set_coalesce,
++};
++
++static const struct ethtool_ops m_can_ethtool_ops_polling = {
+ 	.get_ts_info = ethtool_op_get_ts_info,
+ };
+ 
+@@ -1985,7 +2035,10 @@ static int register_m_can_dev(struct net_device *dev)
+ {
+ 	dev->flags |= IFF_ECHO;	/* we support local echo */
+ 	dev->netdev_ops = &m_can_netdev_ops;
+-	dev->ethtool_ops = &m_can_ethtool_ops;
++	if (dev->irq)
++		dev->ethtool_ops = &m_can_ethtool_ops;
++	else
++		dev->ethtool_ops = &m_can_ethtool_ops_polling;
+ 
+ 	return register_candev(dev);
+ }

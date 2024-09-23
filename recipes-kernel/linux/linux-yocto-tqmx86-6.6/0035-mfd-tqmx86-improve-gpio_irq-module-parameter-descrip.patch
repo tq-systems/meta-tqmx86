@@ -1,0 +1,27 @@
+From 6d21dabce5f289d3f48a1ec872ccf25179201474 Mon Sep 17 00:00:00 2001
+From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Date: Mon, 17 Jun 2024 14:00:22 +0200
+Subject: [PATCH] mfd: tqmx86: improve gpio_irq module parameter description
+
+Clarify that "7, 9, 12" refers to the valid arguments that can be
+passed as gpio_irq.
+
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Upstream-Status: Submitted [https://www.spinics.net/lists/kernel/msg5363925.html]
+---
+ drivers/mfd/tqmx86.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
+index e15b9be98c2db..7b2f9490a9af5 100644
+--- a/drivers/mfd/tqmx86.c
++++ b/drivers/mfd/tqmx86.c
+@@ -58,7 +58,7 @@
+ 
+ static uint gpio_irq;
+ module_param(gpio_irq, uint, 0);
+-MODULE_PARM_DESC(gpio_irq, "GPIO IRQ number (7, 9, 12)");
++MODULE_PARM_DESC(gpio_irq, "GPIO IRQ number (valid parameters: 7, 9, 12)");
+ 
+ static const struct resource tqmx_i2c_soft_resources[] = {
+ 	DEFINE_RES_IO(TQMX86_IOBASE_I2C, TQMX86_IOSIZE_I2C),
