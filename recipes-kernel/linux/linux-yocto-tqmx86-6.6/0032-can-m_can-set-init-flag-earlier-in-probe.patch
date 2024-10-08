@@ -1,6 +1,6 @@
-From 698cdb8d16249c236fa1e7e6040859ecd7f7e0c8 Mon Sep 17 00:00:00 2001
+From cc8a3ddc0d5c408dcdb138c3b29d2d790915c3c9 Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Date: Wed, 18 Sep 2024 13:46:13 +0200
+Date: Mon, 7 Oct 2024 10:23:58 +0200
 Subject: [PATCH] can: m_can: set init flag earlier in probe
 
 While an m_can controller usually already has the init flag from a
@@ -15,22 +15,23 @@ configuration flags.
 
 Fixes: cd5a46ce6fa6 ("can: m_can: don't enable transceiver when probing")
 Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Upstream-Status: Submitted [https://www.spinics.net/lists/linux-can/msg16966.html]
+Reviewed-by: Markus Schneider-Pargmann <msp@baylibre.com>
+Upstream-Status: Submitted [https://www.spinics.net/lists/netdev/msg1033898.html]
 ---
  drivers/net/can/m_can/m_can.c | 14 +++++++++-----
  1 file changed, 9 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index a978b960f1f1e..dbe120aac74fe 100644
+index a978b960f1f1e..07be3595e2ba1 100644
 --- a/drivers/net/can/m_can/m_can.c
 +++ b/drivers/net/can/m_can/m_can.c
 @@ -1682,6 +1682,14 @@ static int m_can_dev_setup(struct m_can_classdev *cdev)
  		return -EINVAL;
  	}
  
-+	/* Forcing standby mode should be redundant, as the chip should be in
-+	 * standby after a reset. Write the INIT bit anyways, should the chip
-+	 * be configured by previous stage.
++	/* Write the INIT bit, in case no hardware reset has happened before
++	 * the probe (for example, it was observed that the Intel Elkhart Lake
++	 * SoCs do not properly reset the CAN controllers on reboot)
 +	 */
 +	err = m_can_cccr_update_bits(cdev, CCCR_INIT, CCCR_INIT);
 +	if (err)
