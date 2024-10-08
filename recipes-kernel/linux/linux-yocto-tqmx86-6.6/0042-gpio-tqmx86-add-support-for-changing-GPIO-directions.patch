@@ -1,4 +1,4 @@
-From f08e19fe8e5bb68d4be11e610f132fe84edfce7a Mon Sep 17 00:00:00 2001
+From 1743c874fcfd3edb15a2adb0ea382fa5458a229a Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 Date: Tue, 28 May 2024 14:28:58 +0200
 Subject: [PATCH] gpio: tqmx86: add support for changing GPIO directions

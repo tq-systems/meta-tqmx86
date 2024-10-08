@@ -1,6 +1,6 @@
-From 11ad5fb66f550d9f5f3106cd66dec6b869c2d185 Mon Sep 17 00:00:00 2001
+From 8819e7c4b72f65caae0ff3ea06e3ea97619d9ec0 Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Date: Mon, 17 Apr 2023 14:19:20 +0200
+Date: Mon, 7 Oct 2024 09:48:04 +0200
 Subject: [PATCH] mfd: tqmx86: add board definitions for TQMx120UC, TQMx130UC
  and TQMxE41S
 
@@ -15,7 +15,7 @@ This adds support for 3 new TQMx86 COMs:
 [3] https://www.tq-group.com/en/products/tq-embedded/x86-architecture/tqmxe41s/
 
 Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Upstream-Status: Submitted [https://www.spinics.net/lists/kernel/msg5363924.html]
+Upstream-Status: Submitted [https://www.spinics.net/lists/kernel/msg5390172.html]
 ---
  drivers/mfd/tqmx86.c | 12 ++++++++++++
  1 file changed, 12 insertions(+)

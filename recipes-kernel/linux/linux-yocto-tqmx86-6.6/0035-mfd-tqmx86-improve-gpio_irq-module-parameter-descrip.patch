@@ -1,13 +1,13 @@
-From 6d21dabce5f289d3f48a1ec872ccf25179201474 Mon Sep 17 00:00:00 2001
+From 6075cd257654cc3059e3c36c01b6ed03530ded46 Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Date: Mon, 17 Jun 2024 14:00:22 +0200
+Date: Mon, 7 Oct 2024 09:48:05 +0200
 Subject: [PATCH] mfd: tqmx86: improve gpio_irq module parameter description
 
 Clarify that "7, 9, 12" refers to the valid arguments that can be
 passed as gpio_irq.
 
 Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Upstream-Status: Submitted [https://www.spinics.net/lists/kernel/msg5363925.html]
+Upstream-Status: Submitted [https://www.spinics.net/lists/kernel/msg5390173.html]
 ---
  drivers/mfd/tqmx86.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

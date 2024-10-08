@@ -1,4 +1,4 @@
-From a1e62d0b6a141a65e48f9c529e71a3555bc6fb10 Mon Sep 17 00:00:00 2001
+From 57e8f68f7a8d115de2456cf051f340422c8d259e Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 Date: Tue, 28 May 2024 16:31:37 +0200
 Subject: [PATCH] mfd: tqmx86: configure board-specific GPIO platform data
@@ -15,11 +15,11 @@ configuration on current kernels.
 Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 Upstream-Status: Pending
 ---
- drivers/mfd/tqmx86.c | 106 ++++++++++++++++++++++++++++++++++++-------
- 1 file changed, 89 insertions(+), 17 deletions(-)
+ drivers/mfd/tqmx86.c | 108 ++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 91 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
-index 87142a722cb7a..f64ee839860a0 100644
+index c9552fc8f72c3..5ad2ca12afd4d 100644
 --- a/drivers/mfd/tqmx86.c
 +++ b/drivers/mfd/tqmx86.c
 @@ -13,6 +13,7 @@
@@ -86,7 +86,7 @@ index 87142a722cb7a..f64ee839860a0 100644
  };
  
  static const char *tqmx86_board_id_to_name(u8 board_id, u8 sauc)
-@@ -196,6 +220,38 @@ static int tqmx86_board_id_to_clk_rate(struct device *dev, u8 board_id)
+@@ -196,6 +220,40 @@ static int tqmx86_board_id_to_clk_rate(struct device *dev, u8 board_id)
  	}
  }
  
@@ -102,10 +102,12 @@ index 87142a722cb7a..f64ee839860a0 100644
 +	case TQMX86_REG_BOARD_ID_E39C2:
 +	case TQMX86_REG_BOARD_ID_70EB:
 +	case TQMX86_REG_BOARD_ID_80UC:
++	case TQMX86_REG_BOARD_ID_120UC:
 +	case TQMX86_REG_BOARD_ID_110EB:
 +	case TQMX86_REG_BOARD_ID_E40M:
 +	case TQMX86_REG_BOARD_ID_E40C1:
 +	case TQMX86_REG_BOARD_ID_E40C2:
++	case TQMX86_REG_BOARD_ID_130UC:
 +		return &gpio_platform_data_come;
 +	case TQMX86_REG_BOARD_ID_E39MS:
 +		return (sauc == 0xff)
@@ -122,10 +124,10 @@ index 87142a722cb7a..f64ee839860a0 100644
 +	}
 +}
 +
- static int tqmx86_irq_to_irq_cfg(struct device *dev, const char *label, u8 irq)
+ static int tqmx86_setup_irq(struct device *dev, const char *label, u8 irq,
+ 			    void __iomem *io_base, u8 reg_shift)
  {
- 	switch (irq) {
-@@ -239,7 +295,8 @@ static int tqmx86_setup_irq(struct device *dev, const char *label, u8 irq,
+@@ -236,7 +294,8 @@ static int tqmx86_setup_irq(struct device *dev, const char *label, u8 irq,
  
  static int tqmx86_probe(struct platform_device *pdev)
  {
@@ -135,7 +137,7 @@ index 87142a722cb7a..f64ee839860a0 100644
  	struct device *dev = &pdev->dev;
  	const char *board_name;
  	void __iomem *io_base;
-@@ -253,10 +310,12 @@ static int tqmx86_probe(struct platform_device *pdev)
+@@ -250,10 +309,12 @@ static int tqmx86_probe(struct platform_device *pdev)
  	sauc = ioread8(io_base + TQMX86_REG_SAUC);
  	board_name = tqmx86_board_id_to_name(board_id, sauc);
  	rev = ioread8(io_base + TQMX86_REG_BOARD_REV);
@@ -149,7 +151,7 @@ index 87142a722cb7a..f64ee839860a0 100644
  
  	/*
  	 * The I2C_DETECT register is in the range assigned to the I2C driver
-@@ -292,9 +351,22 @@ static int tqmx86_probe(struct platform_device *pdev)
+@@ -289,9 +350,22 @@ static int tqmx86_probe(struct platform_device *pdev)
  			return err;
  	}
  

@@ -1,4 +1,4 @@
-From ace98ce5539563431e6ce9d40b36b9b548f186da Mon Sep 17 00:00:00 2001
+From b5a3a4ed5c1eb178cc4443e8caf724d8c68a869a Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 Date: Mon, 27 May 2024 14:15:12 +0200
 Subject: [PATCH] gpio: tqmx86: add macros for interrupt configuration

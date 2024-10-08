@@ -1,4 +1,4 @@
-From f4bc6fda8463da82f7f206a01d3d73d83ad48c8b Mon Sep 17 00:00:00 2001
+From b9d3653dde91c2f06530276e56758db46e5ea17b Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 Date: Mon, 3 Jun 2024 13:13:03 +0200
 Subject: [PATCH] gpio: tqmx86: add support for up to 16 GPIOs

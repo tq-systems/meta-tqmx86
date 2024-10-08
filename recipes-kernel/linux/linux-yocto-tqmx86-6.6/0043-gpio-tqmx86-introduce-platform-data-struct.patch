@@ -1,4 +1,4 @@
-From 2378c44692e49bb9cb7cb48f724286a9bf1eaf56 Mon Sep 17 00:00:00 2001
+From 0fb8409c98154d94ac5ac7703959649b13f4d907 Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 Date: Tue, 28 May 2024 16:11:28 +0200
 Subject: [PATCH] gpio: tqmx86: introduce platform data struct

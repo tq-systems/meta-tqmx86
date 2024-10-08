@@ -1,4 +1,4 @@
-From 0c023e5bc6a6bfb7675066aaf1f3035c57a6b863 Mon Sep 17 00:00:00 2001
+From 17efb46786a6b0bc07f36b48afe584468e276ef5 Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 Date: Mon, 27 May 2024 14:12:37 +0200
 Subject: [PATCH] gpio: tqmx86: consistently refer to IRQs by hwirq numbers

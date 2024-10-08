@@ -1,4 +1,4 @@
-From bdca2263cf31a15068c7720a7c82a184373774ee Mon Sep 17 00:00:00 2001
+From a7ea4cef86f09f8473075d6f34692721ce8f7711 Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 Date: Mon, 3 Jun 2024 16:58:38 +0200
 Subject: [PATCH] gpio: tqmx86: introduce tqmx86_gpio_clrsetbits() helper
