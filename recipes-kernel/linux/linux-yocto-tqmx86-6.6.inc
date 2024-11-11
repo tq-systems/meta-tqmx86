@@ -48,6 +48,7 @@ SRC_URI:append:tqmx86 = " \
     file://0045-mfd-tqmx86-configure-board-specific-GPIO-platform-da.patch \
     file://0046-gpio-tqmx86-prepare-support-for-variants-with-more-G.patch \
     file://0047-gpio-tqmx86-add-support-for-up-to-16-GPIOs.patch \
+    file://0048-mfd-tqmx86-add-board-definitions-for-TQMxCU1-HPCM-an.patch \
     \
     file://nct7802.cfg \
     file://tqmx86.cfg \

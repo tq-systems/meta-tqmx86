@@ -1,0 +1,62 @@
+From 77c84336936f4651216acace594fc480bc19b1aa Mon Sep 17 00:00:00 2001
+From: Steffen Doster <Steffen.Doster@tq-group.com>
+Date: Mon, 11 Nov 2024 13:47:43 +0100
+Subject: [PATCH] mfd: tqmx86: add board definitions for TQMxCU1-HPCM and
+ TQMxCU2-HPCM
+
+This adds support for 2 new TQMx86 COMs:
+
+- TQMxCU1-HPCM [1]
+- TQMxCU2-HPCM (Future development)
+
+[1] https://www.tq-group.com/en/products/tq-embedded/x86-architecture/tqmxcu1-hpcm/
+
+Signed-off-by: Steffen Doster <Steffen.Doster@tq-group.com>
+Upstream-Status: Pending
+---
+ drivers/mfd/tqmx86.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
+index 5ad2ca12afd4d..e31633d318da2 100644
+--- a/drivers/mfd/tqmx86.c
++++ b/drivers/mfd/tqmx86.c
+@@ -44,6 +44,8 @@
+ #define TQMX86_REG_BOARD_ID_E40C2	15
+ #define TQMX86_REG_BOARD_ID_130UC	16
+ #define TQMX86_REG_BOARD_ID_E41S	19
++#define TQMX86_REG_BOARD_ID_CU1_HPCM	24
++#define TQMX86_REG_BOARD_ID_CU2_HPCM	25
+ #define TQMX86_REG_BOARD_REV	0x01
+ #define TQMX86_REG_IO_EXT_INT	0x06
+ #define TQMX86_REG_IO_EXT_INT_NONE		0
+@@ -185,6 +187,10 @@ static const char *tqmx86_board_id_to_name(u8 board_id, u8 sauc)
+ 		return "TQMx130UC";
+ 	case TQMX86_REG_BOARD_ID_E41S:
+ 		return "TQMxE41S";
++	case TQMX86_REG_BOARD_ID_CU1_HPCM:
++		return "TQMxCU1-HPCM";
++	case TQMX86_REG_BOARD_ID_CU2_HPCM:
++		return "TQMxCU2-HPCM";
+ 	default:
+ 		return "Unknown";
+ 	}
+@@ -205,6 +211,8 @@ static int tqmx86_board_id_to_clk_rate(struct device *dev, u8 board_id)
+ 	case TQMX86_REG_BOARD_ID_E40C2:
+ 	case TQMX86_REG_BOARD_ID_130UC:
+ 	case TQMX86_REG_BOARD_ID_E41S:
++	case TQMX86_REG_BOARD_ID_CU1_HPCM:
++	case TQMX86_REG_BOARD_ID_CU2_HPCM:
+ 		return 24000;
+ 	case TQMX86_REG_BOARD_ID_E39MS:
+ 	case TQMX86_REG_BOARD_ID_E39C1:
+@@ -249,6 +257,9 @@ tqmx86_board_id_to_gpio_pdata(u8 board_id, u8 sauc, u8 pld_rev)
+ 			: &gpio_platform_data_smarc21;
+ 	case TQMX86_REG_BOARD_ID_E41S:
+ 		return &gpio_platform_data_smarc21_full;
++	case TQMX86_REG_BOARD_ID_CU1_HPCM:
++	case TQMX86_REG_BOARD_ID_CU2_HPCM:
++		return &gpio_platform_data_smarc20;
+ 	default:
+ 		return NULL;
+ 	}
