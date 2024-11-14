@@ -9,6 +9,18 @@ Releases are named with the following scheme:
 
 ## Next Release
 
+### Added
+
+- Added two distro-configs "pretzel.conf" and "pretzel-rt.conf".
+
+  "pretzel" is the the new TQ-x86 distro and "pretzel-rt" extends
+  it with a realtime kernel (`linux-yocto-rt`).
+
+### Fixed
+
+- Added `usbutils` to provide `usb-devices`. This also required to switch
+  `find` from busybox-find to GNU-find by adding `findutils`.
+
 ## scarthgap.TQMx86.BSP.SW.0002
 
 ### Added
