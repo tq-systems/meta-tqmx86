@@ -1,4 +1,4 @@
-From cc8a3ddc0d5c408dcdb138c3b29d2d790915c3c9 Mon Sep 17 00:00:00 2001
+From 248f0177b3f95575f99f3527d0691389d7c29e5c Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 Date: Mon, 7 Oct 2024 10:23:58 +0200
 Subject: [PATCH] can: m_can: set init flag earlier in probe
@@ -22,7 +22,7 @@ Upstream-Status: Submitted [https://www.spinics.net/lists/netdev/msg1033898.html
  1 file changed, 9 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index a978b960f1f1e..07be3595e2ba1 100644
+index 16e9e7d7527d9762d73a7ec47940c73c0976e05d..73cbbc49688e6e510f593103ae459c5a4572e60a 100644
 --- a/drivers/net/can/m_can/m_can.c
 +++ b/drivers/net/can/m_can/m_can.c
 @@ -1682,6 +1682,14 @@ static int m_can_dev_setup(struct m_can_classdev *cdev)

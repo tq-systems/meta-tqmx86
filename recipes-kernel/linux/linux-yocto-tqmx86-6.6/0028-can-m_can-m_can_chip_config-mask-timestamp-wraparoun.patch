@@ -1,4 +1,4 @@
-From 99fbcb9bd1fe68d17b61694622275d0ea047805c Mon Sep 17 00:00:00 2001
+From 489e11c67a667e2f09917a7a9936965a1d544b6e Mon Sep 17 00:00:00 2001
 From: Jake Hamby <Jake.Hamby@Teledyne.com>
 Date: Fri, 6 Sep 2024 23:19:51 +0000
 Subject: [PATCH] can: m_can: m_can_chip_config(): mask timestamp wraparound
@@ -20,7 +20,7 @@ Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index 012c3d22b01dd..a7b3bc439ae59 100644
+index 39333466d6d276bb2f6a4b741ea9bec7c6e307c2..16e9e7d7527d9762d73a7ec47940c73c0976e05d 100644
 --- a/drivers/net/can/m_can/m_can.c
 +++ b/drivers/net/can/m_can/m_can.c
 @@ -1434,7 +1434,8 @@ static int m_can_chip_config(struct net_device *dev)

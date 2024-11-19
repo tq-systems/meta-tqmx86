@@ -1,4 +1,4 @@
-From 332d210ce33142cdb0651be7c77a75582406db8d Mon Sep 17 00:00:00 2001
+From 08ab7b74bb303c8d4644b55eb41b09dd6156fd96 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Martin=20Hundeb=C3=B8ll?= <martin@geanix.com>
 Date: Mon, 13 Nov 2023 14:14:50 +0100
 Subject: [PATCH] can: m_can: allow keeping the transceiver running in suspend
@@ -23,10 +23,10 @@ Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
  5 files changed, 21 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index 290880ce5329c..14b231c4d7ecf 100644
+index 54393a10df9445981b441f5fef7aaa39bb2d5088..8563a2f56a28ff2ddb3ecc92208fb5cedb982b69 100644
 --- a/drivers/net/can/m_can/m_can.c
 +++ b/drivers/net/can/m_can/m_can.c
-@@ -2382,7 +2382,15 @@ int m_can_class_suspend(struct device *dev)
+@@ -2386,7 +2386,15 @@ int m_can_class_suspend(struct device *dev)
  	if (netif_running(ndev)) {
  		netif_stop_queue(ndev);
  		netif_device_detach(ndev);
@@ -43,7 +43,7 @@ index 290880ce5329c..14b231c4d7ecf 100644
  		m_can_clk_stop(cdev);
  	}
  
-@@ -2409,11 +2417,15 @@ int m_can_class_resume(struct device *dev)
+@@ -2413,11 +2421,15 @@ int m_can_class_resume(struct device *dev)
  		ret = m_can_clk_start(cdev);
  		if (ret)
  			return ret;
@@ -64,7 +64,7 @@ index 290880ce5329c..14b231c4d7ecf 100644
  
  		netif_device_attach(ndev);
 diff --git a/drivers/net/can/m_can/m_can.h b/drivers/net/can/m_can/m_can.h
-index 2986c4ce0b2f3..3a9edc2925938 100644
+index 2986c4ce0b2f327c5fd8a0b0fd2d2a261b156898..3a9edc29259385c9d6c20c27d2e450f40cb134e7 100644
 --- a/drivers/net/can/m_can/m_can.h
 +++ b/drivers/net/can/m_can/m_can.h
 @@ -97,6 +97,7 @@ struct m_can_classdev {
@@ -76,7 +76,7 @@ index 2986c4ce0b2f3..3a9edc2925938 100644
  
  	// Cached M_CAN_IE register content
 diff --git a/drivers/net/can/m_can/m_can_pci.c b/drivers/net/can/m_can/m_can_pci.c
-index f2219aa2824b3..45400de4163d9 100644
+index f2219aa2824b3c581280fde6cf6decf003e50c06..45400de4163d93d30e147ca04b8f47ac299ec58c 100644
 --- a/drivers/net/can/m_can/m_can_pci.c
 +++ b/drivers/net/can/m_can/m_can_pci.c
 @@ -125,6 +125,7 @@ static int m_can_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
@@ -88,7 +88,7 @@ index f2219aa2824b3..45400de4163d9 100644
  	mcan_class->ops = &m_can_pci_ops;
  
 diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m_can/m_can_platform.c
-index ab1b8211a61cf..df0367124b4c5 100644
+index ab1b8211a61cf544c3060479dbc4df5a2ac550e8..df0367124b4c536d392a8d6d033d0d96d73c8ab2 100644
 --- a/drivers/net/can/m_can/m_can_platform.c
 +++ b/drivers/net/can/m_can/m_can_platform.c
 @@ -139,6 +139,7 @@ static int m_can_plat_probe(struct platform_device *pdev)
@@ -100,7 +100,7 @@ index ab1b8211a61cf..df0367124b4c5 100644
  	mcan_class->dev = &pdev->dev;
  	mcan_class->transceiver = transceiver;
 diff --git a/drivers/net/can/m_can/tcan4x5x-core.c b/drivers/net/can/m_can/tcan4x5x-core.c
-index ae8c42f5debd4..71a9e1bec008c 100644
+index ae8c42f5debd4dee37d60ee8224a2ce4572e76b4..71a9e1bec008cfaf9b6f5b5bfc0aad93350ae580 100644
 --- a/drivers/net/can/m_can/tcan4x5x-core.c
 +++ b/drivers/net/can/m_can/tcan4x5x-core.c
 @@ -411,6 +411,7 @@ static int tcan4x5x_can_probe(struct spi_device *spi)

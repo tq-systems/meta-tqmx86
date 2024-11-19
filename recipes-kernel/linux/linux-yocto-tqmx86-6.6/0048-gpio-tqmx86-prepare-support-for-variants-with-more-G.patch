@@ -1,4 +1,4 @@
-From 890850e38e87e99c08fa5f7fa8bdf9be1a0a1dd3 Mon Sep 17 00:00:00 2001
+From b515891e6669fb672dcc87dd24ebab32f688722c Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 Date: Wed, 29 May 2024 09:23:12 +0200
 Subject: [PATCH] gpio: tqmx86: prepare support for variants with more GPIO
@@ -18,7 +18,7 @@ Upstream-Status: Pending
  1 file changed, 19 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/gpio/gpio-tqmx86.c b/drivers/gpio/gpio-tqmx86.c
-index 9d75451d0500d..7efd572b02e44 100644
+index 9d75451d0500d2b8027bbc9991c18131a13fe7b1..7efd572b02e449eae5089a10e5c873df93ceefa6 100644
 --- a/drivers/gpio/gpio-tqmx86.c
 +++ b/drivers/gpio/gpio-tqmx86.c
 @@ -14,14 +14,12 @@

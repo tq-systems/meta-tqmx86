@@ -1,4 +1,4 @@
-From 9419f02315ba0ddcd99c4d4b0fdfe552e23251a3 Mon Sep 17 00:00:00 2001
+From e499e77457cc22e49eae11ff80053ddfc6ca2f4c Mon Sep 17 00:00:00 2001
 From: Markus Schneider-Pargmann <msp@baylibre.com>
 Date: Wed, 7 Feb 2024 10:32:19 +0100
 Subject: [PATCH] can: m_can: Implement BQL
@@ -15,7 +15,7 @@ Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
  1 file changed, 36 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index 20595b7141af1..48968da69ae94 100644
+index d2d86443b2c4784307659d5d753173b76efc7314..3fd8ca3a5943c015edb4040e2bc9758a72018725 100644
 --- a/drivers/net/can/m_can/m_can.c
 +++ b/drivers/net/can/m_can/m_can.c
 @@ -489,6 +489,8 @@ static void m_can_clean(struct net_device *net)

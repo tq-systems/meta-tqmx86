@@ -1,6 +1,6 @@
 require linux-yocto-tqmx86-6.6.inc
 
 # Fixed version/SRCREV to make sure that our patches remain applicable
-LINUX_VERSION:tqmx86 ?= "6.6.50"
-SRCREV_machine:tqmx86 ?= "f1958988835e4b36462e9a7762001b695989288c"
-SRCREV_meta:tqmx86 ?= "c82d4e5d08201d0259c29a4d15ce1e72fc63c65f"
+LINUX_VERSION:tqmx86 ?= "6.6.62"
+SRCREV_machine:tqmx86 ?= "67f358194225f9936b9a98ee9366417597be1769"
+SRCREV_meta:tqmx86 ?= "8cda7c0eb6978af45b1f41e17f325056536c1d53"

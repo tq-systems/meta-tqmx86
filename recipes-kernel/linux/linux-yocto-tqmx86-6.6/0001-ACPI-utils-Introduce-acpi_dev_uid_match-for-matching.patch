@@ -1,4 +1,4 @@
-From 685a2639312a60b3493c50531910c5b5433b210e Mon Sep 17 00:00:00 2001
+From 98dba119605887ae63ab0cad9f80eaf856411cb9 Mon Sep 17 00:00:00 2001
 From: Raag Jadav <raag.jadav@intel.com>
 Date: Tue, 24 Oct 2023 11:50:13 +0530
 Subject: [PATCH] ACPI: utils: Introduce acpi_dev_uid_match() for matching _UID
@@ -18,7 +18,7 @@ Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
  3 files changed, 33 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/acpi/utils.c b/drivers/acpi/utils.c
-index 2ea14648a661f..07ee0d23a1889 100644
+index 2ea14648a661f869d3a505c9851f1dded5180224..07ee0d23a1889779f5df9a5f6977e1a7023234a3 100644
 --- a/drivers/acpi/utils.c
 +++ b/drivers/acpi/utils.c
 @@ -768,20 +768,43 @@ bool acpi_check_dsm(acpi_handle handle, const guid_t *guid, u64 rev, u64 funcs)
@@ -78,7 +78,7 @@ index 2ea14648a661f..07ee0d23a1889 100644
  EXPORT_SYMBOL(acpi_dev_hid_uid_match);
  
 diff --git a/include/acpi/acpi_bus.h b/include/acpi/acpi_bus.h
-index d9c20ae23b632..d7ffbd044603d 100644
+index d9c20ae23b63267738b11d601b1114eb546aa44e..d7ffbd044603d8ad68aa954baa93951a75707529 100644
 --- a/include/acpi/acpi_bus.h
 +++ b/include/acpi/acpi_bus.h
 @@ -761,6 +761,7 @@ static inline bool acpi_device_can_poweroff(struct acpi_device *adev)
@@ -90,7 +90,7 @@ index d9c20ae23b632..d7ffbd044603d 100644
  int acpi_dev_uid_to_integer(struct acpi_device *adev, u64 *integer);
  
 diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-index 1b76d2f83eac6..beeb2192c48a2 100644
+index 1b76d2f83eac6a05058fabec7b913e3fdb644980..beeb2192c48a21bd8d4ae6c8fdf0d297c3dbc96b 100644
 --- a/include/linux/acpi.h
 +++ b/include/linux/acpi.h
 @@ -787,6 +787,11 @@ static inline bool acpi_dev_present(const char *hid, const char *uid, s64 hrv)

@@ -1,4 +1,4 @@
-From 5f345fa349d2f3c2ef324a31f08fb2da893adc7a Mon Sep 17 00:00:00 2001
+From 444f093787909e87dc18190bd97763e7e368b95b Mon Sep 17 00:00:00 2001
 From: Markus Schneider-Pargmann <msp@baylibre.com>
 Date: Wed, 7 Feb 2024 10:32:10 +0100
 Subject: [PATCH] can: m_can: Implement receive coalescing
@@ -30,7 +30,7 @@ Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
  2 files changed, 76 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index a01c9261331dc..b76fcf5f38890 100644
+index 0dab14e192f766afc88a009066948d0d18e2248e..c1e738c6269e0218172740d9de9f45710e718712 100644
 --- a/drivers/net/can/m_can/m_can.c
 +++ b/drivers/net/can/m_can/m_can.c
 @@ -422,6 +422,25 @@ static void m_can_config_endisable(struct m_can_classdev *cdev, bool enable)
@@ -176,7 +176,7 @@ index a01c9261331dc..b76fcf5f38890 100644
  
  	/* route all interrupts to INT0 */
  	m_can_write(cdev, M_CAN_ILS, ILS_ALL_INT0);
-@@ -2082,6 +2144,9 @@ int m_can_class_register(struct m_can_classdev *cdev)
+@@ -2086,6 +2148,9 @@ int m_can_class_register(struct m_can_classdev *cdev)
  		hrtimer_init(&cdev->hrtimer, CLOCK_MONOTONIC,
  			     HRTIMER_MODE_REL_PINNED);
  		cdev->hrtimer.function = &hrtimer_callback;
@@ -187,7 +187,7 @@ index a01c9261331dc..b76fcf5f38890 100644
  
  	ret = m_can_dev_setup(cdev);
 diff --git a/drivers/net/can/m_can/m_can.h b/drivers/net/can/m_can/m_can.h
-index 520e14277dff5..b916206199f19 100644
+index 520e14277dff5d0f903ae534f6ff96ad8216e3d6..b916206199f1922313e0a680aab6cabe1f41971e 100644
 --- a/drivers/net/can/m_can/m_can.h
 +++ b/drivers/net/can/m_can/m_can.h
 @@ -92,6 +92,11 @@ struct m_can_classdev {

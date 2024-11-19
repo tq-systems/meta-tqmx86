@@ -11,7 +11,10 @@ Releases are named with the following scheme:
 
 ### Added
 
-- Added two distro-configs "pretzel.conf" and "pretzel-rt.conf".
+- Added support for TQMxCU1-HPCM (as well as the planned TQMxCU2-HPCM)
+- Added support for the secondary (MachXO2) I2C controller of various TQMx86
+  COMs
+- Added two distro configs "pretzel.conf" and "pretzel-rt.conf".
 
   "pretzel" is the the new TQ-x86 distro and "pretzel-rt" extends
   it with a realtime kernel (`linux-yocto-rt`).
@@ -20,6 +23,10 @@ Releases are named with the following scheme:
 
 - Added `usbutils` to provide `usb-devices`. This also required to switch
   `find` from busybox-find to GNU-find by adding `findutils`.
+
+### Updated
+
+- linux-yocto(-rt) has been updated to 6.6.62
 
 ## scarthgap.TQMx86.BSP.SW.0002
 

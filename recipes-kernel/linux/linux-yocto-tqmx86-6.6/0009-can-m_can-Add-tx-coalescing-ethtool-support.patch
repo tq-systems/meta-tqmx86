@@ -1,4 +1,4 @@
-From bc72cff17eca80192269133e061541359e9a4525 Mon Sep 17 00:00:00 2001
+From 97b36e8681c92c2630eba326b3d6aeac7ec3735c Mon Sep 17 00:00:00 2001
 From: Markus Schneider-Pargmann <msp@baylibre.com>
 Date: Wed, 7 Feb 2024 10:32:13 +0100
 Subject: [PATCH] can: m_can: Add tx coalescing ethtool support
@@ -25,10 +25,10 @@ Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
  1 file changed, 37 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index 6dad1f569f820..b31df3e3ceeb4 100644
+index 8e2cb08d130690d65e70f03831a6d0b170b8f700..651d7aeb3e8b175490454e10a2107d3abf6ba2fe 100644
 --- a/drivers/net/can/m_can/m_can.c
 +++ b/drivers/net/can/m_can/m_can.c
-@@ -1986,6 +1986,8 @@ static int m_can_get_coalesce(struct net_device *dev,
+@@ -1990,6 +1990,8 @@ static int m_can_get_coalesce(struct net_device *dev,
  
  	ec->rx_max_coalesced_frames_irq = cdev->rx_max_coalesced_frames_irq;
  	ec->rx_coalesce_usecs_irq = cdev->rx_coalesce_usecs_irq;
@@ -37,7 +37,7 @@ index 6dad1f569f820..b31df3e3ceeb4 100644
  
  	return 0;
  }
-@@ -2012,16 +2014,50 @@ static int m_can_set_coalesce(struct net_device *dev,
+@@ -2016,16 +2018,50 @@ static int m_can_set_coalesce(struct net_device *dev,
  		netdev_err(dev, "rx-frames-irq and rx-usecs-irq can only be set together\n");
  		return -EINVAL;
  	}

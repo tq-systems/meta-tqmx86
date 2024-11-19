@@ -1,4 +1,4 @@
-From c4fdd0af663a092c1d00730008ef597829849969 Mon Sep 17 00:00:00 2001
+From 2824b1e48226b802874b04f9dc9c9ed74c72b283 Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 Date: Mon, 7 Oct 2024 10:23:59 +0200
 Subject: [PATCH] can: m_can: fix missed interrupts with m_can_pci
@@ -68,7 +68,7 @@ Upstream-Status: Submitted [https://www.spinics.net/lists/netdev/msg1033899.html
  3 files changed, 19 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index 07be3595e2ba1..d63706cbb2c42 100644
+index 73cbbc49688e6e510f593103ae459c5a4572e60a..6b1de4e838ce037e1316af9e743ec0e2c4d38e2c 100644
 --- a/drivers/net/can/m_can/m_can.c
 +++ b/drivers/net/can/m_can/m_can.c
 @@ -1207,20 +1207,32 @@ static void m_can_coalescing_update(struct m_can_classdev *cdev, u32 ir)
@@ -110,7 +110,7 @@ index 07be3595e2ba1..d63706cbb2c42 100644
  		cdev->ops->clear_interrupts(cdev);
  
 diff --git a/drivers/net/can/m_can/m_can.h b/drivers/net/can/m_can/m_can.h
-index 92b2bd8628e6b..ef39e8e527ab6 100644
+index 92b2bd8628e6b31370f4accbc2e28f3b2257a71d..ef39e8e527ab67a040b5d676ccd23d1604fce0f3 100644
 --- a/drivers/net/can/m_can/m_can.h
 +++ b/drivers/net/can/m_can/m_can.h
 @@ -99,6 +99,7 @@ struct m_can_classdev {
@@ -122,7 +122,7 @@ index 92b2bd8628e6b..ef39e8e527ab6 100644
  	// Cached M_CAN_IE register content
  	u32 active_interrupts;
 diff --git a/drivers/net/can/m_can/m_can_pci.c b/drivers/net/can/m_can/m_can_pci.c
-index d72fe771dfc7a..9ad7419f88f83 100644
+index d72fe771dfc7aa768c728f817e67a87b49fd9974..9ad7419f88f83016e93667f4847fe536eca39ad1 100644
 --- a/drivers/net/can/m_can/m_can_pci.c
 +++ b/drivers/net/can/m_can/m_can_pci.c
 @@ -127,6 +127,7 @@ static int m_can_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)

@@ -1,4 +1,4 @@
-From 1bff6e09cf1f46266fafc126e22078ce5ec59de6 Mon Sep 17 00:00:00 2001
+From eb8fa4e1903c80b102c663b07a1125a6972f59ea Mon Sep 17 00:00:00 2001
 From: Markus Schneider-Pargmann <msp@baylibre.com>
 Date: Wed, 7 Feb 2024 10:32:11 +0100
 Subject: [PATCH] can: m_can: Implement transmit coalescing
@@ -28,7 +28,7 @@ Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
  2 files changed, 24 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index b76fcf5f38890..9b3e8e09f3aa2 100644
+index c1e738c6269e0218172740d9de9f45710e718712..7c5530ecba23215e0077a27af25f6915af4cefc5 100644
 --- a/drivers/net/can/m_can/m_can.c
 +++ b/drivers/net/can/m_can/m_can.c
 @@ -255,6 +255,7 @@ enum m_can_reg {
@@ -117,7 +117,7 @@ index b76fcf5f38890..9b3e8e09f3aa2 100644
  				       cdev->mcfg[MRAM_TXE].num) |
  			    cdev->mcfg[MRAM_TXE].off);
 diff --git a/drivers/net/can/m_can/m_can.h b/drivers/net/can/m_can/m_can.h
-index b916206199f19..1e461d305bce5 100644
+index b916206199f1922313e0a680aab6cabe1f41971e..1e461d305bce5559ddf0357aa21d534cbdc6fa91 100644
 --- a/drivers/net/can/m_can/m_can.h
 +++ b/drivers/net/can/m_can/m_can.h
 @@ -84,6 +84,8 @@ struct m_can_classdev {

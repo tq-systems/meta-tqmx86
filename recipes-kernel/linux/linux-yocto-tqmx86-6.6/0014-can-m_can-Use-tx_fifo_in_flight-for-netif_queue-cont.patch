@@ -1,4 +1,4 @@
-From 6d0061e5903f5d697aa0ad634e79c9b198cc6c06 Mon Sep 17 00:00:00 2001
+From d38fc118a6d9c4b1d39abffad840c9a88ef3e6e9 Mon Sep 17 00:00:00 2001
 From: Markus Schneider-Pargmann <msp@baylibre.com>
 Date: Wed, 7 Feb 2024 10:32:18 +0100
 Subject: [PATCH] can: m_can: Use tx_fifo_in_flight for netif_queue control
@@ -30,7 +30,7 @@ Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
  1 file changed, 20 insertions(+), 57 deletions(-)
 
 diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index 2c68b1a60887a..20595b7141af1 100644
+index 42190b5720c29acc26c9c4c8fce82089fc874e8b..d2d86443b2c4784307659d5d753173b76efc7314 100644
 --- a/drivers/net/can/m_can/m_can.c
 +++ b/drivers/net/can/m_can/m_can.c
 @@ -379,16 +379,6 @@ m_can_txe_fifo_read(struct m_can_classdev *cdev, u32 fgi, u32 offset, u32 *val)

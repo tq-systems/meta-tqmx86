@@ -1,4 +1,4 @@
-From 164949c67936d18611406ea286f0e6e9aa91e4a9 Mon Sep 17 00:00:00 2001
+From 1fdc200786feb2f3c3a0cba187e895db5884e6fa Mon Sep 17 00:00:00 2001
 From: Markus Schneider-Pargmann <msp@baylibre.com>
 Date: Mon, 5 Aug 2024 20:30:44 +0200
 Subject: [PATCH] can: m_can: Do not cancel timer from within timer
@@ -29,7 +29,7 @@ Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
  1 file changed, 42 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index a37ed376de9b3..5228304779f19 100644
+index fc8d66a93f83dbe3c53cafb334b38410d93bdd38..6ef7831fcbcecaff2167fe60c5edf6389e5e08b1 100644
 --- a/drivers/net/can/m_can/m_can.c
 +++ b/drivers/net/can/m_can/m_can.c
 @@ -487,7 +487,7 @@ static inline void m_can_disable_all_interrupts(struct m_can_classdev *cdev)

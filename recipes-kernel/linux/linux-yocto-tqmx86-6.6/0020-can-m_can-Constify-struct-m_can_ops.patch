@@ -1,4 +1,4 @@
-From 5d0bf85562bf37854d53098dba7cbaf2620f763b Mon Sep 17 00:00:00 2001
+From 9929fc5f910d17b7ba1e22434edf58b149ae930c Mon Sep 17 00:00:00 2001
 From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 Date: Sun, 23 Jun 2024 22:01:50 +0200
 Subject: [PATCH] can: m_can: Constify struct m_can_ops
@@ -32,7 +32,7 @@ Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
  4 files changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/can/m_can/m_can.h b/drivers/net/can/m_can/m_can.h
-index 3a9edc2925938..92b2bd8628e6b 100644
+index 3a9edc29259385c9d6c20c27d2e450f40cb134e7..92b2bd8628e6b31370f4accbc2e28f3b2257a71d 100644
 --- a/drivers/net/can/m_can/m_can.h
 +++ b/drivers/net/can/m_can/m_can.h
 @@ -91,7 +91,7 @@ struct m_can_classdev {
@@ -45,7 +45,7 @@ index 3a9edc2925938..92b2bd8628e6b 100644
  	int version;
  	u32 irqstatus;
 diff --git a/drivers/net/can/m_can/m_can_pci.c b/drivers/net/can/m_can/m_can_pci.c
-index 45400de4163d9..d72fe771dfc7a 100644
+index 45400de4163d93d30e147ca04b8f47ac299ec58c..d72fe771dfc7aa768c728f817e67a87b49fd9974 100644
 --- a/drivers/net/can/m_can/m_can_pci.c
 +++ b/drivers/net/can/m_can/m_can_pci.c
 @@ -77,7 +77,7 @@ static int iomap_write_fifo(struct m_can_classdev *cdev, int offset,
@@ -58,7 +58,7 @@ index 45400de4163d9..d72fe771dfc7a 100644
  	.write_reg = iomap_write_reg,
  	.write_fifo = iomap_write_fifo,
 diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m_can/m_can_platform.c
-index df0367124b4c5..983ab80260ddb 100644
+index df0367124b4c536d392a8d6d033d0d96d73c8ab2..983ab80260ddbfc2bd4afcb696f68c2746f3465a 100644
 --- a/drivers/net/can/m_can/m_can_platform.c
 +++ b/drivers/net/can/m_can/m_can_platform.c
 @@ -68,7 +68,7 @@ static int iomap_write_fifo(struct m_can_classdev *cdev, int offset,
@@ -71,7 +71,7 @@ index df0367124b4c5..983ab80260ddb 100644
  	.write_reg = iomap_write_reg,
  	.write_fifo = iomap_write_fifo,
 diff --git a/drivers/net/can/m_can/tcan4x5x-core.c b/drivers/net/can/m_can/tcan4x5x-core.c
-index 0732225e5957f..c378c9dc88f97 100644
+index 0732225e5957f1cc63620047f227cb5ef8789889..c378c9dc88f97a582e9cec82adee15fb5a9ebaeb 100644
 --- a/drivers/net/can/m_can/tcan4x5x-core.c
 +++ b/drivers/net/can/m_can/tcan4x5x-core.c
 @@ -357,7 +357,7 @@ static int tcan4x5x_get_gpios(struct m_can_classdev *cdev,

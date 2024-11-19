@@ -1,4 +1,4 @@
-From 9ef8bef26364254c75f7c3ade950f6387895cbe8 Mon Sep 17 00:00:00 2001
+From 4a3b206f6962054ba93ff4c75200346d4c7640cd Mon Sep 17 00:00:00 2001
 From: Christian Marangi <ansuelsmth@gmail.com>
 Date: Wed, 18 Oct 2023 14:35:47 +0200
 Subject: [PATCH] net: introduce napi_is_scheduled helper
@@ -26,7 +26,7 @@ Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
  4 files changed, 25 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/net/ethernet/chelsio/cxgb3/sge.c b/drivers/net/ethernet/chelsio/cxgb3/sge.c
-index 2e9a74fe0970d..71fa2dc19034f 100644
+index 2e9a74fe0970df333226b80af8716f30865c01b7..71fa2dc19034f65b9bc4b75c9c04effc3dc39241 100644
 --- a/drivers/net/ethernet/chelsio/cxgb3/sge.c
 +++ b/drivers/net/ethernet/chelsio/cxgb3/sge.c
 @@ -2501,14 +2501,6 @@ static int napi_rx_handler(struct napi_struct *napi, int budget)
@@ -45,7 +45,7 @@ index 2e9a74fe0970d..71fa2dc19034f 100644
   *	process_pure_responses - process pure responses from a response queue
   *	@adap: the adapter
 diff --git a/drivers/net/wireless/realtek/rtw89/core.c b/drivers/net/wireless/realtek/rtw89/core.c
-index 535393eca5641..309c11d96af0d 100644
+index 535393eca5641cc7f82b8bb84de08f2c71cf32da..309c11d96af0d1100fb930dc79365cb3109f022b 100644
 --- a/drivers/net/wireless/realtek/rtw89/core.c
 +++ b/drivers/net/wireless/realtek/rtw89/core.c
 @@ -1744,7 +1744,7 @@ static void rtw89_core_rx_to_mac80211(struct rtw89_dev *rtwdev,
@@ -58,7 +58,7 @@ index 535393eca5641..309c11d96af0d 100644
  
  	rtw89_core_hw_to_sband_rate(rx_status);
 diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index b8e60a20416ba..13cf3def5a1aa 100644
+index 1576e7443eee50aeeaf8ccadd3b10d27bc97c72e..b8aeb5f74f6a0eda9db5f65ff2bb29507e1ff239 100644
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
 @@ -480,6 +480,29 @@ static inline bool napi_prefer_busy_poll(struct napi_struct *n)
@@ -92,10 +92,10 @@ index b8e60a20416ba..13cf3def5a1aa 100644
  
  /**
 diff --git a/net/core/dev.c b/net/core/dev.c
-index 5a5bd339f11eb..d3a79a03a8069 100644
+index 4beb9acf2c18397b09e27ba6d0d5817a8ec60d7c..5c4965fd21c2831fbe7b706656383b2194838e06 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -6555,7 +6555,7 @@ static int __napi_poll(struct napi_struct *n, bool *repoll)
+@@ -6563,7 +6563,7 @@ static int __napi_poll(struct napi_struct *n, bool *repoll)
  	 * accidentally calling ->poll() when NAPI is not scheduled.
  	 */
  	work = 0;

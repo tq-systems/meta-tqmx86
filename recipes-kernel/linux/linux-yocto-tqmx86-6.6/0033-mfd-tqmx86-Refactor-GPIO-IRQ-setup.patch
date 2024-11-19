@@ -1,7 +1,7 @@
-From ed5363ed108de3ae830a3ee09562d83bcbf5c698 Mon Sep 17 00:00:00 2001
+From ef626cd938c94585b7fa0010d65bcc300067ec04 Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Date: Mon, 7 Oct 2024 09:48:06 +0200
-Subject: [PATCH] mfd: tqmx86: refactor GPIO IRQ setup
+Date: Mon, 11 Nov 2024 15:10:30 +0100
+Subject: [PATCH] mfd: tqmx86: Refactor GPIO IRQ setup
 
 Move IRQ setup into a helper function. The string "GPIO" for error
 messages is replaced with a label argument to prepare for reusing the
@@ -12,13 +12,15 @@ No functional change intended.
 Co-developed-by: Gregor Herburger <gregor.herburger@tq-group.com>
 Signed-off-by: Gregor Herburger <gregor.herburger@tq-group.com>
 Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Upstream-Status: Submitted [https://www.spinics.net/lists/kernel/msg5390174.html]
+Link: https://lore.kernel.org/r/97f481334f480a113b7076e76f994e0e73ee5aa5.1731325758.git.matthias.schiffer@ew.tq-group.com
+Signed-off-by: Lee Jones <lee@kernel.org>
+Upstream-Status: Backport [https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=b58bbbd7c599eab4861cc68a13440f5ad4679dba]
 ---
  drivers/mfd/tqmx86.c | 59 +++++++++++++++++++++++++++-----------------
  1 file changed, 37 insertions(+), 22 deletions(-)
 
 diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
-index 7b2f9490a9af5..8aa448a67c9a5 100644
+index 7b2f9490a9af5252f50bc78287e60ec97b625d37..8aa448a67c9a5da90b9d1b2fb39c32ff2afbc362 100644
 --- a/drivers/mfd/tqmx86.c
 +++ b/drivers/mfd/tqmx86.c
 @@ -186,33 +186,52 @@ static int tqmx86_board_id_to_clk_rate(struct device *dev, u8 board_id)

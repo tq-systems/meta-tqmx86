@@ -1,4 +1,4 @@
-From 17efb46786a6b0bc07f36b48afe584468e276ef5 Mon Sep 17 00:00:00 2001
+From 766727f7083bc67be1d21f0f74dc605b1c81cea6 Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 Date: Mon, 27 May 2024 14:12:37 +0200
 Subject: [PATCH] gpio: tqmx86: consistently refer to IRQs by hwirq numbers
@@ -30,7 +30,7 @@ Upstream-Status: Pending
  1 file changed, 20 insertions(+), 20 deletions(-)
 
 diff --git a/drivers/gpio/gpio-tqmx86.c b/drivers/gpio/gpio-tqmx86.c
-index 3a4dc657cc075..370618e1dbe69 100644
+index 3a4dc657cc075d76582d6c06947419a53f4eef8b..370618e1dbe694ce93f4caddf2326d46f1b55f61 100644
 --- a/drivers/gpio/gpio-tqmx86.c
 +++ b/drivers/gpio/gpio-tqmx86.c
 @@ -51,7 +51,7 @@ struct tqmx86_gpio_data {

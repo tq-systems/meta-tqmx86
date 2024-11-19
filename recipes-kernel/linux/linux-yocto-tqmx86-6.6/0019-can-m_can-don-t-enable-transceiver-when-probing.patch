@@ -1,4 +1,4 @@
-From 7ccd24a2a65666b669bfecdc0ef0b34b4ed2f2e1 Mon Sep 17 00:00:00 2001
+From 6453c345ddafda7f1241f71ac96665b2fba111d3 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Martin=20Hundeb=C3=B8ll?= <martin@geanix.com>
 Date: Fri, 7 Jun 2024 12:52:08 +0200
 Subject: [PATCH] can: m_can: don't enable transceiver when probing
@@ -32,7 +32,7 @@ Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
  2 files changed, 116 insertions(+), 66 deletions(-)
 
 diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index 14b231c4d7ecf..7f63f866083e0 100644
+index 8563a2f56a28ff2ddb3ecc92208fb5cedb982b69..8f5af0bfb9ff9164dd4b010ffc9f3d2a32dcbd8e 100644
 --- a/drivers/net/can/m_can/m_can.c
 +++ b/drivers/net/can/m_can/m_can.c
 @@ -379,38 +379,72 @@ m_can_txe_fifo_read(struct m_can_classdev *cdev, u32 fgi, u32 offset, u32 *val)
@@ -281,7 +281,7 @@ index 14b231c4d7ecf..7f63f866083e0 100644
  	/* set the state as STOPPED */
  	cdev->can.state = CAN_STATE_STOPPED;
 diff --git a/drivers/net/can/m_can/tcan4x5x-core.c b/drivers/net/can/m_can/tcan4x5x-core.c
-index 71a9e1bec008c..0732225e5957f 100644
+index 71a9e1bec008cfaf9b6f5b5bfc0aad93350ae580..0732225e5957f1cc63620047f227cb5ef8789889 100644
 --- a/drivers/net/can/m_can/tcan4x5x-core.c
 +++ b/drivers/net/can/m_can/tcan4x5x-core.c
 @@ -453,10 +453,17 @@ static int tcan4x5x_can_probe(struct spi_device *spi)

@@ -1,4 +1,4 @@
-From a7ea4cef86f09f8473075d6f34692721ce8f7711 Mon Sep 17 00:00:00 2001
+From c5d1b38689e85787f8db762059b0ca1e0287b67b Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 Date: Mon, 3 Jun 2024 16:58:38 +0200
 Subject: [PATCH] gpio: tqmx86: introduce tqmx86_gpio_clrsetbits() helper
@@ -13,7 +13,7 @@ Upstream-Status: Pending
  1 file changed, 17 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/gpio/gpio-tqmx86.c b/drivers/gpio/gpio-tqmx86.c
-index 370618e1dbe69..3d71f25e995bb 100644
+index 370618e1dbe694ce93f4caddf2326d46f1b55f61..3d71f25e995bb8e72dd68637020f57134b6a3924 100644
 --- a/drivers/gpio/gpio-tqmx86.c
 +++ b/drivers/gpio/gpio-tqmx86.c
 @@ -65,6 +65,18 @@ static void tqmx86_gpio_write(struct tqmx86_gpio_data *gd, u8 val,

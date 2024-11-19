@@ -1,4 +1,4 @@
-From b5a3a4ed5c1eb178cc4443e8caf724d8c68a869a Mon Sep 17 00:00:00 2001
+From e1d2ffec62d875a0535e2dbbfc1e4ad60b0c894e Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 Date: Mon, 27 May 2024 14:15:12 +0200
 Subject: [PATCH] gpio: tqmx86: add macros for interrupt configuration
@@ -17,7 +17,7 @@ Upstream-Status: Pending
  1 file changed, 23 insertions(+), 20 deletions(-)
 
 diff --git a/drivers/gpio/gpio-tqmx86.c b/drivers/gpio/gpio-tqmx86.c
-index f2e7e8754d95d..3a4dc657cc075 100644
+index f2e7e8754d95d699c0c2e4aa334e362396c376f4..3a4dc657cc075d76582d6c06947419a53f4eef8b 100644
 --- a/drivers/gpio/gpio-tqmx86.c
 +++ b/drivers/gpio/gpio-tqmx86.c
 @@ -29,18 +29,21 @@

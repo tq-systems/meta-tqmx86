@@ -1,4 +1,4 @@
-From 7e6f8b3f87855636677b226cb3c4387661b2f96c Mon Sep 17 00:00:00 2001
+From a704c0e1d750a976498539279b0803bb7e47d762 Mon Sep 17 00:00:00 2001
 From: Markus Schneider-Pargmann <msp@baylibre.com>
 Date: Wed, 7 Feb 2024 10:32:08 +0100
 Subject: [PATCH] can: m_can: Move hrtimer init to m_can_class_register
@@ -20,10 +20,10 @@ Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
  2 files changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index 2395b1225cc8a..45391492339e6 100644
+index ec6e740b032474aca5075be32ebf83b6d2089627..89a172fcc9d7c37a0584025d73e4d457e1e8cf87 100644
 --- a/drivers/net/can/m_can/m_can.c
 +++ b/drivers/net/can/m_can/m_can.c
-@@ -2070,8 +2070,12 @@ int m_can_class_register(struct m_can_classdev *cdev)
+@@ -2074,8 +2074,12 @@ int m_can_class_register(struct m_can_classdev *cdev)
  			goto clk_disable;
  	}
  
@@ -38,7 +38,7 @@ index 2395b1225cc8a..45391492339e6 100644
  	ret = m_can_dev_setup(cdev);
  	if (ret)
 diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m_can/m_can_platform.c
-index cdb28d6a092c6..ab1b8211a61cf 100644
+index cdb28d6a092c6d043dd4af65459943abc6bc473c..ab1b8211a61cf544c3060479dbc4df5a2ac550e8 100644
 --- a/drivers/net/can/m_can/m_can_platform.c
 +++ b/drivers/net/can/m_can/m_can_platform.c
 @@ -109,10 +109,6 @@ static int m_can_plat_probe(struct platform_device *pdev)

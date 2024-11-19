@@ -1,4 +1,4 @@
-From 533f6ef5d1727567dc0799bf26a6c6ca68f12d59 Mon Sep 17 00:00:00 2001
+From a89802823323b658f5d19c00cfef8f9d895df4f7 Mon Sep 17 00:00:00 2001
 From: Francesco Dolcini <francesco.dolcini@toradex.com>
 Date: Fri, 5 Jan 2024 00:57:23 +0100
 Subject: [PATCH] can: m_can: remove redundant check for pm_clock_support
@@ -22,10 +22,10 @@ Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
  1 file changed, 3 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index b7dbce4c342a7..290880ce5329c 100644
+index 77d88f208861874f13ecccc5e11fd6891704b1f0..54393a10df9445981b441f5fef7aaa39bb2d5088 100644
 --- a/drivers/net/can/m_can/m_can.c
 +++ b/drivers/net/can/m_can/m_can.c
-@@ -2312,11 +2312,9 @@ int m_can_class_register(struct m_can_classdev *cdev)
+@@ -2316,11 +2316,9 @@ int m_can_class_register(struct m_can_classdev *cdev)
  		}
  	}
  

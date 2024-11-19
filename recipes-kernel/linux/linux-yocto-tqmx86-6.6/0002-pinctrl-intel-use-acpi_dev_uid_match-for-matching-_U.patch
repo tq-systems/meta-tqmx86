@@ -1,4 +1,4 @@
-From 6cc959e3e0811b6e4ae0b5e9b8495e8dadcdb907 Mon Sep 17 00:00:00 2001
+From 01042176d3a4796b19d79bf19c40f4aca522e7e8 Mon Sep 17 00:00:00 2001
 From: Raag Jadav <raag.jadav@intel.com>
 Date: Tue, 24 Oct 2023 11:50:14 +0530
 Subject: [PATCH] pinctrl: intel: use acpi_dev_uid_match() for matching _UID
@@ -16,7 +16,7 @@ Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/pinctrl/intel/pinctrl-intel.c b/drivers/pinctrl/intel/pinctrl-intel.c
-index 3be04ab760d3f..999f453344d26 100644
+index 3be04ab760d3f5d69b63d70258732f662fa36b7b..999f453344d261391ebb9de8f68c9b478125e236 100644
 --- a/drivers/pinctrl/intel/pinctrl-intel.c
 +++ b/drivers/pinctrl/intel/pinctrl-intel.c
 @@ -1694,7 +1694,7 @@ const struct intel_pinctrl_soc_data *intel_pinctrl_get_soc_data(struct platform_

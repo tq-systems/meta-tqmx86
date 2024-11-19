@@ -1,4 +1,4 @@
-From da6713f6bcfe695ebb21e050fe4dad51ad35600b Mon Sep 17 00:00:00 2001
+From a5959535eb35d0fef308f8a5f06605e2b3c842d0 Mon Sep 17 00:00:00 2001
 From: Markus Schneider-Pargmann <msp@baylibre.com>
 Date: Mon, 5 Aug 2024 20:30:43 +0200
 Subject: [PATCH] can: m_can: Remove m_can_rx_peripheral indirection
@@ -20,7 +20,7 @@ Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
  1 file changed, 1 insertion(+), 17 deletions(-)
 
 diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index ba416c973e8d2..a37ed376de9b3 100644
+index 6be4c0ac6493a40e9d67a33a31efa2833416a59c..fc8d66a93f83dbe3c53cafb334b38410d93bdd38 100644
 --- a/drivers/net/can/m_can/m_can.c
 +++ b/drivers/net/can/m_can/m_can.c
 @@ -1037,22 +1037,6 @@ static int m_can_rx_handler(struct net_device *dev, int quota, u32 irqstatus)

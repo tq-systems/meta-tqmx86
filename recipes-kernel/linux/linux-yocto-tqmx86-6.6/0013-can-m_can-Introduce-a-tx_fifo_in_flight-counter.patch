@@ -1,4 +1,4 @@
-From 6e25c1425378c98182b28354bd7cc44bd0ddde3d Mon Sep 17 00:00:00 2001
+From f4ec5746243508c0c2f0a55f0691fdb231b15ff5 Mon Sep 17 00:00:00 2001
 From: Markus Schneider-Pargmann <msp@baylibre.com>
 Date: Wed, 7 Feb 2024 10:32:17 +0100
 Subject: [PATCH] can: m_can: Introduce a tx_fifo_in_flight counter
@@ -21,7 +21,7 @@ Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
  2 files changed, 34 insertions(+)
 
 diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index 8d7dbf2eb46c4..2c68b1a60887a 100644
+index 0c2cf28a91d3512aa6c7627bd397f54eb620838b..42190b5720c29acc26c9c4c8fce82089fc874e8b 100644
 --- a/drivers/net/can/m_can/m_can.c
 +++ b/drivers/net/can/m_can/m_can.c
 @@ -484,6 +484,7 @@ static u32 m_can_get_timestamp(struct m_can_classdev *cdev)
@@ -110,7 +110,7 @@ index 8d7dbf2eb46c4..2c68b1a60887a 100644
  		return m_can_start_peripheral_xmit(cdev, skb);
  	else
 diff --git a/drivers/net/can/m_can/m_can.h b/drivers/net/can/m_can/m_can.h
-index be1d2119bd53a..76b1ce1b7c1b4 100644
+index be1d2119bd53a691e118669f40c84a630563d91c..76b1ce1b7c1b4b598375a4436f76b407fe85f534 100644
 --- a/drivers/net/can/m_can/m_can.h
 +++ b/drivers/net/can/m_can/m_can.h
 @@ -108,6 +108,10 @@ struct m_can_classdev {

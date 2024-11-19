@@ -1,7 +1,7 @@
-From 8819e7c4b72f65caae0ff3ea06e3ea97619d9ec0 Mon Sep 17 00:00:00 2001
+From bf30c9fa1acce5d9ee1a06b9725b9de341b522c6 Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Date: Mon, 7 Oct 2024 09:48:04 +0200
-Subject: [PATCH] mfd: tqmx86: add board definitions for TQMx120UC, TQMx130UC
+Date: Mon, 11 Nov 2024 15:10:28 +0100
+Subject: [PATCH] mfd: tqmx86: Add board definitions for TQMx120UC, TQMx130UC
  and TQMxE41S
 
 This adds support for 3 new TQMx86 COMs:
@@ -15,13 +15,15 @@ This adds support for 3 new TQMx86 COMs:
 [3] https://www.tq-group.com/en/products/tq-embedded/x86-architecture/tqmxe41s/
 
 Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Upstream-Status: Submitted [https://www.spinics.net/lists/kernel/msg5390172.html]
+Link: https://lore.kernel.org/r/90ddebda96d29246992b58ae0231a511f6424211.1731325758.git.matthias.schiffer@ew.tq-group.com
+Signed-off-by: Lee Jones <lee@kernel.org>
+Upstream-Status: Backport [https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=97f0db59525f7e82113404ea4bf79c435ad53365]
 ---
  drivers/mfd/tqmx86.c | 12 ++++++++++++
  1 file changed, 12 insertions(+)
 
 diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
-index fac02875fe7d9..e15b9be98c2db 100644
+index fac02875fe7d9f2b5e568c930b9fad192cec59f2..e15b9be98c2db81cf2c83e1995c21d1e22baf009 100644
 --- a/drivers/mfd/tqmx86.c
 +++ b/drivers/mfd/tqmx86.c
 @@ -35,11 +35,14 @@

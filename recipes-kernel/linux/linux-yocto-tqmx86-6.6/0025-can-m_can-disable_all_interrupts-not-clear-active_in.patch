@@ -1,4 +1,4 @@
-From dcc58bdf515a3c0005bce7b892ae16ca8b0eff6a Mon Sep 17 00:00:00 2001
+From 6254be845a277adc460a2d96264909c153765e69 Mon Sep 17 00:00:00 2001
 From: Markus Schneider-Pargmann <msp@baylibre.com>
 Date: Mon, 5 Aug 2024 20:30:45 +0200
 Subject: [PATCH] can: m_can: disable_all_interrupts, not clear
@@ -19,7 +19,7 @@ Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
  1 file changed, 1 deletion(-)
 
 diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index 5228304779f19..68bd4a00eccaa 100644
+index 6ef7831fcbcecaff2167fe60c5edf6389e5e08b1..924873bab7e2bdb1ed18024fd5c8362dd0b425c5 100644
 --- a/drivers/net/can/m_can/m_can.c
 +++ b/drivers/net/can/m_can/m_can.c
 @@ -483,7 +483,6 @@ static inline void m_can_disable_all_interrupts(struct m_can_classdev *cdev)

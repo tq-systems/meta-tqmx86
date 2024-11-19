@@ -1,4 +1,4 @@
-From 66fa2190e825defba18880c20ac600c018ece191 Mon Sep 17 00:00:00 2001
+From 28da35b43df1266f89f404252cce99609de6fb09 Mon Sep 17 00:00:00 2001
 From: Markus Schneider-Pargmann <msp@baylibre.com>
 Date: Mon, 5 Aug 2024 20:30:47 +0200
 Subject: [PATCH] can: m_can: Limit coalescing to peripheral instances
@@ -17,10 +17,10 @@ Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
  1 file changed, 9 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index 67c4c740c416f..012c3d22b01dd 100644
+index 52a6f0d80a01f3b3c2d8d3867d5ab2e7f08833af..39333466d6d276bb2f6a4b741ea9bec7c6e307c2 100644
 --- a/drivers/net/can/m_can/m_can.c
 +++ b/drivers/net/can/m_can/m_can.c
-@@ -2184,7 +2184,7 @@ static int m_can_set_coalesce(struct net_device *dev,
+@@ -2185,7 +2185,7 @@ static int m_can_set_coalesce(struct net_device *dev,
  	return 0;
  }
  
@@ -29,7 +29,7 @@ index 67c4c740c416f..012c3d22b01dd 100644
  	.supported_coalesce_params = ETHTOOL_COALESCE_RX_USECS_IRQ |
  		ETHTOOL_COALESCE_RX_MAX_FRAMES_IRQ |
  		ETHTOOL_COALESCE_TX_USECS_IRQ |
-@@ -2195,18 +2195,20 @@ static const struct ethtool_ops m_can_ethtool_ops = {
+@@ -2196,18 +2196,20 @@ static const struct ethtool_ops m_can_ethtool_ops = {
  	.set_coalesce = m_can_set_coalesce,
  };
  
@@ -55,7 +55,7 @@ index 67c4c740c416f..012c3d22b01dd 100644
  
  	return register_candev(dev);
  }
-@@ -2392,7 +2394,7 @@ int m_can_class_register(struct m_can_classdev *cdev)
+@@ -2393,7 +2395,7 @@ int m_can_class_register(struct m_can_classdev *cdev)
  	if (ret)
  		goto rx_offload_del;
  

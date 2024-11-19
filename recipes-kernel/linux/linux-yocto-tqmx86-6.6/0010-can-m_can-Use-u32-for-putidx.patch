@@ -1,4 +1,4 @@
-From b05dd3a867c33eff3ba798c1e2e0431c8a922840 Mon Sep 17 00:00:00 2001
+From b58633a3a49b217513ea9f105f447cee151680dc Mon Sep 17 00:00:00 2001
 From: Markus Schneider-Pargmann <msp@baylibre.com>
 Date: Wed, 7 Feb 2024 10:32:14 +0100
 Subject: [PATCH] can: m_can: Use u32 for putidx
@@ -17,7 +17,7 @@ Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index b31df3e3ceeb4..1b62613f195c1 100644
+index 651d7aeb3e8b175490454e10a2107d3abf6ba2fe..80eb6017eef8174bfd0d1cc09770b9e933290e7b 100644
 --- a/drivers/net/can/m_can/m_can.c
 +++ b/drivers/net/can/m_can/m_can.c
 @@ -486,7 +486,7 @@ static void m_can_clean(struct net_device *net)

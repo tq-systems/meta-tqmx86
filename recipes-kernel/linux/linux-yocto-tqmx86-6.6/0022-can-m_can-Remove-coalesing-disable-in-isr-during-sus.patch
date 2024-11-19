@@ -1,4 +1,4 @@
-From 91da36ff989473ee833cfaf7c2e7156eabf85f97 Mon Sep 17 00:00:00 2001
+From e52eccd69b899816b937e8fbf4027b86cba6d647 Mon Sep 17 00:00:00 2001
 From: Markus Schneider-Pargmann <msp@baylibre.com>
 Date: Mon, 5 Aug 2024 20:30:42 +0200
 Subject: [PATCH] can: m_can: Remove coalesing disable in isr during suspend
@@ -18,7 +18,7 @@ Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
  1 file changed, 1 insertion(+), 3 deletions(-)
 
 diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index 31991e2f343e9..ba416c973e8d2 100644
+index f140fb458939d6fc8016aa21c8d0c2bcba66cf34..6be4c0ac6493a40e9d67a33a31efa2833416a59c 100644
 --- a/drivers/net/can/m_can/m_can.c
 +++ b/drivers/net/can/m_can/m_can.c
 @@ -1223,10 +1223,8 @@ static irqreturn_t m_can_isr(int irq, void *dev_id)

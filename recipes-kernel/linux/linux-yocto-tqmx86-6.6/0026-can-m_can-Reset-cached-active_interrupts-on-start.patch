@@ -1,4 +1,4 @@
-From 8c28a29c720ebdda3bd3ddf7fc601f2d9f1b8689 Mon Sep 17 00:00:00 2001
+From 99c0941d36099a8b6f7a87ed3f87c08c382f2bdc Mon Sep 17 00:00:00 2001
 From: Markus Schneider-Pargmann <msp@baylibre.com>
 Date: Mon, 5 Aug 2024 20:30:46 +0200
 Subject: [PATCH] can: m_can: Reset cached active_interrupts on start
@@ -17,7 +17,7 @@ Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
  1 file changed, 1 insertion(+)
 
 diff --git a/drivers/net/can/m_can/m_can.c b/drivers/net/can/m_can/m_can.c
-index 68bd4a00eccaa..67c4c740c416f 100644
+index 924873bab7e2bdb1ed18024fd5c8362dd0b425c5..52a6f0d80a01f3b3c2d8d3867d5ab2e7f08833af 100644
 --- a/drivers/net/can/m_can/m_can.c
 +++ b/drivers/net/can/m_can/m_can.c
 @@ -1541,6 +1541,7 @@ static int m_can_chip_config(struct net_device *dev)

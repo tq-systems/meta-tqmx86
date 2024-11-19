@@ -1,4 +1,4 @@
-From 1743c874fcfd3edb15a2adb0ea382fa5458a229a Mon Sep 17 00:00:00 2001
+From 6650ce2420ef1498bdd6ec8809fa8b619c24daeb Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 Date: Tue, 28 May 2024 14:28:58 +0200
 Subject: [PATCH] gpio: tqmx86: add support for changing GPIO directions
@@ -18,7 +18,7 @@ Upstream-Status: Pending
  1 file changed, 32 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/gpio/gpio-tqmx86.c b/drivers/gpio/gpio-tqmx86.c
-index 3d71f25e995bb..9d75451d0500d 100644
+index 3d71f25e995bb8e72dd68637020f57134b6a3924..9d75451d0500d2b8027bbc9991c18131a13fe7b1 100644
 --- a/drivers/gpio/gpio-tqmx86.c
 +++ b/drivers/gpio/gpio-tqmx86.c
 @@ -84,6 +84,14 @@ static int tqmx86_gpio_get(struct gpio_chip *chip, unsigned int offset)
