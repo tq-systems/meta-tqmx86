@@ -29,6 +29,18 @@ Releases are named with the following scheme:
 - Added `usbutils` to provide `usb-devices`. This also required to switch
   `find` from busybox-find to GNU-find by adding `findutils`.
 
+### Changed
+
+- Generate compressed rootfs image and archive
+
+  By default, images are now generated in the following formats:
+
+  - wic.zst (including a wic.bmap for bmaptool)
+  - tar.zst
+
+  The used compression algorithm can be adjusted using the
+  `TQ_IMAGE_COMPRESSION` variable.
+
 ### Updated
 
 - linux-yocto(-rt) has been updated to 6.6.62
