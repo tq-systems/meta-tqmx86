@@ -21,6 +21,11 @@ Releases are named with the following scheme:
 
 ### Fixed
 
+- Fixed order of MACHINEOVERRIDES
+
+  `tqmx86` is now more specific than `corei7-64-intel-common` and
+  `intel-x86-common`, allowing to use it to override settings from the
+  meta-intel machine includes
 - Added `usbutils` to provide `usb-devices`. This also required to switch
   `find` from busybox-find to GNU-find by adding `findutils`.
 
