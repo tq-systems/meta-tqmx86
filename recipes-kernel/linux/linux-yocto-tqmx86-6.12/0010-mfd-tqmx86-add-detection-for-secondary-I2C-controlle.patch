@@ -1,0 +1,57 @@
+From 0364df8ce1e07940c0a823c11bcc8c37927e313f Mon Sep 17 00:00:00 2001
+From: Matthias Schiffer <matthias.schiffer@tq-group.com>
+Date: Mon, 25 Nov 2024 10:30:56 +0100
+Subject: [PATCH] mfd: tqmx86: add detection for secondary I2C controller
+
+Many TQMx86 PLDs contain 2 I2C controllers. Add support for the second
+one.
+
+Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
+Upstream-Status: Pending
+---
+ drivers/mfd/tqmx86.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
+index 0ec46ff050ca578cf37e868d1a703ae2729c9d36..4b969d683d8c8ee4ed87ef857adec6e3219eeb76 100644
+--- a/drivers/mfd/tqmx86.c
++++ b/drivers/mfd/tqmx86.c
+@@ -20,6 +20,7 @@
+ #define TQMX86_IOBASE			0x180
+ #define TQMX86_IOSIZE			0x20
+ #define TQMX86_IOBASE_I2C1		0x1a0
++#define TQMX86_IOBASE_I2C2		0x1aa
+ #define TQMX86_IOSIZE_I2C		0xa
+ #define TQMX86_IOBASE_WATCHDOG		0x18b
+ #define TQMX86_IOSIZE_WATCHDOG		0x2
+@@ -54,6 +55,7 @@
+ #define TQMX86_REG_IO_EXT_INT_12		3
+ #define TQMX86_REG_IO_EXT_INT_MASK		0x3
+ #define TQMX86_REG_IO_EXT_INT_I2C1_SHIFT	0
++#define TQMX86_REG_IO_EXT_INT_I2C2_SHIFT	2
+ #define TQMX86_REG_IO_EXT_INT_GPIO_SHIFT	4
+ #define TQMX86_REG_SAUC		0x17
+ 
+@@ -70,6 +72,10 @@ static uint i2c1_irq;
+ module_param(i2c1_irq, uint, 0);
+ MODULE_PARM_DESC(i2c1_irq, "I2C1 IRQ number (valid parameters: 7, 9, 12)");
+ 
++static uint i2c2_irq;
++module_param(i2c2_irq, uint, 0);
++MODULE_PARM_DESC(i2c2_irq, "I2C2 IRQ number (valid parameters: 7, 9, 12)");
++
+ static const struct resource tqmx_watchdog_resources[] = {
+ 	DEFINE_RES_IO(TQMX86_IOBASE_WATCHDOG, TQMX86_IOSIZE_WATCHDOG),
+ };
+@@ -344,6 +350,11 @@ static int tqmx86_probe(struct platform_device *pdev)
+ 	if (err)
+ 		return err;
+ 
++	err = tqmx86_detect_i2c(dev, "I2C2", TQMX86_IOBASE_I2C2, clock_khz, i2c2_irq,
++				NULL, 0, io_base, TQMX86_REG_IO_EXT_INT_I2C2_SHIFT);
++	if (err)
++		return err;
++
+ 	return devm_mfd_add_devices(dev, PLATFORM_DEVID_NONE,
+ 				    tqmx86_devs,
+ 				    ARRAY_SIZE(tqmx86_devs),

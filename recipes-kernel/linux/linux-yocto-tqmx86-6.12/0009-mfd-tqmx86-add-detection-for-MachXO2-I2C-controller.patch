@@ -1,0 +1,93 @@
+From 09cd321052b3c24b90a90df182645b95a2ba4e8a Mon Sep 17 00:00:00 2001
+From: Matthias Schiffer <matthias.schiffer@tq-group.com>
+Date: Mon, 25 Nov 2024 10:24:58 +0100
+Subject: [PATCH] mfd: tqmx86: add detection for MachXO2 I2C controller
+
+The TQMx86 PLD may contain two kinds of I2C controllers: the previously
+supported OpenCores I2C, or the MachXO2 I2C. Add support for the latter.
+
+Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
+Upstream-Status: Pending
+---
+ drivers/mfd/tqmx86.c | 39 ++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 34 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
+index bf9709b370d5f3ac5e78e6cd7533f04b4ba8b138..0ec46ff050ca578cf37e868d1a703ae2729c9d36 100644
+--- a/drivers/mfd/tqmx86.c
++++ b/drivers/mfd/tqmx86.c
+@@ -13,6 +13,7 @@
+ #include <linux/io.h>
+ #include <linux/mfd/core.h>
+ #include <linux/module.h>
++#include <linux/platform_data/i2c-machxo2.h>
+ #include <linux/platform_data/i2c-ocores.h>
+ #include <linux/platform_device.h>
+ 
+@@ -59,6 +60,8 @@
+ #define TQMX86_REG_I2C_DETECT	0x7
+ #define TQMX86_REG_I2C_DETECT_OCORES	0xa5
+ 
++#define TQMX86_REG_I2C_IEN	0x9
++
+ static uint gpio_irq;
+ module_param(gpio_irq, uint, 0);
+ MODULE_PARM_DESC(gpio_irq, "GPIO IRQ number (valid parameters: 7, 9, 12)");
+@@ -255,26 +258,52 @@ static int tqmx86_setup_i2c_ocores(struct device *dev, const char *label,
+ 				sizeof(platform_data), irq);
+ }
+ 
++static int tqmx86_setup_i2c_machxo2(struct device *dev, const char *label,
++				    unsigned long i2c_base, int clock_khz, u8 irq)
++{
++	struct machxo2_i2c_platform_data platform_data = {
++		.clock_khz = clock_khz,
++		.bus_khz = 100,
++	};
++
++	return tqmx86_setup_i2c(dev, "i2c-machxo2", i2c_base, &platform_data,
++				sizeof(platform_data), irq);
++}
++
+ static int tqmx86_detect_i2c(struct device *dev, const char *label,
+ 			     unsigned long i2c_base, int clock_khz, u8 irq,
+ 			     struct i2c_board_info *devices, size_t num_devices,
+ 			     void __iomem *io_base, u8 irq_reg_shift)
+ {
+-	u8 i2c_det;
++	u8 i2c_det, i2c_ien;
+ 
+ 	if (tqmx86_setup_irq(dev, label, irq, io_base, irq_reg_shift))
+ 		irq = 0;
+ 
+ 	/*
+-	 * The I2C_DETECT register is in the range assigned to the I2C driver
+-	 * later, so we don't extend TQMX86_IOSIZE. Use inb() for this one-off
+-	 * access instead of ioport_map + unmap.
++	 * These registers are in the range assigned to the I2C driver
++	 * later, so we don't extend TQMX86_IOSIZE. Use inb() for these one-off
++	 * accesses instead of ioport_map + unmap.
++	 *
++	 * There are 3 cases to distinguish:
++	 *
++	 * - ocores: i2c_det is a TQMx86-specific register that always contains
++	 *   the value 0xa5. i2c_ien is unused and reads as 0xff.
++	 * - machxo2: i2c_det is the data register can read as any value.
++	 *   i2c_ien is the interrupt enable register; the upper nibble is
++	 *   reserved and always reads as 0.
++	 * - none: both i2c_det and i2c_ien read as 0xff if no I2C controller
++	 *   exists at a given base address.
+ 	 */
+ 	i2c_det = inb(i2c_base + TQMX86_REG_I2C_DETECT);
++	i2c_ien = inb(i2c_base + TQMX86_REG_I2C_IEN);
+ 
+-	if (i2c_det == TQMX86_REG_I2C_DETECT_OCORES)
++	if (i2c_det == TQMX86_REG_I2C_DETECT_OCORES && (i2c_ien & 0xf0) == 0xf0)
+ 		return tqmx86_setup_i2c_ocores(dev, label, i2c_base, clock_khz,
+ 					       irq, devices, num_devices);
++	else if ((i2c_ien & 0xf0) == 0x00)
++		return tqmx86_setup_i2c_machxo2(dev, label, i2c_base, clock_khz,
++						irq);
+ 
+ 	return 0;
+ }

@@ -1,0 +1,29 @@
+From 3e22a3a4901a2222603eaf6abe97a320e843bdfe Mon Sep 17 00:00:00 2001
+From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Date: Mon, 11 Nov 2024 15:10:29 +0100
+Subject: [PATCH] mfd: tqmx86: Improve gpio_irq module parameter description
+
+Clarify that "7, 9, 12" refers to the valid arguments that can be
+passed as gpio_irq.
+
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Link: https://lore.kernel.org/r/3275f436b66f6807c02256bc852d39b03ebd64d5.1731325758.git.matthias.schiffer@ew.tq-group.com
+Signed-off-by: Lee Jones <lee@kernel.org>
+Upstream-Status: Backport [https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=aaac6067d7749bba6401fe3d76fc554de8338f36]
+---
+ drivers/mfd/tqmx86.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
+index e15b9be98c2db81cf2c83e1995c21d1e22baf009..7b2f9490a9af5252f50bc78287e60ec97b625d37 100644
+--- a/drivers/mfd/tqmx86.c
++++ b/drivers/mfd/tqmx86.c
+@@ -58,7 +58,7 @@
+ 
+ static uint gpio_irq;
+ module_param(gpio_irq, uint, 0);
+-MODULE_PARM_DESC(gpio_irq, "GPIO IRQ number (7, 9, 12)");
++MODULE_PARM_DESC(gpio_irq, "GPIO IRQ number (valid parameters: 7, 9, 12)");
+ 
+ static const struct resource tqmx_i2c_soft_resources[] = {
+ 	DEFINE_RES_IO(TQMX86_IOBASE_I2C, TQMX86_IOSIZE_I2C),

@@ -11,6 +11,7 @@ Releases are named with the following scheme:
 
 ### Added
 
+- Added recipes for linux-yocto(-rt) 6.12.49
 - Added support for TQMxCU1-HPCM (as well as the planned TQMxCU2-HPCM)
 - Added support for the secondary (MachXO2) I2C controller of various TQMx86
   COMs
@@ -41,9 +42,9 @@ Releases are named with the following scheme:
   The used compression algorithm can be adjusted using the
   `TQ_IMAGE_COMPRESSION` variable.
 
-### Updated
+### Removed
 
-- linux-yocto(-rt) has been updated to 6.6.62
+- Removed linux-yocto(-rt) 6.6 recipes
 
 ## scarthgap.TQMx86.BSP.SW.0002
 
