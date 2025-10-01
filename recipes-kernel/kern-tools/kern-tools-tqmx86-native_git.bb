@@ -1,0 +1,3 @@
+require recipes-kernel/kern-tools/kern-tools-native_git.bb
+
+SRCREV = "fe67c98d2e9b74af44d0c4b660fa18e3a95e7edd"
