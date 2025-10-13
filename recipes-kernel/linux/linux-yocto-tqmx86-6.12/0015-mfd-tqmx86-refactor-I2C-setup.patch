@@ -1,4 +1,4 @@
-From 5af441f4d7d7a5f3b42ab406c96e99727e72a829 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@tq-group.com>
 Date: Tue, 19 Nov 2024 16:11:25 +0100
 Subject: [PATCH] mfd: tqmx86: refactor I2C setup
@@ -15,36 +15,22 @@ ocores and machxo2 controllers.
 Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
 Upstream-Status: Pending
 ---
- drivers/mfd/tqmx86.c | 142 ++++++++++++++++++++++++-------------------
- 1 file changed, 79 insertions(+), 63 deletions(-)
+ drivers/mfd/tqmx86.c | 128 ++++++++++++++++++++++++-------------------
+ 1 file changed, 72 insertions(+), 56 deletions(-)
 
 diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
-index 1c2fe3f912389c0f04da40c40549f9549fa97076..bf9709b370d5f3ac5e78e6cd7533f04b4ba8b138 100644
+index 1c2fe3f912389c0f04da40c40549f9549fa97076..8035b284d3bf665366abcc912c7eb69fff8f10d7 100644
 --- a/drivers/mfd/tqmx86.c
 +++ b/drivers/mfd/tqmx86.c
-@@ -16,14 +16,14 @@
- #include <linux/platform_data/i2c-ocores.h>
- #include <linux/platform_device.h>
+@@ -18,7 +18,7 @@
  
--#define TQMX86_IOBASE	0x180
--#define TQMX86_IOSIZE	0x20
+ #define TQMX86_IOBASE	0x180
+ #define TQMX86_IOSIZE	0x20
 -#define TQMX86_IOBASE_I2C	0x1a0
--#define TQMX86_IOSIZE_I2C	0xa
--#define TQMX86_IOBASE_WATCHDOG	0x18b
--#define TQMX86_IOSIZE_WATCHDOG	0x2
--#define TQMX86_IOBASE_GPIO	0x18d
--#define TQMX86_IOSIZE_GPIO	0x4
-+#define TQMX86_IOBASE			0x180
-+#define TQMX86_IOSIZE			0x20
-+#define TQMX86_IOBASE_I2C1		0x1a0
-+#define TQMX86_IOSIZE_I2C		0xa
-+#define TQMX86_IOBASE_WATCHDOG		0x18b
-+#define TQMX86_IOSIZE_WATCHDOG		0x2
-+#define TQMX86_IOBASE_GPIO		0x18d
-+#define TQMX86_IOSIZE_GPIO		0x4
- 
- #define TQMX86_REG_BOARD_ID	0x00
- #define TQMX86_REG_BOARD_ID_E38M	1
++#define TQMX86_IOBASE_I2C1	0x1a0
+ #define TQMX86_IOSIZE_I2C	0xa
+ #define TQMX86_IOBASE_WATCHDOG	0x18b
+ #define TQMX86_IOSIZE_WATCHDOG	0x2
 @@ -56,8 +56,8 @@
  #define TQMX86_REG_IO_EXT_INT_GPIO_SHIFT	4
  #define TQMX86_REG_SAUC		0x17

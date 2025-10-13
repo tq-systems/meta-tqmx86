@@ -1,9 +1,9 @@
-From 45a9c3bd9fb96833dc7a02178e3bdd264f5951d8 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Date: Mon, 27 May 2024 14:15:12 +0200
+Date: Thu, 12 Dec 2024 15:08:05 +0100
 Subject: [PATCH] gpio: tqmx86: add macros for interrupt configuration
 
-We now consistently use TQMX86_INT_* flags for irq_type values. The
+Consistently use TQMX86_INT_* flags for irq_type values. The
 TQMX86_GPII_CONFIG macro is used to convert from TQMX86_INT_TRIG_*
 flags to GPII register values. Bit patterns for TQMX86_INT_* are chosen
 to make this conversion as simple as possible.
@@ -11,16 +11,18 @@ to make this conversion as simple as possible.
 No functional change intended.
 
 Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Upstream-Status: Pending
+Link: https://lore.kernel.org/r/26c01bce589aedb794c19ea7ccd85f6143532e48.1734001247.git.matthias.schiffer@ew.tq-group.com
+Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Upstream-Status: Backport [https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=2a485c83787723671b7ad215e4e141315e46b311]
 ---
- drivers/gpio/gpio-tqmx86.c | 43 ++++++++++++++++++++------------------
- 1 file changed, 23 insertions(+), 20 deletions(-)
+ drivers/gpio/gpio-tqmx86.c | 44 +++++++++++++++++++++-----------------
+ 1 file changed, 24 insertions(+), 20 deletions(-)
 
 diff --git a/drivers/gpio/gpio-tqmx86.c b/drivers/gpio/gpio-tqmx86.c
-index f2e7e8754d95d699c0c2e4aa334e362396c376f4..3a4dc657cc075d76582d6c06947419a53f4eef8b 100644
+index f2e7e8754d95d699c0c2e4aa334e362396c376f4..4dfdcd2932b9d02d7066f562a8c04b60c4cfaf8e 100644
 --- a/drivers/gpio/gpio-tqmx86.c
 +++ b/drivers/gpio/gpio-tqmx86.c
-@@ -29,18 +29,21 @@
+@@ -29,18 +29,22 @@
  #define TQMX86_GPIIC	3	/* GPI Interrupt Configuration Register */
  #define TQMX86_GPIIS	4	/* GPI Interrupt Status Register */
  
@@ -29,7 +31,8 @@ index f2e7e8754d95d699c0c2e4aa334e362396c376f4..3a4dc657cc075d76582d6c06947419a5
 -#define TQMX86_GPII_RISING	BIT(1)
 -/* Stored in irq_type as a trigger type, but not actually valid as a register
 - * value, so the name doesn't use "GPII"
-+/* NONE, FALLING and RISING use the same bit patterns that can be programmed to
++/*
++ * NONE, FALLING and RISING use the same bit patterns that can be programmed to
 + * the GPII register (after passing them to the TQMX86_GPII_ macros to shift
 + * them to the right position)
   */
@@ -50,7 +53,7 @@ index f2e7e8754d95d699c0c2e4aa334e362396c376f4..3a4dc657cc075d76582d6c06947419a5
  struct tqmx86_gpio_data {
  	struct gpio_chip	chip;
  	void __iomem		*io_base;
-@@ -115,20 +118,20 @@ static int tqmx86_gpio_get_direction(struct gpio_chip *chip,
+@@ -115,20 +119,20 @@ static int tqmx86_gpio_get_direction(struct gpio_chip *chip,
  static void tqmx86_gpio_irq_config(struct tqmx86_gpio_data *gpio, int offset)
  	__must_hold(&gpio->spinlock)
  {
@@ -78,7 +81,7 @@ index f2e7e8754d95d699c0c2e4aa334e362396c376f4..3a4dc657cc075d76582d6c06947419a5
  	tqmx86_gpio_write(gpio, gpiic, TQMX86_GPIIC);
  }
  
-@@ -173,20 +176,20 @@ static int tqmx86_gpio_irq_set_type(struct irq_data *data, unsigned int type)
+@@ -173,20 +177,20 @@ static int tqmx86_gpio_irq_set_type(struct irq_data *data, unsigned int type)
  
  	switch (edge_type) {
  	case IRQ_TYPE_EDGE_RISING:
@@ -103,7 +106,7 @@ index f2e7e8754d95d699c0c2e4aa334e362396c376f4..3a4dc657cc075d76582d6c06947419a5
  	gpio->irq_type[offset] |= new_type;
  	tqmx86_gpio_irq_config(gpio, offset);
  	raw_spin_unlock_irqrestore(&gpio->spinlock, flags);
-@@ -232,7 +235,7 @@ static void tqmx86_gpio_irq_handler(struct irq_desc *desc)
+@@ -232,7 +236,7 @@ static void tqmx86_gpio_irq_handler(struct irq_desc *desc)
  		 * reading the input and setting the trigger, we will have a new
  		 * interrupt pending.
  		 */

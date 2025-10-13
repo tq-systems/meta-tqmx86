@@ -1,4 +1,4 @@
-From 3f2d7f75c7235dea0f8ab3a5279253276eee8ae9 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 Date: Mon, 4 Nov 2024 16:41:14 +0100
 Subject: [PATCH] i2c: machxo2: new driver

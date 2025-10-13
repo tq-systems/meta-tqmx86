@@ -1,4 +1,4 @@
-From 0364df8ce1e07940c0a823c11bcc8c37927e313f Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@tq-group.com>
 Date: Mon, 25 Nov 2024 10:30:56 +0100
 Subject: [PATCH] mfd: tqmx86: add detection for secondary I2C controller
@@ -13,17 +13,17 @@ Upstream-Status: Pending
  1 file changed, 11 insertions(+)
 
 diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
-index 0ec46ff050ca578cf37e868d1a703ae2729c9d36..4b969d683d8c8ee4ed87ef857adec6e3219eeb76 100644
+index b91ce5b772bd8d85319fe4e01dab7b218d46e3f4..1316249c92f804cec4f1dcaa882524a272ef0ae6 100644
 --- a/drivers/mfd/tqmx86.c
 +++ b/drivers/mfd/tqmx86.c
 @@ -20,6 +20,7 @@
- #define TQMX86_IOBASE			0x180
- #define TQMX86_IOSIZE			0x20
- #define TQMX86_IOBASE_I2C1		0x1a0
-+#define TQMX86_IOBASE_I2C2		0x1aa
- #define TQMX86_IOSIZE_I2C		0xa
- #define TQMX86_IOBASE_WATCHDOG		0x18b
- #define TQMX86_IOSIZE_WATCHDOG		0x2
+ #define TQMX86_IOBASE	0x180
+ #define TQMX86_IOSIZE	0x20
+ #define TQMX86_IOBASE_I2C1	0x1a0
++#define TQMX86_IOBASE_I2C2	0x1aa
+ #define TQMX86_IOSIZE_I2C	0xa
+ #define TQMX86_IOBASE_WATCHDOG	0x18b
+ #define TQMX86_IOSIZE_WATCHDOG	0x2
 @@ -54,6 +55,7 @@
  #define TQMX86_REG_IO_EXT_INT_12		3
  #define TQMX86_REG_IO_EXT_INT_MASK		0x3

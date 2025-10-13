@@ -1,19 +1,18 @@
-From 406ac8eb8a34ef3e7f01ea9356da3c2811e2f73b Mon Sep 17 00:00:00 2001
-From: Steffen Doster <Steffen.Doster@tq-group.com>
-Date: Mon, 11 Nov 2024 13:47:43 +0100
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Date: Tue, 7 Oct 2025 11:54:24 +0200
 Subject: [PATCH] mfd: tqmx86: add board definitions for TQMxCU1-HPCM and
  TQMxCU2-HPCM
 
 This adds support for 2 new TQMx86 COMs:
 
-- TQMxCU1-HPCM [1]
-- TQMxCU2-HPCM (Future development)
+- TQMxCU1-HPCM (COM-HPC Mini Module with Intel Core Ultra Processors [1])
+- TQMxCU2-HPCM (in development)
 
 [1] https://www.tq-group.com/en/products/tq-embedded/x86-architecture/tqmxcu1-hpcm/
 
-Signed-off-by: Steffen Doster <Steffen.Doster@tq-group.com>
-Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
-Upstream-Status: Pending
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Upstream-Status: Submitted [https://lore.kernel.org/lkml/20251007095424.138878-1-matthias.schiffer@ew.tq-group.com/]
 ---
  drivers/mfd/tqmx86.c | 8 ++++++++
  1 file changed, 8 insertions(+)

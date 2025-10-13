@@ -1,27 +1,31 @@
-From db22b214acb2237a37ae24c015f21a61a4abab0e Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Date: Mon, 3 Jun 2024 16:58:38 +0200
+Date: Thu, 12 Dec 2024 15:08:08 +0100
 Subject: [PATCH] gpio: tqmx86: introduce tqmx86_gpio_clrsetbits() helper
 
 Add a helper for the common read-modify-write pattern (only used in
 tqmx86_gpio_irq_config() initially).
 
+No functional change intended.
+
 Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Upstream-Status: Pending
+Link: https://lore.kernel.org/r/f60ec3cc1386d4527ebb864d1b069683473b7a5a.1734001247.git.matthias.schiffer@ew.tq-group.com
+Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
+Upstream-Status: Backport [https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a1389f5c128e80c8ad3132bbdc7b5061f3710b7f]
 ---
  drivers/gpio/gpio-tqmx86.c | 22 +++++++++++++++++-----
  1 file changed, 17 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/gpio/gpio-tqmx86.c b/drivers/gpio/gpio-tqmx86.c
-index 370618e1dbe694ce93f4caddf2326d46f1b55f61..3d71f25e995bb8e72dd68637020f57134b6a3924 100644
+index 6f784e398b400b83645f7ea8c7dac097bd72a95a..6c28a1992c3b0bf3c9ec1b301b724db37e042ec1 100644
 --- a/drivers/gpio/gpio-tqmx86.c
 +++ b/drivers/gpio/gpio-tqmx86.c
-@@ -65,6 +65,18 @@ static void tqmx86_gpio_write(struct tqmx86_gpio_data *gd, u8 val,
+@@ -66,6 +66,18 @@ static void tqmx86_gpio_write(struct tqmx86_gpio_data *gd, u8 val,
  	iowrite8(val, gd->io_base + reg);
  }
  
 +static void tqmx86_gpio_clrsetbits(struct tqmx86_gpio_data *gpio,
-+				    u8 clr, u8 set, unsigned int reg)
++				   u8 clr, u8 set, unsigned int reg)
 +	__must_hold(&gpio->spinlock)
 +{
 +	u8 val = tqmx86_gpio_read(gpio, reg);

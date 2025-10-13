@@ -1,4 +1,4 @@
-From 09cd321052b3c24b90a90df182645b95a2ba4e8a Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@tq-group.com>
 Date: Mon, 25 Nov 2024 10:24:58 +0100
 Subject: [PATCH] mfd: tqmx86: add detection for MachXO2 I2C controller
@@ -13,7 +13,7 @@ Upstream-Status: Pending
  1 file changed, 34 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
-index bf9709b370d5f3ac5e78e6cd7533f04b4ba8b138..0ec46ff050ca578cf37e868d1a703ae2729c9d36 100644
+index 8035b284d3bf665366abcc912c7eb69fff8f10d7..b91ce5b772bd8d85319fe4e01dab7b218d46e3f4 100644
 --- a/drivers/mfd/tqmx86.c
 +++ b/drivers/mfd/tqmx86.c
 @@ -13,6 +13,7 @@

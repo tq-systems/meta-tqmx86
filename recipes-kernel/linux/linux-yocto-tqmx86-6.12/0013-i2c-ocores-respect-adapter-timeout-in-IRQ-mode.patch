@@ -1,0 +1,31 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Date: Thu, 9 Oct 2025 11:19:50 +0200
+Subject: [PATCH] i2c: ocores: respect adapter timeout in IRQ mode
+
+While the timeout field of the i2c_adapter defaults to 1s, it can be
+changed, for example using the I2C_TIMEOUT ioctl. Change the ocores
+driver to use this timeout instead of hardcoding 1s, also making it
+consistent with polling mode.
+
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Acked-by: Peter Korsgaard <peter@korsgaard.com>
+Upstream-Status: Submitted [https://lore.kernel.org/lkml/96e4ef171bc710abde215c50dd5dd4fffa98a2b2.1760000254.git.matthias.schiffer@ew.tq-group.com/]
+---
+ drivers/i2c/busses/i2c-ocores.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/i2c/busses/i2c-ocores.c b/drivers/i2c/busses/i2c-ocores.c
+index c4587194d46be5ada0418ae2e59e4fa0298e15a7..4a8ce167a3d9fdae7eea3ae6bbf77a0242b8e89a 100644
+--- a/drivers/i2c/busses/i2c-ocores.c
++++ b/drivers/i2c/busses/i2c-ocores.c
+@@ -383,7 +383,8 @@ static int ocores_xfer_core(struct ocores_i2c *i2c,
+ 	} else {
+ 		if (wait_event_timeout(i2c->wait,
+ 				       (i2c->state == STATE_ERROR) ||
+-				       (i2c->state == STATE_DONE), HZ) == 0)
++				       (i2c->state == STATE_DONE),
++				       i2c->adap.timeout) == 0)
+ 			ret = -ETIMEDOUT;
+ 	}
+ 	if (ret) {
