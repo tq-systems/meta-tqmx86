@@ -23,6 +23,7 @@ SRC_URI:append:tqmx86 = " \
     file://0020-mfd-tqmx86-configure-board-specific-GPIO-platform-da.patch \
     file://0021-gpio-tqmx86-prepare-support-for-variants-with-more-G.patch \
     file://0022-gpio-tqmx86-add-support-for-up-to-16-GPIOs.patch \
+    file://0023-mfd-tqmx86-add-board-definition-for-TQMxE41M.patch \
     \
     file://nct7802.cfg \
     file://tqmx86.cfg \

@@ -1,0 +1,53 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Date: Wed, 26 Nov 2025 13:18:00 +0100
+Subject: [PATCH] mfd: tqmx86: add board definition for TQMxE41M
+
+This adds support for the TQ-Systems TQMxE41M COM, a COM Express Mini
+module based on Intel Atom x7000E/RE processors:
+
+https://www.tq-group.com/en/products/tq-embedded/cpu-families/x86-architecture/tqmxe41m/
+
+Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
+Upstream-Status: Pending
+---
+ drivers/mfd/tqmx86.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
+index f3946544dbf38..43b2c6b5a902c 100644
+--- a/drivers/mfd/tqmx86.c
++++ b/drivers/mfd/tqmx86.c
+@@ -45,6 +45,7 @@
+ #define TQMX86_REG_BOARD_ID_E40C1	14
+ #define TQMX86_REG_BOARD_ID_E40C2	15
+ #define TQMX86_REG_BOARD_ID_130UC	16
++#define TQMX86_REG_BOARD_ID_E41M	18
+ #define TQMX86_REG_BOARD_ID_E41S	19
+ #define TQMX86_REG_BOARD_ID_CU1_HPCM	24
+ #define TQMX86_REG_BOARD_ID_CU2_HPCM	25
+@@ -172,6 +173,8 @@ static const char *tqmx86_board_id_to_name(u8 board_id, u8 sauc)
+ 		return "TQMxE40C2";
+ 	case TQMX86_REG_BOARD_ID_130UC:
+ 		return "TQMx130UC";
++	case TQMX86_REG_BOARD_ID_E41M:
++		return "TQMxE41M";
+ 	case TQMX86_REG_BOARD_ID_E41S:
+ 		return "TQMxE41S";
+ 	case TQMX86_REG_BOARD_ID_CU1_HPCM:
+@@ -197,6 +200,7 @@ static int tqmx86_board_id_to_clk_rate(struct device *dev, u8 board_id)
+ 	case TQMX86_REG_BOARD_ID_E40C1:
+ 	case TQMX86_REG_BOARD_ID_E40C2:
+ 	case TQMX86_REG_BOARD_ID_130UC:
++	case TQMX86_REG_BOARD_ID_E41M:
+ 	case TQMX86_REG_BOARD_ID_E41S:
+ 	case TQMX86_REG_BOARD_ID_CU1_HPCM:
+ 	case TQMX86_REG_BOARD_ID_CU2_HPCM:
+@@ -233,6 +237,7 @@ tqmx86_board_id_to_gpio_pdata(u8 board_id, u8 sauc, u8 pld_rev)
+ 	case TQMX86_REG_BOARD_ID_E40C1:
+ 	case TQMX86_REG_BOARD_ID_E40C2:
+ 	case TQMX86_REG_BOARD_ID_130UC:
++	case TQMX86_REG_BOARD_ID_E41M:
+ 		return &gpio_platform_data_come;
+ 	case TQMX86_REG_BOARD_ID_E39MS:
+ 		return (sauc == 0xff)
