@@ -19,7 +19,7 @@ Upstream-Status: Pending
  1 file changed, 91 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
-index f087c66a7a202c7e986fcf7dd2e573c637fe32a9..cad2f835a1c08af24b226e159e17ce7216fded96 100644
+index f404f2cbf00623fe6711fe57eb7e3a9edee1daf9..317812c2aa015ebf271aed3e1ddabc9b8b795772 100644
 --- a/drivers/mfd/tqmx86.c
 +++ b/drivers/mfd/tqmx86.c
 @@ -13,6 +13,7 @@
@@ -30,8 +30,8 @@ index f087c66a7a202c7e986fcf7dd2e573c637fe32a9..cad2f835a1c08af24b226e159e17ce72
  #include <linux/platform_data/i2c-machxo2.h>
  #include <linux/platform_data/i2c-ocores.h>
  #include <linux/platform_device.h>
-@@ -98,19 +99,42 @@ static struct i2c_board_info tqmx86_i2c1_devices[] = {
- 	},
+@@ -157,19 +158,42 @@ static const struct mfd_cell tqmx86_i2c2_dev_machxo2 = {
+ 	.num_resources = ARRAY_SIZE(tqmx_i2c2_resources),
  };
  
 -static const struct mfd_cell tqmx86_devs[] = {
@@ -86,7 +86,7 @@ index f087c66a7a202c7e986fcf7dd2e573c637fe32a9..cad2f835a1c08af24b226e159e17ce72
  };
  
  static const char *tqmx86_board_id_to_name(u8 board_id, u8 sauc)
-@@ -191,6 +215,40 @@ static int tqmx86_board_id_to_clk_rate(struct device *dev, u8 board_id)
+@@ -250,6 +274,40 @@ static int tqmx86_board_id_to_clk_rate(struct device *dev, u8 board_id)
  	}
  }
  
@@ -127,7 +127,7 @@ index f087c66a7a202c7e986fcf7dd2e573c637fe32a9..cad2f835a1c08af24b226e159e17ce72
  static int tqmx86_setup_irq(struct device *dev, const char *label, u8 irq,
  			    void __iomem *io_base, u8 reg_shift)
  {
-@@ -316,7 +374,8 @@ static int tqmx86_detect_i2c(struct device *dev, const char *label,
+@@ -361,7 +419,8 @@ static int tqmx86_detect_i2c2(struct device *dev, void __iomem *io_base, int clo
  
  static int tqmx86_probe(struct platform_device *pdev)
  {
@@ -137,7 +137,7 @@ index f087c66a7a202c7e986fcf7dd2e573c637fe32a9..cad2f835a1c08af24b226e159e17ce72
  	struct device *dev = &pdev->dev;
  	const char *board_name;
  	void __iomem *io_base;
-@@ -330,10 +389,12 @@ static int tqmx86_probe(struct platform_device *pdev)
+@@ -375,10 +434,12 @@ static int tqmx86_probe(struct platform_device *pdev)
  	sauc = ioread8(io_base + TQMX86_REG_SAUC);
  	board_name = tqmx86_board_id_to_name(board_id, sauc);
  	rev = ioread8(io_base + TQMX86_REG_BOARD_REV);
@@ -151,7 +151,7 @@ index f087c66a7a202c7e986fcf7dd2e573c637fe32a9..cad2f835a1c08af24b226e159e17ce72
  
  	if (gpio_irq) {
  		err = tqmx86_setup_irq(dev, "GPIO", gpio_irq, io_base,
-@@ -355,9 +416,22 @@ static int tqmx86_probe(struct platform_device *pdev)
+@@ -397,9 +458,22 @@ static int tqmx86_probe(struct platform_device *pdev)
  	if (err)
  		return err;
  

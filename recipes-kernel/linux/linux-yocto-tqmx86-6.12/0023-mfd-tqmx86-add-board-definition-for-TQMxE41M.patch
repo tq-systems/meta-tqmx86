@@ -15,7 +15,7 @@ Upstream-Status: Pending
  1 file changed, 5 insertions(+)
 
 diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
-index f3946544dbf38..43b2c6b5a902c 100644
+index 317812c2aa015ebf271aed3e1ddabc9b8b795772..67773250fef2f427de1de93bd3c2ead921cdc235 100644
 --- a/drivers/mfd/tqmx86.c
 +++ b/drivers/mfd/tqmx86.c
 @@ -45,6 +45,7 @@
@@ -26,7 +26,7 @@ index f3946544dbf38..43b2c6b5a902c 100644
  #define TQMX86_REG_BOARD_ID_E41S	19
  #define TQMX86_REG_BOARD_ID_CU1_HPCM	24
  #define TQMX86_REG_BOARD_ID_CU2_HPCM	25
-@@ -172,6 +173,8 @@ static const char *tqmx86_board_id_to_name(u8 board_id, u8 sauc)
+@@ -231,6 +232,8 @@ static const char *tqmx86_board_id_to_name(u8 board_id, u8 sauc)
  		return "TQMxE40C2";
  	case TQMX86_REG_BOARD_ID_130UC:
  		return "TQMx130UC";
@@ -35,7 +35,7 @@ index f3946544dbf38..43b2c6b5a902c 100644
  	case TQMX86_REG_BOARD_ID_E41S:
  		return "TQMxE41S";
  	case TQMX86_REG_BOARD_ID_CU1_HPCM:
-@@ -197,6 +200,7 @@ static int tqmx86_board_id_to_clk_rate(struct device *dev, u8 board_id)
+@@ -256,6 +259,7 @@ static int tqmx86_board_id_to_clk_rate(struct device *dev, u8 board_id)
  	case TQMX86_REG_BOARD_ID_E40C1:
  	case TQMX86_REG_BOARD_ID_E40C2:
  	case TQMX86_REG_BOARD_ID_130UC:
@@ -43,7 +43,7 @@ index f3946544dbf38..43b2c6b5a902c 100644
  	case TQMX86_REG_BOARD_ID_E41S:
  	case TQMX86_REG_BOARD_ID_CU1_HPCM:
  	case TQMX86_REG_BOARD_ID_CU2_HPCM:
-@@ -233,6 +237,7 @@ tqmx86_board_id_to_gpio_pdata(u8 board_id, u8 sauc, u8 pld_rev)
+@@ -292,6 +296,7 @@ tqmx86_board_id_to_gpio_pdata(u8 board_id, u8 sauc, u8 pld_rev)
  	case TQMX86_REG_BOARD_ID_E40C1:
  	case TQMX86_REG_BOARD_ID_E40C2:
  	case TQMX86_REG_BOARD_ID_130UC:

@@ -16,8 +16,8 @@ SRC_URI:append:tqmx86 = " \
     file://0013-i2c-ocores-respect-adapter-timeout-in-IRQ-mode.patch \
     file://0014-i2c-machxo2-new-driver.patch \
     file://0015-mfd-tqmx86-refactor-I2C-setup.patch \
-    file://0016-mfd-tqmx86-add-detection-for-MachXO2-I2C-controller.patch \
-    file://0017-mfd-tqmx86-add-detection-for-secondary-I2C-controlle.patch \
+    file://0016-mfd-tqmx86-add-detection-for-secondary-I2C-controlle.patch \
+    file://0017-mfd-tqmx86-add-detection-for-MachXO2-I2C-controller.patch \
     file://0018-gpio-tqmx86-introduce-platform-data-struct.patch \
     file://0019-mfd-tqmx86-update-TQMX86_IOSIZE_GPIO.patch \
     file://0020-mfd-tqmx86-configure-board-specific-GPIO-platform-da.patch \

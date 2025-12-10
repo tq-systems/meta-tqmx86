@@ -17,7 +17,7 @@ Upstream-Status: Pending
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
-index 1316249c92f804cec4f1dcaa882524a272ef0ae6..f087c66a7a202c7e986fcf7dd2e573c637fe32a9 100644
+index a4e3ecfccb8ab107249e062f331f537f605844a0..f404f2cbf00623fe6711fe57eb7e3a9edee1daf9 100644
 --- a/drivers/mfd/tqmx86.c
 +++ b/drivers/mfd/tqmx86.c
 @@ -25,7 +25,7 @@
