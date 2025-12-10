@@ -80,6 +80,7 @@ following table have been used for testing the Yocto BSP.
 | `b` | TQMxE40C1/2        |            | Intel Atom x6000             | COM Express Compact Type 6 |
 | `b` | TQMxE40M           |            | Intel Atom x6000             | COM Express Mini Type 10   |
 | `y` | TQMxE40S           | MB-SMARC-3 | Intel Atom x6000             | SMARC 2.1                  |
+| `b` | TQMxE41M           |            | Intel Atom x7000E            | COM Express Mini Type 10   |
 | `b` | TQMxE41S           |            | Intel Atom x7000E            | SMARC 2.1                  |
 
 |     | Support status    |
