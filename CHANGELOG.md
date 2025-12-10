@@ -35,6 +35,11 @@ Releases are named with the following scheme:
 
 ### Changed
 
+- Do not install contents of ESP to root filesystem by default
+
+  `/boot` is the mountpoint for the ESP. To avoid confusion when looking
+  at the filesystem without this mount, do not install the kernel or
+  bootloader components to this directory.
 - Generate compressed rootfs image and archive
 
   By default, images are now generated in the following formats:
