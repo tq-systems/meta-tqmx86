@@ -16,6 +16,8 @@ Releases are named with the following scheme:
 - Added support for TQMxE41M
 - Added support for the secondary (MachXO2) I2C controller of various TQMx86
   COMs
+- Added ptn3460-edid-tool to program EDID information on PTN3460 eDP to LVDS bridges
+  found on many TQMx86 COMs
 - Added two distro configs "pretzel.conf" and "pretzel-rt.conf".
 
   "pretzel" is the the new TQ-x86 distro and "pretzel-rt" extends
