@@ -11,7 +11,7 @@ Releases are named with the following scheme:
 
 ### Added
 
-- Added recipes for linux-yocto(-rt) 6.12.60
+- Added recipes for linux-yocto(-rt) 6.12.63
 - Added support for TQMxCU1-HPCM (as well as the planned TQMxCU2-HPCM)
 - Added support for TQMxE41M
 - Added support for the secondary (MachXO2) I2C controller of various TQMx86

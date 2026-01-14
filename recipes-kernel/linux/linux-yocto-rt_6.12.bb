@@ -1,3 +1,5 @@
+# Imported from openembedded-core
+
 KBRANCH ?= "v6.12/standard/preempt-rt/base"
 
 require recipes-kernel/linux/linux-yocto.inc
@@ -14,13 +16,13 @@ python () {
         raise bb.parse.SkipRecipe("Set PREFERRED_PROVIDER_virtual/kernel to linux-yocto-rt to enable it")
 }
 
-SRCREV_machine ?= "b23e01aff4eb21167db80c8d178ffeaf174be51c"
-SRCREV_meta ?= "204830448d850850867fa4ca7ee0dab04fdb7011"
+SRCREV_machine ?= "1355364a79ad7f57bdcec8ee2190c1859a07c613"
+SRCREV_meta ?= "f7d83a5a4be20f4f4d3fcf3b1fbd23aa69bdc6ac"
 
 SRC_URI = "git://git.yoctoproject.org/linux-yocto.git;branch=${KBRANCH};name=machine;protocol=https \
            git://git.yoctoproject.org/yocto-kernel-cache;type=kmeta;name=meta;branch=yocto-6.12;destsuffix=${KMETA};protocol=https"
 
-LINUX_VERSION ?= "6.12.60"
+LINUX_VERSION ?= "6.12.63"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
