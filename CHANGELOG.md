@@ -9,6 +9,8 @@ Releases are named with the following scheme:
 
 ## Next Release
 
+## scarthgap.TQMx86.BSP.SW.0003
+
 ### Added
 
 - Added recipes for linux-yocto(-rt) 6.12.63
