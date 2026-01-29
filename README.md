@@ -51,13 +51,12 @@ BBLAYERS ?= " \
 
 All TQ-Systems x86 hardware listed in the following is supported by the
 `MACHINE` configuration "intel-x86-64-tqmx86". The `core-image-base` and
-the `DISTRO` "poky" are the recommended starting point for customization of the
-BSP.
+the `DISTRO` "pretzel" are the recommended starting point for customization of
+the BSP.
 
-The "intel-x86-64-tqmx86" machine uses the `linux-yocto` kernel recipe by
-default. A realtime kernel can be built by setting
-`PREFERRED_PROVIDER_virtual/kernel = "linux-yocto-rt"` in `local.conf` or a
-custom distro.
+The "intel-x86-64-tqmx86" machine uses the `linux-yocto` kernel recipe (version
+6.12.y) by default. A realtime kernel can be built by setting `DISTRO` to
+"pretzel-rt".
 
 For many COMs, variants with alternative CPUs are available, and different
 mainboards with the same form factor can be used. The boards listed in the
@@ -79,9 +78,9 @@ following table have been used for testing the Yocto BSP.
 | `b` | TQMxE39S           |            | Intel Atom E3900             | SMARC 2.0/2.1              |
 | `b` | TQMxE40C1/2        |            | Intel Atom x6000             | COM Express Compact Type 6 |
 | `b` | TQMxE40M           |            | Intel Atom x6000             | COM Express Mini Type 10   |
-| `y` | TQMxE40S           | MB-SMARC-3 | Intel Atom x6000             | SMARC 2.1                  |
+| `b` | TQMxE40S           | MB-SMARC-3 | Intel Atom x6000             | SMARC 2.1                  |
 | `b` | TQMxE41M           |            | Intel Atom x7000E            | COM Express Mini Type 10   |
-| `b` | TQMxE41S           |            | Intel Atom x7000E            | SMARC 2.1                  |
+| `y` | TQMxE41S           | MB-SMARC-3 | Intel Atom x7000E            | SMARC 2.1                  |
 
 |     | Support status    |
 |-----|-------------------|
