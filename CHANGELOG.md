@@ -9,6 +9,11 @@ Releases are named with the following scheme:
 
 ## Next Release
 
+### Changed
+
+- Replaced unmaintained cpufrequtils package with cpupower
+- Switched from busybox to full coreutils
+
 ## scarthgap.TQMx86.BSP.SW.0003
 
 ### Added
