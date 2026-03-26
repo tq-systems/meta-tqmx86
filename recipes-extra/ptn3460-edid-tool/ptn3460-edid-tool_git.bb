@@ -6,8 +6,6 @@ SRCREV = "98a6c8feb679648c2aa845b0a5b133f63e01ce10"
 LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=751419260aa954499f7abaabaa882bbe"
 
-S = "${WORKDIR}/git"
-
 inherit cmake
 
 do_install() {
