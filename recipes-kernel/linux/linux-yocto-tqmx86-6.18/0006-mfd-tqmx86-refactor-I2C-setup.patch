@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Date: Mon, 13 Oct 2025 14:56:43 +0200
+From: Nora Schiffer <nora.schiffer@ew.tq-group.com>
+Date: Thu, 26 Mar 2026 11:56:37 +0100
 Subject: [PATCH] mfd: tqmx86: refactor I2C setup
 
 Preparation for supporting the second I2C controller, and detecting both
@@ -11,14 +11,14 @@ ocores and machxo2 controllers.
   ocores I2C
 - Define TQMX86_REG_I2C_DETECT relative to I2C base register
 
-Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Signed-off-by: Nora Schiffer <nora.schiffer@ew.tq-group.com>
 Upstream-Status: Submitted [https://lore.kernel.org/lkml/10b68f0c46a68d9b946d6cedfacb5a9efb476e37.1765373900.git.matthias.schiffer@ew.tq-group.com/]
 ---
  drivers/mfd/tqmx86.c | 92 +++++++++++++++++++++++---------------------
  1 file changed, 49 insertions(+), 43 deletions(-)
 
 diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
-index 1c2fe3f912389c0f04da40c40549f9549fa97076..6d304741f898948a753ceceb530c4c4212f815af 100644
+index 4aef72bb585dac8b3f84d0bec91c4e93ade542a9..3b8e9e9dfd25cdaf32a6abd1a8e90e22dd5a835a 100644
 --- a/drivers/mfd/tqmx86.c
 +++ b/drivers/mfd/tqmx86.c
 @@ -18,7 +18,7 @@
@@ -30,7 +30,7 @@ index 1c2fe3f912389c0f04da40c40549f9549fa97076..6d304741f898948a753ceceb530c4c42
  #define TQMX86_IOSIZE_I2C	0xa
  #define TQMX86_IOBASE_WATCHDOG	0x18b
  #define TQMX86_IOSIZE_WATCHDOG	0x2
-@@ -56,8 +56,8 @@
+@@ -57,8 +57,8 @@
  #define TQMX86_REG_IO_EXT_INT_GPIO_SHIFT	4
  #define TQMX86_REG_SAUC		0x17
  
@@ -41,7 +41,7 @@ index 1c2fe3f912389c0f04da40c40549f9549fa97076..6d304741f898948a753ceceb530c4c42
  
  static uint gpio_irq;
  module_param(gpio_irq, uint, 0);
-@@ -72,8 +72,8 @@ enum tqmx86_i2c1_resource_type {
+@@ -73,8 +73,8 @@ enum tqmx86_i2c1_resource_type {
  	TQMX86_I2C1_IRQ,
  };
  
@@ -52,7 +52,7 @@ index 1c2fe3f912389c0f04da40c40549f9549fa97076..6d304741f898948a753ceceb530c4c42
  	/* Placeholder for IRQ resource */
  	[TQMX86_I2C1_IRQ] = {},
  };
-@@ -93,26 +93,24 @@ static struct resource tqmx_gpio_resources[] = {
+@@ -94,26 +94,24 @@ static struct resource tqmx_gpio_resources[] = {
  	[TQMX86_GPIO_IRQ] = {},
  };
  
@@ -89,7 +89,7 @@ index 1c2fe3f912389c0f04da40c40549f9549fa97076..6d304741f898948a753ceceb530c4c42
  };
  
  static const struct mfd_cell tqmx86_devs[] = {
-@@ -246,13 +244,40 @@ static int tqmx86_setup_irq(struct device *dev, const char *label, u8 irq,
+@@ -250,13 +248,40 @@ static int tqmx86_setup_irq(struct device *dev, const char *label, u8 irq,
  	return 0;
  }
  
@@ -132,7 +132,7 @@ index 1c2fe3f912389c0f04da40c40549f9549fa97076..6d304741f898948a753ceceb530c4c42
  
  	io_base = devm_ioport_map(dev, TQMX86_IOBASE, TQMX86_IOSIZE);
  	if (!io_base)
-@@ -267,13 +292,6 @@ static int tqmx86_probe(struct platform_device *pdev)
+@@ -271,13 +296,6 @@ static int tqmx86_probe(struct platform_device *pdev)
  		 "Found %s - Board ID %d, PCB Revision %d, PLD Revision %d\n",
  		 board_name, board_id, rev >> 4, rev & 0xf);
  
@@ -146,7 +146,7 @@ index 1c2fe3f912389c0f04da40c40549f9549fa97076..6d304741f898948a753ceceb530c4c42
  	if (gpio_irq) {
  		err = tqmx86_setup_irq(dev, "GPIO", gpio_irq, io_base,
  				       TQMX86_REG_IO_EXT_INT_GPIO_SHIFT);
-@@ -281,23 +299,11 @@ static int tqmx86_probe(struct platform_device *pdev)
+@@ -285,23 +303,11 @@ static int tqmx86_probe(struct platform_device *pdev)
  			tqmx_gpio_resources[TQMX86_GPIO_IRQ] = DEFINE_RES_IRQ(gpio_irq);
  	}
  

@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+From: Nora Schiffer <nora.schiffer@ew.tq-group.com>
 Date: Wed, 29 May 2024 09:23:12 +0200
 Subject: [PATCH] gpio: tqmx86: prepare support for variants with more GPIO
  channels
@@ -11,14 +11,14 @@ fields.
 
 No functional change intended.
 
-Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Signed-off-by: Nora Schiffer <nora.schiffer@ew.tq-group.com>
 Upstream-Status: Pending
 ---
  drivers/gpio/gpio-tqmx86.c | 35 +++++++++++++++++++----------------
  1 file changed, 19 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/gpio/gpio-tqmx86.c b/drivers/gpio/gpio-tqmx86.c
-index 9db482995d33edc1fb774f86fc861e00e91bb936..e64d0c611041963e608b5922a54d89c86bbd523e 100644
+index 27dd09273292a8db1b78c1f98aaa950b52d1e9be..a4a0623cd18f86ff786b50839fed43b82c20c92b 100644
 --- a/drivers/gpio/gpio-tqmx86.c
 +++ b/drivers/gpio/gpio-tqmx86.c
 @@ -14,14 +14,12 @@
@@ -53,7 +53,7 @@ index 9db482995d33edc1fb774f86fc861e00e91bb936..e64d0c611041963e608b5922a54d89c8
  };
  
  static u8 tqmx86_gpio_read(struct tqmx86_gpio_data *gd, unsigned int reg)
-@@ -146,8 +147,8 @@ static int tqmx86_gpio_get_direction(struct gpio_chip *chip,
+@@ -148,8 +149,8 @@ static int tqmx86_gpio_get_direction(struct gpio_chip *chip,
  static void tqmx86_gpio_irq_config(struct tqmx86_gpio_data *gpio, int hwirq)
  	__must_hold(&gpio->spinlock)
  {
@@ -63,7 +63,7 @@ index 9db482995d33edc1fb774f86fc861e00e91bb936..e64d0c611041963e608b5922a54d89c8
  
  	if (gpio->irq_type[hwirq] & TQMX86_INT_UNMASKED) {
  		type = gpio->irq_type[hwirq] & TQMX86_INT_TRIG_MASK;
-@@ -237,8 +238,8 @@ static void tqmx86_gpio_irq_handler(struct irq_desc *desc)
+@@ -239,8 +240,8 @@ static void tqmx86_gpio_irq_handler(struct irq_desc *desc)
  	irq_bits = irq_status;
  
  	scoped_guard(raw_spinlock_irqsave, &gpio->spinlock) {
@@ -74,7 +74,7 @@ index 9db482995d33edc1fb774f86fc861e00e91bb936..e64d0c611041963e608b5922a54d89c8
  
  			/*
  			 * Edge-both triggers are implemented by flipping the
-@@ -269,9 +270,9 @@ static void tqmx86_gpio_irq_handler(struct irq_desc *desc)
+@@ -271,9 +272,9 @@ static void tqmx86_gpio_irq_handler(struct irq_desc *desc)
  		}
  	}
  
@@ -86,7 +86,7 @@ index 9db482995d33edc1fb774f86fc861e00e91bb936..e64d0c611041963e608b5922a54d89c8
  
  	chained_irq_exit(irq_chip, desc);
  }
-@@ -296,11 +297,9 @@ static void tqmx86_init_irq_valid_mask(struct gpio_chip *chip,
+@@ -298,11 +299,9 @@ static void tqmx86_init_irq_valid_mask(struct gpio_chip *chip,
  				       unsigned long *valid_mask,
  				       unsigned int ngpios)
  {
@@ -101,7 +101,7 @@ index 9db482995d33edc1fb774f86fc861e00e91bb936..e64d0c611041963e608b5922a54d89c8
  }
  
  static void tqmx86_gpio_irq_print_chip(struct irq_data *d, struct seq_file *p)
-@@ -349,6 +348,8 @@ static int tqmx86_gpio_probe(struct platform_device *pdev)
+@@ -351,6 +350,8 @@ static int tqmx86_gpio_probe(struct platform_device *pdev)
  
  	raw_spin_lock_init(&gpio->spinlock);
  	gpio->io_base = io_base;
@@ -110,7 +110,7 @@ index 9db482995d33edc1fb774f86fc861e00e91bb936..e64d0c611041963e608b5922a54d89c8
  
  	tqmx86_gpio_write(gpio, (u8)~TQMX86_DIR_INPUT_MASK, TQMX86_GPIODD);
  
-@@ -369,7 +370,7 @@ static int tqmx86_gpio_probe(struct platform_device *pdev)
+@@ -371,7 +372,7 @@ static int tqmx86_gpio_probe(struct platform_device *pdev)
  	chip->get_direction = tqmx86_gpio_get_direction;
  	chip->get = tqmx86_gpio_get;
  	chip->set = tqmx86_gpio_set;
@@ -119,7 +119,7 @@ index 9db482995d33edc1fb774f86fc861e00e91bb936..e64d0c611041963e608b5922a54d89c8
  	chip->parent = pdev->dev.parent;
  
  	pm_runtime_enable(&pdev->dev);
-@@ -377,6 +378,8 @@ static int tqmx86_gpio_probe(struct platform_device *pdev)
+@@ -379,6 +380,8 @@ static int tqmx86_gpio_probe(struct platform_device *pdev)
  	if (irq > 0) {
  		u8 irq_status;
  

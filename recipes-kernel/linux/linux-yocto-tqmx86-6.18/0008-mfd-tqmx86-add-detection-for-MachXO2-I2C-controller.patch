@@ -1,20 +1,20 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Date: Mon, 13 Oct 2025 14:57:02 +0200
+From: Nora Schiffer <nora.schiffer@ew.tq-group.com>
+Date: Thu, 26 Mar 2026 11:57:02 +0100
 Subject: [PATCH] mfd: tqmx86: add detection for MachXO2 I2C controller
 
 The TQMx86 PLD may contain two kinds of I2C controllers as its secondary
 instance: the previously supported OpenCores I2C, or the MachXO2 I2C. Add
 support for the latter.
 
-Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Signed-off-by: Nora Schiffer <nora.schiffer@ew.tq-group.com>
 Upstream-Status: Submitted [https://lore.kernel.org/lkml/8d275757b7544fe81e5cec4a1a5d4524e9b6967b.1765373900.git.matthias.schiffer@ew.tq-group.com/]
 ---
  drivers/mfd/tqmx86.c | 44 +++++++++++++++++++++++++++++++++++++++-----
  1 file changed, 39 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
-index 708b33c3e572427c12a236e26cd8188d6ca85784..a4e3ecfccb8ab107249e062f331f537f605844a0 100644
+index 50631715aab74e83c1c78ce6aed679cd121a44e8..8e5596ba2c3c407ba8961056a9360ea93e9d3777 100644
 --- a/drivers/mfd/tqmx86.c
 +++ b/drivers/mfd/tqmx86.c
 @@ -13,6 +13,7 @@
@@ -25,7 +25,7 @@ index 708b33c3e572427c12a236e26cd8188d6ca85784..a4e3ecfccb8ab107249e062f331f537f
  #include <linux/platform_data/i2c-ocores.h>
  #include <linux/platform_device.h>
  
-@@ -61,6 +62,8 @@
+@@ -62,6 +63,8 @@
  #define TQMX86_REG_I2C_DETECT	0x7
  #define TQMX86_REG_I2C_DETECT_OCORES	0xa5
  
@@ -34,7 +34,7 @@ index 708b33c3e572427c12a236e26cd8188d6ca85784..a4e3ecfccb8ab107249e062f331f537f
  static uint gpio_irq;
  module_param(gpio_irq, uint, 0);
  MODULE_PARM_DESC(gpio_irq, "GPIO IRQ number (valid parameters: 7, 9, 12)");
-@@ -130,6 +133,8 @@ static const struct mfd_cell tqmx86_i2c1_dev_ocores = {
+@@ -131,6 +134,8 @@ static const struct mfd_cell tqmx86_i2c1_dev_ocores = {
  	.num_resources = ARRAY_SIZE(tqmx_i2c1_resources),
  };
  
@@ -43,7 +43,7 @@ index 708b33c3e572427c12a236e26cd8188d6ca85784..a4e3ecfccb8ab107249e062f331f537f
  static struct ocores_i2c_platform_data tqmx86_i2c2_platform_data_ocores = {};
  
  static const struct mfd_cell tqmx86_i2c2_dev_ocores = {
-@@ -140,6 +145,18 @@ static const struct mfd_cell tqmx86_i2c2_dev_ocores = {
+@@ -141,6 +146,18 @@ static const struct mfd_cell tqmx86_i2c2_dev_ocores = {
  	.num_resources = ARRAY_SIZE(tqmx_i2c2_resources),
  };
  
@@ -62,7 +62,7 @@ index 708b33c3e572427c12a236e26cd8188d6ca85784..a4e3ecfccb8ab107249e062f331f537f
  static const struct mfd_cell tqmx86_devs[] = {
  	{
  		.name = "tqmx86-wdt",
-@@ -282,9 +299,9 @@ static int tqmx86_detect_i2c1(struct device *dev, void __iomem *io_base, int clo
+@@ -286,9 +303,9 @@ static int tqmx86_detect_i2c1(struct device *dev, void __iomem *io_base, int clo
  	}
  
  	/*
@@ -75,7 +75,7 @@ index 708b33c3e572427c12a236e26cd8188d6ca85784..a4e3ecfccb8ab107249e062f331f537f
  	 */
  	i2c_det = inb(TQMX86_IOBASE_I2C1 + TQMX86_REG_I2C_DETECT);
  
-@@ -300,7 +317,7 @@ static int tqmx86_detect_i2c1(struct device *dev, void __iomem *io_base, int clo
+@@ -304,7 +321,7 @@ static int tqmx86_detect_i2c1(struct device *dev, void __iomem *io_base, int clo
  
  static int tqmx86_detect_i2c2(struct device *dev, void __iomem *io_base, int clock_khz)
  {
@@ -84,7 +84,7 @@ index 708b33c3e572427c12a236e26cd8188d6ca85784..a4e3ecfccb8ab107249e062f331f537f
  
  	if (i2c2_irq) {
  		if (!tqmx86_setup_irq(dev, "I2C2", i2c2_irq, io_base,
-@@ -312,16 +329,33 @@ static int tqmx86_detect_i2c2(struct device *dev, void __iomem *io_base, int clo
+@@ -316,16 +333,33 @@ static int tqmx86_detect_i2c2(struct device *dev, void __iomem *io_base, int clo
  	 * The I2C_DETECT register is in the range assigned to the I2C driver
  	 * later, so we don't extend TQMX86_IOSIZE. Use inb() for this one-off
  	 * access instead of ioport_map + unmap.

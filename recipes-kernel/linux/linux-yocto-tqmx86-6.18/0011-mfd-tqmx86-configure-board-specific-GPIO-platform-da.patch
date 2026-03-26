@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+From: Nora Schiffer <nora.schiffer@ew.tq-group.com>
 Date: Tue, 28 May 2024 16:31:37 +0200
 Subject: [PATCH] mfd: tqmx86: configure board-specific GPIO platform data
 
@@ -12,14 +12,14 @@ Unknown boards are deliberately not supported (by not adding the GPIO
 platform device), so future TQMx86 boards will not use incorrect
 configuration on current kernels.
 
-Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Signed-off-by: Nora Schiffer <nora.schiffer@ew.tq-group.com>
 Upstream-Status: Pending
 ---
- drivers/mfd/tqmx86.c | 108 ++++++++++++++++++++++++++++++++++++-------
- 1 file changed, 91 insertions(+), 17 deletions(-)
+ drivers/mfd/tqmx86.c | 109 ++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 92 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
-index f404f2cbf00623fe6711fe57eb7e3a9edee1daf9..317812c2aa015ebf271aed3e1ddabc9b8b795772 100644
+index 544f0f4e670da446ee7cf339aad28780db8de737..67773250fef2f427de1de93bd3c2ead921cdc235 100644
 --- a/drivers/mfd/tqmx86.c
 +++ b/drivers/mfd/tqmx86.c
 @@ -13,6 +13,7 @@
@@ -30,7 +30,7 @@ index f404f2cbf00623fe6711fe57eb7e3a9edee1daf9..317812c2aa015ebf271aed3e1ddabc9b
  #include <linux/platform_data/i2c-machxo2.h>
  #include <linux/platform_data/i2c-ocores.h>
  #include <linux/platform_device.h>
-@@ -157,19 +158,42 @@ static const struct mfd_cell tqmx86_i2c2_dev_machxo2 = {
+@@ -158,19 +159,42 @@ static const struct mfd_cell tqmx86_i2c2_dev_machxo2 = {
  	.num_resources = ARRAY_SIZE(tqmx_i2c2_resources),
  };
  
@@ -86,7 +86,7 @@ index f404f2cbf00623fe6711fe57eb7e3a9edee1daf9..317812c2aa015ebf271aed3e1ddabc9b
  };
  
  static const char *tqmx86_board_id_to_name(u8 board_id, u8 sauc)
-@@ -250,6 +274,40 @@ static int tqmx86_board_id_to_clk_rate(struct device *dev, u8 board_id)
+@@ -254,6 +278,41 @@ static int tqmx86_board_id_to_clk_rate(struct device *dev, u8 board_id)
  	}
  }
  
@@ -108,6 +108,7 @@ index f404f2cbf00623fe6711fe57eb7e3a9edee1daf9..317812c2aa015ebf271aed3e1ddabc9b
 +	case TQMX86_REG_BOARD_ID_E40C1:
 +	case TQMX86_REG_BOARD_ID_E40C2:
 +	case TQMX86_REG_BOARD_ID_130UC:
++	case TQMX86_REG_BOARD_ID_E41M:
 +		return &gpio_platform_data_come;
 +	case TQMX86_REG_BOARD_ID_E39MS:
 +		return (sauc == 0xff)
@@ -127,7 +128,7 @@ index f404f2cbf00623fe6711fe57eb7e3a9edee1daf9..317812c2aa015ebf271aed3e1ddabc9b
  static int tqmx86_setup_irq(struct device *dev, const char *label, u8 irq,
  			    void __iomem *io_base, u8 reg_shift)
  {
-@@ -361,7 +419,8 @@ static int tqmx86_detect_i2c2(struct device *dev, void __iomem *io_base, int clo
+@@ -365,7 +424,8 @@ static int tqmx86_detect_i2c2(struct device *dev, void __iomem *io_base, int clo
  
  static int tqmx86_probe(struct platform_device *pdev)
  {
@@ -137,7 +138,7 @@ index f404f2cbf00623fe6711fe57eb7e3a9edee1daf9..317812c2aa015ebf271aed3e1ddabc9b
  	struct device *dev = &pdev->dev;
  	const char *board_name;
  	void __iomem *io_base;
-@@ -375,10 +434,12 @@ static int tqmx86_probe(struct platform_device *pdev)
+@@ -379,10 +439,12 @@ static int tqmx86_probe(struct platform_device *pdev)
  	sauc = ioread8(io_base + TQMX86_REG_SAUC);
  	board_name = tqmx86_board_id_to_name(board_id, sauc);
  	rev = ioread8(io_base + TQMX86_REG_BOARD_REV);
@@ -151,7 +152,7 @@ index f404f2cbf00623fe6711fe57eb7e3a9edee1daf9..317812c2aa015ebf271aed3e1ddabc9b
  
  	if (gpio_irq) {
  		err = tqmx86_setup_irq(dev, "GPIO", gpio_irq, io_base,
-@@ -397,9 +458,22 @@ static int tqmx86_probe(struct platform_device *pdev)
+@@ -401,9 +463,22 @@ static int tqmx86_probe(struct platform_device *pdev)
  	if (err)
  		return err;
  

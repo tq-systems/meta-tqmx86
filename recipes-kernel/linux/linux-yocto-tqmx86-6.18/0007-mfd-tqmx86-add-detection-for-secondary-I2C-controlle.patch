@@ -1,19 +1,19 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Date: Mon, 13 Oct 2025 14:57:10 +0200
+From: Nora Schiffer <nora.schiffer@ew.tq-group.com>
+Date: Thu, 26 Mar 2026 11:56:50 +0100
 Subject: [PATCH] mfd: tqmx86: add detection for secondary I2C controller
 
 Many TQMx86 PLDs contain 2 I2C controllers. Add support for the second
 one.
 
-Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Signed-off-by: Nora Schiffer <nora.schiffer@ew.tq-group.com>
 Upstream-Status: Submitted [https://lore.kernel.org/lkml/62c6fc03a62aa867689e0d4d3e38e3c598deeb3f.1765373900.git.matthias.schiffer@ew.tq-group.com/]
 ---
  drivers/mfd/tqmx86.c | 58 ++++++++++++++++++++++++++++++++++++++++++++
  1 file changed, 58 insertions(+)
 
 diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
-index 6d304741f898948a753ceceb530c4c4212f815af..708b33c3e572427c12a236e26cd8188d6ca85784 100644
+index 3b8e9e9dfd25cdaf32a6abd1a8e90e22dd5a835a..50631715aab74e83c1c78ce6aed679cd121a44e8 100644
 --- a/drivers/mfd/tqmx86.c
 +++ b/drivers/mfd/tqmx86.c
 @@ -19,6 +19,7 @@
@@ -24,7 +24,7 @@ index 6d304741f898948a753ceceb530c4c4212f815af..708b33c3e572427c12a236e26cd8188d
  #define TQMX86_IOSIZE_I2C	0xa
  #define TQMX86_IOBASE_WATCHDOG	0x18b
  #define TQMX86_IOSIZE_WATCHDOG	0x2
-@@ -53,6 +54,7 @@
+@@ -54,6 +55,7 @@
  #define TQMX86_REG_IO_EXT_INT_12		3
  #define TQMX86_REG_IO_EXT_INT_MASK		0x3
  #define TQMX86_REG_IO_EXT_INT_I2C1_SHIFT	0
@@ -32,7 +32,7 @@ index 6d304741f898948a753ceceb530c4c4212f815af..708b33c3e572427c12a236e26cd8188d
  #define TQMX86_REG_IO_EXT_INT_GPIO_SHIFT	4
  #define TQMX86_REG_SAUC		0x17
  
-@@ -67,6 +69,10 @@ static uint i2c1_irq;
+@@ -68,6 +70,10 @@ static uint i2c1_irq;
  module_param(i2c1_irq, uint, 0);
  MODULE_PARM_DESC(i2c1_irq, "I2C1 IRQ number (valid parameters: 7, 9, 12)");
  
@@ -43,7 +43,7 @@ index 6d304741f898948a753ceceb530c4c4212f815af..708b33c3e572427c12a236e26cd8188d
  enum tqmx86_i2c1_resource_type {
  	TQMX86_I2C1_IO,
  	TQMX86_I2C1_IRQ,
-@@ -78,6 +84,17 @@ static struct resource tqmx_i2c1_resources[] = {
+@@ -79,6 +85,17 @@ static struct resource tqmx_i2c1_resources[] = {
  	[TQMX86_I2C1_IRQ] = {},
  };
  
@@ -61,7 +61,7 @@ index 6d304741f898948a753ceceb530c4c4212f815af..708b33c3e572427c12a236e26cd8188d
  static const struct resource tqmx_watchdog_resources[] = {
  	DEFINE_RES_IO(TQMX86_IOBASE_WATCHDOG, TQMX86_IOSIZE_WATCHDOG),
  };
-@@ -113,6 +130,16 @@ static const struct mfd_cell tqmx86_i2c1_dev_ocores = {
+@@ -114,6 +131,16 @@ static const struct mfd_cell tqmx86_i2c1_dev_ocores = {
  	.num_resources = ARRAY_SIZE(tqmx_i2c1_resources),
  };
  
@@ -78,7 +78,7 @@ index 6d304741f898948a753ceceb530c4c4212f815af..708b33c3e572427c12a236e26cd8188d
  static const struct mfd_cell tqmx86_devs[] = {
  	{
  		.name = "tqmx86-wdt",
-@@ -271,6 +298,33 @@ static int tqmx86_detect_i2c1(struct device *dev, void __iomem *io_base, int clo
+@@ -275,6 +302,33 @@ static int tqmx86_detect_i2c1(struct device *dev, void __iomem *io_base, int clo
  	return 0;
  }
  
@@ -112,7 +112,7 @@ index 6d304741f898948a753ceceb530c4c4212f815af..708b33c3e572427c12a236e26cd8188d
  static int tqmx86_probe(struct platform_device *pdev)
  {
  	u8 board_id, sauc, rev;
-@@ -305,6 +359,10 @@ static int tqmx86_probe(struct platform_device *pdev)
+@@ -309,6 +363,10 @@ static int tqmx86_probe(struct platform_device *pdev)
  	if (err)
  		return err;
  

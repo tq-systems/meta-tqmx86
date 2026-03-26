@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 Date: Tue, 7 Oct 2025 11:54:24 +0200
-Subject: [PATCH] mfd: tqmx86: add board definitions for TQMxCU1-HPCM and
+Subject: [PATCH] mfd: tqmx86: Add board definitions for TQMxCU1-HPCM and
  TQMxCU2-HPCM
 
 This adds support for 2 new TQMx86 COMs:
@@ -12,7 +12,9 @@ This adds support for 2 new TQMx86 COMs:
 [1] https://www.tq-group.com/en/products/tq-embedded/x86-architecture/tqmxcu1-hpcm/
 
 Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Upstream-Status: Submitted [https://lore.kernel.org/lkml/20251007095424.138878-1-matthias.schiffer@ew.tq-group.com/]
+Link: https://patch.msgid.link/20251007095424.138878-1-matthias.schiffer@ew.tq-group.com
+Signed-off-by: Lee Jones <lee@kernel.org>
+Upstream-Status: Backport [https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=78bf081ddf39ba83b551f96d42fe2e4a8fda8718]
 ---
  drivers/mfd/tqmx86.c | 8 ++++++++
  1 file changed, 8 insertions(+)

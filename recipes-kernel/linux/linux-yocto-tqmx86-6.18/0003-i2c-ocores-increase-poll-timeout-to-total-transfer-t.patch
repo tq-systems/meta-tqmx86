@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+From: Nora Schiffer <nora.schiffer@ew.tq-group.com>
 Date: Thu, 9 Oct 2025 11:19:49 +0200
 Subject: [PATCH] i2c: ocores: increase poll timeout to total transfer timeout
 
@@ -15,14 +15,14 @@ read_poll_timeout() is used, allowing a total transfer time up to the
 timeout set in struct i2c_adapter (defaulting to 1s, configurable through
 the I2C_TIMEOUT ioctl).
 
-Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Signed-off-by: Nora Schiffer <nora.schiffer@ew.tq-group.com>
 Upstream-Status: Submitted [https://lore.kernel.org/lkml/51a72ceca0154d7be85c3cc67722e7dd0b364a2e.1760000254.git.matthias.schiffer@ew.tq-group.com/]
 ---
  drivers/i2c/busses/i2c-ocores.c | 44 ++++++++++++++++-----------------
  1 file changed, 22 insertions(+), 22 deletions(-)
 
 diff --git a/drivers/i2c/busses/i2c-ocores.c b/drivers/i2c/busses/i2c-ocores.c
-index 482b37c8a12970438400960bc667e6f7331e0e54..c4587194d46be5ada0418ae2e59e4fa0298e15a7 100644
+index 0f67e57cdeff6cfcbd68522d467fcf289959f4b0..f4d47b9bcc0533772a45093b998273940df3fc14 100644
 --- a/drivers/i2c/busses/i2c-ocores.c
 +++ b/drivers/i2c/busses/i2c-ocores.c
 @@ -18,6 +18,7 @@

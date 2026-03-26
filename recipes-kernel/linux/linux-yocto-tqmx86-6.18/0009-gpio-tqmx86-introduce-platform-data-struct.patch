@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+From: Nora Schiffer <nora.schiffer@ew.tq-group.com>
 Date: Tue, 28 May 2024 16:11:28 +0200
 Subject: [PATCH] gpio: tqmx86: introduce platform data struct
 
@@ -13,7 +13,7 @@ dir_input_mask bit fields as arrays allows for import into bitmaps using
 bitmap_from_arr32(), keeping the code independent of the actual
 number of GPIOs when not dealing with register accesses.
 
-Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Signed-off-by: Nora Schiffer <nora.schiffer@ew.tq-group.com>
 Upstream-Status: Pending
 ---
  MAINTAINERS                               |  1 +
@@ -22,10 +22,10 @@ Upstream-Status: Pending
  create mode 100644 include/linux/platform_data/gpio-tqmx86.h
 
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 1d8a2ed21b0115aeb3d08287fdd18ada8b4c2bb6..21e043dd198b47bce77762903eedb09b563beb29 100644
+index 632bc1a513e5d62f98451cc0b97c6320b9f358b2..46c9c0c4dcdb37af0bd56e8371e9c852613b0531 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -23491,6 +23491,7 @@ F:	arch/arm64/boot/dts/freescale/tqml*.dts*
+@@ -26080,6 +26080,7 @@ F:	arch/arm64/boot/dts/freescale/tqml*.dts*
  F:	drivers/gpio/gpio-tqmx86.c
  F:	drivers/mfd/tqmx86.c
  F:	drivers/watchdog/tqmx86_wdt.c
@@ -35,7 +35,7 @@ index 1d8a2ed21b0115aeb3d08287fdd18ada8b4c2bb6..21e043dd198b47bce77762903eedb09b
  M:	Steven Rostedt <rostedt@goodmis.org>
 diff --git a/include/linux/platform_data/gpio-tqmx86.h b/include/linux/platform_data/gpio-tqmx86.h
 new file mode 100644
-index 0000000000000000000000000000000000000000..c315707309e57d5939f47bb23924fc0ec8843e3c
+index 0000000000000000000000000000000000000000..994143d13700d08fb8e660cea3cced25362c334b
 --- /dev/null
 +++ b/include/linux/platform_data/gpio-tqmx86.h
 @@ -0,0 +1,24 @@
@@ -44,7 +44,7 @@ index 0000000000000000000000000000000000000000..c315707309e57d5939f47bb23924fc0e
 + * TQMx86 GPIO controller platform data
 + *
 + * Copyright (C) 2024 TQ-Systems GmbH <linux@ew.tq-group.com>, D-82229 Seefeld, Germany.
-+ * Author: Matthias Schiffer
++ * Author: Nora Schiffer
 + */
 +
 +#ifndef __LINUX_PLATFORM_DATA_GPIO_TQMX86_H

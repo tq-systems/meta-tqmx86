@@ -1,28 +1,28 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Date: Mon, 13 Oct 2025 14:56:27 +0200
+From: Nora Schiffer <nora.schiffer@ew.tq-group.com>
+Date: Thu, 26 Mar 2026 11:56:26 +0100
 Subject: [PATCH] i2c: machxo2: new driver
 
 Implement a driver for the "Hardened I2C" controller found on Lattice
 MachXO2 family PLDs. The driver can run IRQ-driven or use a timer for
 polling.
 
-Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Signed-off-by: Nora Schiffer <nora.schiffer@ew.tq-group.com>
 Upstream-Status: Submitted [https://lore.kernel.org/lkml/128cfc422f60d674f5ced8e8350b794945c8fa59.1765373900.git.matthias.schiffer@ew.tq-group.com/]
 ---
  drivers/i2c/busses/Kconfig                |  11 +
  drivers/i2c/busses/Makefile               |   1 +
- drivers/i2c/busses/i2c-machxo2.c          | 710 ++++++++++++++++++++++
+ drivers/i2c/busses/i2c-machxo2.c          | 709 ++++++++++++++++++++++
  include/linux/platform_data/i2c-machxo2.h |  17 +
- 4 files changed, 739 insertions(+)
+ 4 files changed, 738 insertions(+)
  create mode 100644 drivers/i2c/busses/i2c-machxo2.c
  create mode 100644 include/linux/platform_data/i2c-machxo2.h
 
 diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
-index 0e679cc5014882a323bb7a2d4204b579d737102d..de5ac9ca2aa472092536f2cdeeb58029f8f3aa86 100644
+index fd81e49638aaa161ae264a722e9e06adc7914cda..ab1be9ed47314f84fd2183fa662b27c48e36f2f1 100644
 --- a/drivers/i2c/busses/Kconfig
 +++ b/drivers/i2c/busses/Kconfig
-@@ -823,6 +823,17 @@ config I2C_LS2X
+@@ -855,6 +855,17 @@ config I2C_LS2X
  	  This driver can also be built as a module. If so, the module
  	  will be called i2c-ls2x.
  
@@ -39,12 +39,12 @@ index 0e679cc5014882a323bb7a2d4204b579d737102d..de5ac9ca2aa472092536f2cdeeb58029
 +
  config I2C_MLXBF
          tristate "Mellanox BlueField I2C controller"
-         depends on MELLANOX_PLATFORM && ARM64
+         depends on (MELLANOX_PLATFORM && ARM64) || COMPILE_TEST
 diff --git a/drivers/i2c/busses/Makefile b/drivers/i2c/busses/Makefile
-index ecc07c50f2a0feec8c5902ee044cc4c598afb499..c3b5f11daa624f444099f1275d6387236f710450 100644
+index fb985769f5ff78a8de8aaa93668c7c4a7af590ac..f9c44406be2e1ff57c821cf7c632e15ed0de6f5e 100644
 --- a/drivers/i2c/busses/Makefile
 +++ b/drivers/i2c/busses/Makefile
-@@ -149,6 +149,7 @@ obj-$(CONFIG_I2C_BRCMSTB)	+= i2c-brcmstb.o
+@@ -152,6 +152,7 @@ obj-$(CONFIG_I2C_BRCMSTB)	+= i2c-brcmstb.o
  obj-$(CONFIG_I2C_CROS_EC_TUNNEL)	+= i2c-cros-ec-tunnel.o
  obj-$(CONFIG_I2C_ELEKTOR)	+= i2c-elektor.o
  obj-$(CONFIG_I2C_ICY)		+= i2c-icy.o
@@ -54,16 +54,16 @@ index ecc07c50f2a0feec8c5902ee044cc4c598afb499..c3b5f11daa624f444099f1275d638723
  obj-$(CONFIG_I2C_OPAL)		+= i2c-opal.o
 diff --git a/drivers/i2c/busses/i2c-machxo2.c b/drivers/i2c/busses/i2c-machxo2.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..c7a11d4d4b1983be984c64290774b5f03e42c4ab
+index 0000000000000000000000000000000000000000..05eb664fd93f54dacf161626afd6fb74dc6d9fa2
 --- /dev/null
 +++ b/drivers/i2c/busses/i2c-machxo2.c
-@@ -0,0 +1,710 @@
+@@ -0,0 +1,709 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * i2c-machxo2.c: I2C bus driver for Lattice MachXO2 I2C controller
 + *
 + * Copyright (c) 2024-2025 TQ-Systems GmbH <linux@ew.tq-group.com>, D-82229 Seefeld, Germany.
-+ * Author: Matthias Schiffer
++ * Author: Nora Schiffer
 + *
 + * Based on driver by:
 + *   Vadim V.Vlasov <vvlasov@dev.rtsoft.ru>
@@ -665,8 +665,7 @@ index 0000000000000000000000000000000000000000..c7a11d4d4b1983be984c64290774b5f0
 +
 +	init_waitqueue_head(&i2c->wait);
 +	spin_lock_init(&i2c->lock);
-+	hrtimer_init(&i2c->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-+	i2c->timer.function = machxo2_handle;
++	hrtimer_setup(&i2c->timer, machxo2_handle, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
 +
 +	if (i2c->irq > 0) {
 +		ret = devm_request_irq(&pdev->dev, i2c->irq, machxo2_isr, 0,
@@ -770,7 +769,7 @@ index 0000000000000000000000000000000000000000..c7a11d4d4b1983be984c64290774b5f0
 +MODULE_LICENSE("GPL");
 diff --git a/include/linux/platform_data/i2c-machxo2.h b/include/linux/platform_data/i2c-machxo2.h
 new file mode 100644
-index 0000000000000000000000000000000000000000..5cbfbe9d81b46cf9f4f7112bdd29f6864b305c35
+index 0000000000000000000000000000000000000000..d63e65fb31b7500f1c156e94d2bc65f926e984a4
 --- /dev/null
 +++ b/include/linux/platform_data/i2c-machxo2.h
 @@ -0,0 +1,17 @@
@@ -779,7 +778,7 @@ index 0000000000000000000000000000000000000000..5cbfbe9d81b46cf9f4f7112bdd29f686
 + * i2c-machxo2.h: Platform data for Lattice MachXO2 I2C controller
 + *
 + * Copyright (c) 2024 TQ-Systems GmbH <linux@ew.tq-group.com>, D-82229 Seefeld, Germany.
-+ * Author: Matthias Schiffer
++ * Author: Nora Schiffer
 + */
 +
 +#ifndef _LINUX_I2C_MACHXO2_H

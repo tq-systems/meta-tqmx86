@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+From: Nora Schiffer <nora.schiffer@ew.tq-group.com>
 Date: Wed, 26 Nov 2025 13:18:00 +0100
 Subject: [PATCH] mfd: tqmx86: add board definition for TQMxE41M
 
@@ -8,17 +8,17 @@ module based on Intel Atom x7000E/RE processors:
 
 https://www.tq-group.com/en/products/tq-embedded/cpu-families/x86-architecture/tqmxe41m/
 
-Signed-off-by: Matthias Schiffer <matthias.schiffer@tq-group.com>
+Signed-off-by: Nora Schiffer <nora.schiffer@ew.tq-group.com>
 Upstream-Status: Pending
 ---
- drivers/mfd/tqmx86.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/mfd/tqmx86.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/drivers/mfd/tqmx86.c b/drivers/mfd/tqmx86.c
-index 317812c2aa015ebf271aed3e1ddabc9b8b795772..67773250fef2f427de1de93bd3c2ead921cdc235 100644
+index 1c2fe3f912389c0f04da40c40549f9549fa97076..4aef72bb585dac8b3f84d0bec91c4e93ade542a9 100644
 --- a/drivers/mfd/tqmx86.c
 +++ b/drivers/mfd/tqmx86.c
-@@ -45,6 +45,7 @@
+@@ -42,6 +42,7 @@
  #define TQMX86_REG_BOARD_ID_E40C1	14
  #define TQMX86_REG_BOARD_ID_E40C2	15
  #define TQMX86_REG_BOARD_ID_130UC	16
@@ -26,7 +26,7 @@ index 317812c2aa015ebf271aed3e1ddabc9b8b795772..67773250fef2f427de1de93bd3c2ead9
  #define TQMX86_REG_BOARD_ID_E41S	19
  #define TQMX86_REG_BOARD_ID_CU1_HPCM	24
  #define TQMX86_REG_BOARD_ID_CU2_HPCM	25
-@@ -231,6 +232,8 @@ static const char *tqmx86_board_id_to_name(u8 board_id, u8 sauc)
+@@ -165,6 +166,8 @@ static const char *tqmx86_board_id_to_name(u8 board_id, u8 sauc)
  		return "TQMxE40C2";
  	case TQMX86_REG_BOARD_ID_130UC:
  		return "TQMx130UC";
@@ -35,7 +35,7 @@ index 317812c2aa015ebf271aed3e1ddabc9b8b795772..67773250fef2f427de1de93bd3c2ead9
  	case TQMX86_REG_BOARD_ID_E41S:
  		return "TQMxE41S";
  	case TQMX86_REG_BOARD_ID_CU1_HPCM:
-@@ -256,6 +259,7 @@ static int tqmx86_board_id_to_clk_rate(struct device *dev, u8 board_id)
+@@ -190,6 +193,7 @@ static int tqmx86_board_id_to_clk_rate(struct device *dev, u8 board_id)
  	case TQMX86_REG_BOARD_ID_E40C1:
  	case TQMX86_REG_BOARD_ID_E40C2:
  	case TQMX86_REG_BOARD_ID_130UC:
@@ -43,11 +43,3 @@ index 317812c2aa015ebf271aed3e1ddabc9b8b795772..67773250fef2f427de1de93bd3c2ead9
  	case TQMX86_REG_BOARD_ID_E41S:
  	case TQMX86_REG_BOARD_ID_CU1_HPCM:
  	case TQMX86_REG_BOARD_ID_CU2_HPCM:
-@@ -292,6 +296,7 @@ tqmx86_board_id_to_gpio_pdata(u8 board_id, u8 sauc, u8 pld_rev)
- 	case TQMX86_REG_BOARD_ID_E40C1:
- 	case TQMX86_REG_BOARD_ID_E40C2:
- 	case TQMX86_REG_BOARD_ID_130UC:
-+	case TQMX86_REG_BOARD_ID_E41M:
- 		return &gpio_platform_data_come;
- 	case TQMX86_REG_BOARD_ID_E39MS:
- 		return (sauc == 0xff)
