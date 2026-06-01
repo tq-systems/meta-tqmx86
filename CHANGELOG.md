@@ -11,6 +11,11 @@ Releases are named with the following scheme:
 
 ### Changed
 
+- Switched from Yocto scarthgap to wrynose
+- Switched from linux-yocto(-rt) 6.12.y to 6.18.y
+
+  The specific patch release of 6.18.y is defined by the used revision
+  of openembedded-core.
 - Replaced unmaintained cpufrequtils package with cpupower
 - Switched from busybox to full coreutils
 
